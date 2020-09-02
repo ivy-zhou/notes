@@ -1,0 +1,1852 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>CS 247 - Sentences</title>
+
+<meta name="description" content="Professor Caroline Kierstead, Spring 2017  Software engineering principles, a course where attendance is probably correlated with a higher grade.ADT DesignAb...">
+<link rel="canonical" href="/2017/08/06/cs-247.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24">
+<style type="text/css">
+	.st0{fill:#515151;}
+</style>
+<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
+	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>CS 247</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2017-08-06-cs-247/2017-08-06-cs-247.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="CS 247"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=notes">notes</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 06, 2017</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2017-08-06T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><blockquote>
+  <p>Professor Caroline Kierstead, Spring 2017</p>
+</blockquote>
+
+<blockquote>
+  <p>Software engineering principles, a course where attendance is probably correlated with a higher grade.</p>
+</blockquote>
+
+<h1 id="adt-design">ADT Design</h1>
+
+<p><strong>Abstract data type (ADT):</strong> A user defined class which bundles together data about the class and operations on it e.g. stack, linkedlist. The point is to make the compiler catch illegal values in the class and illegal operations on it (programming errors) as type errors.</p>
+
+<p>Accessors and mutators do exactly what they sound like they do. A naming convention used in the course is that accessors are declared as <code class="language-plaintext highlighter-rouge">dataField()</code> and mutators are declared as <code class="language-plaintext highlighter-rouge">dataFieldIs(const &amp;dataField newDataField)</code>.</p>
+
+<blockquote>
+  <p><strong>Best Practice (BP):</strong> Mutators should check the values that they’re writing into the ADT, and throw an exception if things aren’t working out. Use const references to pass in things to the mutator.</p>
+</blockquote>
+
+<p>Function overloading is when you have two functions with the same name having different parameter types, so you can call either. Function overriding is when you have two functions with the same name and the same parameter types, so one overrides the other (e.g. child class overrides parent class method).</p>
+
+<p>You can also overload operators, either as member functions (which have access to your private variables/methods) or as non-member functions (declared outside, have no access to anything that isn’t public). Sometimes you get operators like <code class="language-plaintext highlighter-rouge">&lt;&lt;</code> and <code class="language-plaintext highlighter-rouge">&gt;&gt;</code> which are streaming operators that have to be declared outside BUT you also need to access the private data members (say, to output them), so you declare them as a friend inside the class, and then declare it again outside. Friends have access to all your private information in C++. Friend classes will do this too.</p>
+
+<p>You can specify default arguments to a class in the declaration for it, but not in the definition.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">RationalFriend</span> <span class="p">{</span>
+    <span class="c1">// this doesn't do anything except show you how friend declaration works for classes</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Rational</span> <span class="o">:</span> <span class="n">Fraction</span> <span class="p">{</span>
+    <span class="c1">// my friends which are classes</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">RationalFriend</span><span class="p">;</span>
+
+    <span class="c1">// my friends which are functions</span>
+    <span class="k">friend</span> <span class="n">ostream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">ostream</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+    <span class="k">friend</span> <span class="n">istream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">istream</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+
+    <span class="nl">public:</span>
+        <span class="c1">// accessors, mutators</span>
+        <span class="kt">int</span> <span class="n">numerator</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">denominator</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+        <span class="kt">void</span> <span class="n">numeratorIs</span><span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="p">);</span>
+        <span class="kt">void</span> <span class="n">denominatorIs</span><span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="p">)</span> <span class="k">throw</span> <span class="p">(</span><span class="kt">char</span> <span class="k">const</span><span class="o">*</span><span class="p">);</span>
+
+        <span class="n">Rational</span> <span class="p">(</span><span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">denom</span> <span class="o">=</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// declaration with default arguments</span>
+
+
+    <span class="p">...</span>
+<span class="p">};</span>
+
+<span class="n">ostream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">sout</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="p">);</span> <span class="c1">// notice we return a stream for chaining!</span>
+<span class="n">istream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">istream</span> <span class="o">&amp;</span><span class="n">sin</span><span class="p">,</span> <span class="n">Rational</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+
+<span class="c1">// arithmetic/comparison operator overloading</span>
+<span class="n">Rational</span> <span class="k">operator</span><span class="o">+</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="n">Rational</span> <span class="k">operator</span><span class="o">*</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="o">==</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="o">!=</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Other function declaration keywords to remember:</p>
+
+<ul>
+  <li><strong>explicit:</strong> prevents C++ from doing implicit type conversion e.g. a constructor that looks like <code class="language-plaintext highlighter-rouge">explicit Rational (int num = 0, int denom = 1);</code> prevents <code class="language-plaintext highlighter-rouge">Rational doubleRational = Rational(1.0, 1.0)</code> from compiling</li>
+  <li><strong>override:</strong> signals that this method is overridden from a base class and the compiler gives an error if it doesn’t actually override anything (not technically necessary)</li>
+  <li><strong>virtual:</strong> signals that this method should be overridden by the most derived child class (not technically necessary, you can override without it, but it would be a bad practice) e.g. <code class="language-plaintext highlighter-rouge">virtual int foo();</code></li>
+</ul>
+
+<blockquote>
+  <p>What’s the point of virtual then?</p>
+
+  <p>Consider some code which looks like <code class="language-plaintext highlighter-rouge">Base *foo = new Child();</code>. If you called <code class="language-plaintext highlighter-rouge">foo -&gt; childMethod()</code> (where childMethod is defined in Child, but not declared virtual) it wouldn’t work. Since function binding was done at compile time, foo was declared a Base and it can only use Base class methods. The virtual keyword tells the compiler to delay function lookup to runtime, so that <code class="language-plaintext highlighter-rouge">foo -&gt; childMethod()</code> will work.</p>
+</blockquote>
+
+<ul>
+  <li><strong>pure virtual:</strong> defining a method like this makes the class an abstract base class which cannot be instantiated (you have to instantiate a child class that defines the method instead e.g. <code class="language-plaintext highlighter-rouge">pure virtual int foo() = 0;</code></li>
+  <li>
+    <p><strong>final:</strong> prevents the method from being redefined, does the same thing for classes if you declare the class as <code class="language-plaintext highlighter-rouge">class Object final{...}</code> e.g. <code class="language-plaintext highlighter-rouge">int foo() final;</code></p>
+  </li>
+  <li><strong>const:</strong> prevents this method from mutating the object e.g. <code class="language-plaintext highlighter-rouge">int foo() const;</code></li>
+</ul>
+
+<p>Object slicing: occurs when you cast a specified child class to its parent class, thus slicing off all its child class data fields</p>
+
+<blockquote>
+  <p><strong>BP:</strong> Use helper functions, but don’t pollute the global namespace by making them public. Put them as private, or put them in a namespace.</p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">const</code> and <code class="language-plaintext highlighter-rouge">private</code> are basically the major themes of this course.</p>
+
+<h3 id="entity-vs-value-based-adts">Entity v.s. Value-based ADTs</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Entity ADTs</th>
+      <th style="text-align: left">Value-based ADTs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Objects with distinct identities, a representation of some real world object</td>
+      <td style="text-align: left">Objects with the same values are considered identical</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Examples are: physical objects (planes), people (passengers), transactions (reservations, receipts), records (customer information</td>
+      <td style="text-align: left">Examples are: mathematical types, measurements, quantities, properties (colour, location, time), restricted value sets (postal codes)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Prohibit copy constructor, assignment, type conversions, operator overloading for comparison and equality (none of these are meaningful</td>
+      <td style="text-align: left">Allow copy constructor, assignment, often operator overloading is meaningful</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Usually mutable</td>
+      <td style="text-align: left">Usually immutable (think about somebody having a reference to your Coin object and mutating it without you knowing!)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="special-member-functions">Special member functions</h3>
+
+<p>The compiler gives us these 6 member functions for free:</p>
+
+<ul>
+  <li>
+    <p>default constructor with no params</p>
+
+    <ul>
+      <li>This is removed if you define a constructor yourself</li>
+      <li>It does memberwise initialization. It’ll go through all your data members and try to initialize all of them (your simple data types like strings and ints are untouched, your pointers are untouched, your member objects get their default constructor called on them, and any data members you got from your parents are initialized with your parent’s constructors</li>
+    </ul>
+  </li>
+  <li>
+    <p>destructor</p>
+
+    <ul>
+      <li>It does memberwise deletion. Your simple data members are deallocated, your pointers get dealloc’d but the memory that they were pointing to isn’t deleted, your member objects are cleaned up using their destructors (from your parent class or from the member class)</li>
+    </ul>
+  </li>
+  <li>
+    <p>copy constructor (shallow copy)</p>
+
+    <ul>
+      <li>This is also memberwise. Your simple data members and your pointers are bitwise copied (so your copy points at the same memory as the object you’re copying from), and your member objects have their copy constructors used.</li>
+    </ul>
+  </li>
+  <li>
+    <p>copy assignment (remember, this is just operator =)</p>
+
+    <ul>
+      <li>Remember that the distinction between copy assignment and copy constructor is that in assignment, the object you’re trying to copy into already exists e.g. <code class="language-plaintext highlighter-rouge">Object foo(bar);</code> v.s. <code class="language-plaintext highlighter-rouge">Object foo = bar;</code></li>
+      <li>Again, it’s going to be memberwise. It’s going to bitwise copy your simple data members and your pointers, and then it’s going to call the assignment operator on all your member objects.</li>
+    </ul>
+  </li>
+  <li>
+    <p>move constructor</p>
+
+    <ul>
+      <li>This is basically a copy constructor which doesn’t guarantee that the object you’re copying is going to stay unchanged. It’s useful for efficiency reasons like for example if you’re assigning a rvalue like <code class="language-plaintext highlighter-rouge">Object foo; foo = Object(std::move(baz));</code></li>
+      <li>It’s pretty much the same memberwise story as before (bitwise copy of simple data + pointers, move construction of your member variables)</li>
+      <li>You declare it like this:</li>
+    </ul>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">MyClass</span><span class="o">::</span><span class="n">MyClass</span> <span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;&amp;</span> <span class="n">m</span><span class="p">)</span> <span class="o">:</span> <span class="n">Base</span><span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="p">},</span> <span class="n">comp_</span><span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">comp_</span><span class="p">)</span> <span class="p">},</span>
+                                 <span class="n">simple_</span><span class="p">{</span> <span class="n">m</span><span class="p">.</span><span class="n">simple</span> <span class="p">},</span> <span class="n">ptr_</span><span class="p">{</span> <span class="n">m</span><span class="p">.</span><span class="n">ptr_</span> <span class="p">}</span> <span class="p">{</span>
+   <span class="n">m</span><span class="p">.</span><span class="n">ptr_</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>move assignment</p>
+
+    <ul>
+      <li>Basically an assignment operator without the guarantee that the object you’re copying is going to stay unchanged. I’m getting tired of typing the memberwise stuff.</li>
+      <li>You can roll up your move assignment and your copy assignment into one nifty function:</li>
+    </ul>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// we don't need these 2</span>
+<span class="n">MyClass</span><span class="o">::</span><span class="n">MyClass</span><span class="p">(</span> <span class="k">const</span> <span class="n">MyClass</span> <span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="o">:</span> <span class="n">MyClass</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">copy</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span><span class="p">,</span> <span class="n">other</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="n">MyClass</span><span class="o">::</span><span class="n">MyClass</span><span class="p">(</span> <span class="n">MyClass</span> <span class="o">&amp;&amp;</span> <span class="n">other</span> <span class="p">)</span> <span class="o">:</span> <span class="n">MyClass</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">swap</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span><span class="p">,</span> <span class="n">other</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// since we can just define this one!</span>
+<span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">MyClass</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span> <span class="p">(</span><span class="n">MyClass</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Since MyClass m is passed by value here, it's already been</span>
+    <span class="c1">// copied, so it's perfectly OK to directly swap the values using copy-swap</span>
+    <span class="n">swap</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span><span class="p">,</span> <span class="n">m</span> <span class="p">);</span>
+    <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="copy-and-swap-idiom">Copy and swap idiom</h4>
+
+<p>The copy and swap idiom is a way to implement deep copies in assignment operator definitions whose main benefit is that if the deep fails, the original object we were trying to copy is unaffected.</p>
+
+<p>Say we’re trying to deep copy some Object foo in an assignment operation. We’ll make a deep copy of foo by using foo’s copy constructor (which already does deep copies). Let’s call this deep copy foo2. Then, we can copy foo by swapping out the values of my pointers and data members with the values in foo2. This is a shallow copy, but that’s totally fine, because foo2 already did all the hard work of deep copying. Also, we don’t have to delete our old members anymore because since foo2 was allocated on the stack, its destructor is going to get called, so it’ll do the work of deleting our old data members too!</p>
+
+<p><strong>Pros:</strong> Since we didn’t really touch foo except for deep copying it, if the deep copy fails, everything’s fine and we didn’t break foo.</p>
+
+<p><strong>Cons:</strong> We essentially copied foo twice, so it’s kind of inefficient.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// friend that swaps contents of m1 and m2</span>
+<span class="c1">// using std::swap from &lt;algorithm&gt;</span>
+<span class="kt">void</span> <span class="nf">swap</span><span class="p">(</span> <span class="n">MyClass</span> <span class="o">&amp;</span> <span class="n">m1</span><span class="p">,</span> <span class="n">MyClass</span> <span class="o">&amp;</span><span class="n">m2</span> <span class="p">)</span> <span class="p">{</span>
+ <span class="n">Base</span> <span class="o">&amp;</span><span class="n">b_m1</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&amp;&gt;</span><span class="p">(</span><span class="n">m1</span><span class="p">);</span>
+ <span class="n">Base</span> <span class="o">&amp;</span><span class="n">b_m2</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&amp;&gt;</span><span class="p">(</span><span class="n">m2</span><span class="p">);</span>
+ <span class="n">swap</span><span class="p">(</span> <span class="n">b_m1</span><span class="p">,</span> <span class="n">b_m2</span> <span class="p">);</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span> <span class="n">m1</span><span class="p">.</span><span class="n">comp_</span><span class="p">,</span> <span class="n">m2</span><span class="p">.</span><span class="n">comp_</span> <span class="p">);</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span> <span class="n">m1</span><span class="p">.</span><span class="n">ptr_</span><span class="p">,</span> <span class="n">m2</span><span class="p">.</span><span class="n">ptr_</span> <span class="p">);</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span> <span class="n">m1</span><span class="p">.</span><span class="n">simple_</span><span class="p">,</span> <span class="n">m2</span><span class="p">.</span><span class="n">simple_</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">MyClass</span><span class="o">::</span><span class="k">operator</span><span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">MyClass</span> <span class="n">temp</span><span class="p">{</span><span class="n">m</span><span class="p">};</span>
+ <span class="n">swap</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span><span class="p">,</span> <span class="n">temp</span> <span class="p">);</span>
+ <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="singleton-design-pattern">Singleton Design Pattern</h2>
+
+<p>Ensure that exactly one of our ADT object can be instantiated can exist.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Egg</span> <span class="p">{</span>
+  <span class="k">static</span> <span class="n">Egg</span> <span class="n">e</span><span class="p">;</span> <span class="c1">// singleton instance</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="c1">// data member</span>
+  <span class="n">Egg</span><span class="p">(</span><span class="kt">int</span> <span class="n">ii</span><span class="p">)</span> <span class="o">:</span> <span class="n">i</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// private constructor</span>
+ <span class="nl">public:</span>
+   <span class="k">static</span> <span class="n">Egg</span><span class="o">*</span> <span class="n">instance</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// You would call for an instance of egg using Egg()</span>
+   <span class="kt">int</span> <span class="n">val</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">i</span><span class="p">;</span> <span class="p">}</span>
+   <span class="n">Egg</span><span class="p">(</span><span class="k">const</span> <span class="n">Egg</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span> <span class="c1">// prevent copy</span>
+   <span class="n">Egg</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">Egg</span><span class="o">&amp;</span><span class="p">)</span> <span class="o">=</span> <span class="k">delete</span><span class="p">;</span> <span class="c1">// prevent assign</span>
+<span class="p">};</span>
+
+<span class="n">Egg</span> <span class="n">Egg</span><span class="o">::</span><span class="n">e</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span> <span class="c1">// initialization of singleton (apparently, you can access private static data fields</span>
+                <span class="c1">// in line in C++, wow)</span>
+</code></pre></div></div>
+
+<h2 id="pimpl-idiom">PImpl Idiom</h2>
+
+<p>Header files are kind of wack–they let everyone see what type of private data members you’re using, which is no good. So to solve this, we can forward declare a <code class="language-plaintext highlighter-rouge">struct Impl;</code>, create a reference to it in our header file which our class will use to store its data members, and then actually define the <code class="language-plaintext highlighter-rouge">Impl</code> in the <code class="language-plaintext highlighter-rouge">.cc</code> file.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Rational</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="n">Rational</span> <span class="p">(</span><span class="kt">int</span> <span class="n">numer</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">denom</span> <span class="o">=</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">numerator</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">denominator</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+ <span class="nl">private:</span>
+  <span class="k">struct</span> <span class="nc">Impl</span><span class="p">;</span>
+  <span class="n">Impl</span><span class="o">*</span> <span class="n">rat_</span><span class="p">;</span>
+ <span class="nl">public:</span>
+  <span class="o">~</span><span class="n">Rational</span><span class="p">();</span>
+  <span class="n">Rational</span> <span class="p">(</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span> <span class="p">);</span>
+  <span class="n">Rational</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span> <span class="p">(</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span> <span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h1 id="modules-and-interfaces">Modules and Interfaces</h1>
+
+<p>When you put <code class="language-plaintext highlighter-rouge">#include "something.h"</code> into your header file, all the compiler does is copy paste the contents of that header file into your header file. So, to prevent things from being included twice (e.g. I include something.h and you include something.h, and I also include you), we use header guards.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef RATIONAL_H
+#define RATIONAL_H
+</span>    <span class="c1">// class Rational declaration and related functions go here</span>
+<span class="p">...</span>
+<span class="cp">#endif
+</span></code></pre></div></div>
+
+<p>But what if I include you and you include me? To break that circular dependency, at least one of us has to forward declare the other. This way, when we’re compiled together, the declarations will be filled in for both of us and everyone’s happy.</p>
+
+<p>From adt1.h</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ADT2</span><span class="p">;</span> <span class="c1">// forward declaration</span>
+<span class="k">class</span> <span class="nc">ADT1</span> <span class="p">{</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">ADT2</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">data_</span><span class="p">;</span>
+    <span class="n">ADT1</span> <span class="o">*</span><span class="n">next_</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>From adt2.h</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ADT1</span><span class="p">;</span> <span class="c1">// forward declaration</span>
+<span class="k">class</span> <span class="nc">ADT2</span> <span class="p">{</span>
+    <span class="n">ADT1</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Never put a using directive in a header file, since your header file can be included in a bunch of other header files, all of which are now using your namespace. Never put a using directive before an includes, since it messes with the namespace of the includes.</p>
+</blockquote>
+
+<h2 id="make">Make</h2>
+
+<p>Remember that the build process in C++ has compilation (creating object files of assembly code, containing symbols which may not be defined) separate from linking (generating an executable from the object files). Also compilation of each file is done separately, so ideally, we want to only recompile a file that we’ve changed. However, if the file we’re changing has other files depending on it, we’ve got to recompile those files too. Make will do the dependency tracking and smart recompilation for you. <img src="../../../../assets/Screen Shot 2017-08-06 at 2.45.49 PM.png" alt="" />Here are 3 sample Makefiles.</p>
+
+<pre><code class="language-Makefile"># This produces something you can run with ./program if you call make program or make
+program : main.o ADT1.o ADT2.o # dependency graph
+    g++-5 -std=c++14 -g -Wall main.o ADT1.o ADT2.o -o program # build rule
+
+main.o : main.cpp ADT1.h # sub dependency graph
+    g++-5 -std=c++14 -g -Wall -c main.cpp -o main.o
+ADT1.o : ADT1.cpp ADT1.h ADT2.h
+    g++-5 -std=c++14 -g -Wall -c ADT1.cpp -o ADT1.o
+ADT2.o : ADT2.cpp ADT2.h ADT1.h
+    g++-5 -std=c++14 -g -Wall -c ADT2.cpp -o ADT2.o
+</code></pre>
+
+<pre><code class="language-Makefile"># you can define macros like this!
+CXX = g++-5 -std=c++14 # variables and initialization
+CXXFLAGS = -g -Wall -Werror -Wextra -Wpendantic
+
+OBJECTS = main.o stack.o node.o
+EXEC = program
+
+# you can use implicit rules like this!
+${EXEC} : ${OBJECTS} # default target
+${CXX} ${CXXFLAGS} ${OBJECTS} -o ${EXEC}
+
+# gmake knows how to build .o files; just list dependencies
+main.o : main.cpp stack.h
+stack.o : stack.cpp stack.h node.h
+node.o : node.cpp node.h stack.h
+
+# run with make clean
+clean : # second target
+    rm -rf ${OBJECTS} ${EXEC}
+</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># this calculates dependencies for you!
+CXX = g++-5 -std=c++14 # variables and initialization
+CXXFLAGS = -g -MMD -Wall -Werror -Wextra -Wpedantic # -MMD builds dependency lists in .d files
+
+OBJECTS = main.o stack.o node.o
+DEPENDS = ${OBJECTS:.o=.d} # substitute ".o" with ".d"
+EXEC = program
+
+${EXEC} : ${OBJECTS}
+${CXX} ${CXXFLAGS} ${OBJECTS} -o ${EXEC}
+
+clean :
+    rm -rf ${DEPENDS} ${OBJECTS} ${EXEC}
+
+-include ${DEPENDS} # reads the .d files and reruns dependencies
+</code></pre></div></div>
+
+<h2 id="namespaces">Namespaces</h2>
+
+<p>Namespaces are variable scopes that you can create and name. It’s like an enclosing if block without any conditions attached to it. People used them to package together related variables, classes, and functions. There is a global namespace which is implicitly declared in every program.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// We use the RationalADT namespace here because we don't want to pollute the global namespace</span>
+<span class="c1">// with this nasty ass Rational class.</span>
+<span class="c1">// Now people can only refer to it by RatADT::Rational, which is good.</span>
+<span class="k">namespace</span> <span class="n">RatADT</span> <span class="p">{</span>
+ <span class="k">class</span> <span class="nc">Rational</span> <span class="p">{</span>
+<span class="nl">public:</span>
+ <span class="n">Rational</span> <span class="p">(</span><span class="kt">int</span> <span class="n">numer</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">denom</span> <span class="o">=</span> <span class="mi">1</span><span class="p">);</span>
+ <span class="p">...</span>
+<span class="p">};</span>
+<span class="n">Rational</span> <span class="k">operator</span><span class="o">+</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="n">Rational</span> <span class="k">operator</span><span class="o">*</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="o">==</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="k">operator</span><span class="o">!=</span> <span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">sout</span><span class="p">,</span> <span class="k">const</span> <span class="n">Rational</span> <span class="o">&amp;</span><span class="n">r</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">istream</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">istream</span> <span class="o">&amp;</span><span class="n">sin</span><span class="p">,</span> <span class="n">Rational</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+ <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You can also declare anonymous namespace, which has no name attached to it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>namespace {
+    void f();
+}
+</code></pre></div></div>
+
+<blockquote>
+  <p>Why would you ever want to use an anonymous namespace? How can you refer to it if you can’t use the using directive?</p>
+
+  <p>You don’t ever refer to an anonymous namespace outside of the file it’s defined in. Things defined inside the anonymous namespace brackets are available to the rest of the file but not other source files which include your source. It’s kind of like defining a static function/variable.</p>
+
+  <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// these are the same</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">func_for_this_file_only</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="k">namespace</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">func_for_this_file_only</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span> <span class="p">}</span>
+</code></pre></div>  </div>
+</blockquote>
+
+<p><strong>Using declaration:</strong> Makes one name on par with local names, may cause conflicts e.g. <code class="language-plaintext highlighter-rouge">using std::cout;</code></p>
+
+<p><strong>Using directive:</strong> Brings in all of the names from a namespace at a lower level than your local names (differentiate between which version you want with the name of the namespace) e.g. <code class="language-plaintext highlighter-rouge">using namespace std;</code></p>
+
+<p><strong>Principle of Separation of Concerns:</strong> Each class should only be responsible for one thing</p>
+
+<p><strong>Principle of Information Hiding:</strong> Make data private to make it safer</p>
+
+<h1 id="interfaces">Interfaces</h1>
+
+<p><strong>Module:</strong> a software component that encapsulates some design decision e.g. function, class, package, library, component</p>
+
+<p><strong>Interface:</strong> abstract public description of some module</p>
+
+<p><strong>Interface specification:</strong> contract between a programmer and the client describing their expectations of the interface, composed of a signature (specifying the syntax) and a specification (describes the module’s behaviour)</p>
+
+<p>The interface specification specification has preconditions and postconditions. These conditions only describe the abstract values of the class the client sees, and not any sort of restriction on the implementation details.</p>
+
+<ul>
+  <li>preconditions: requires (does not include exception conditions, we assume that the client takes care of these)</li>
+  <li>postconditions: modifies, ensures, throws (list all exceptions that can be thrown with when they are thrown), returns</li>
+</ul>
+
+<p>For a child class, we only have to create the interface specification for new/overridden methods.</p>
+
+<p>**Specificand set: **the set of all implementations which satisfy a specification</p>
+
+<p>An interface A is stronger than an interface B if:</p>
+
+<ul>
+  <li>A’s preconditions are equal to or weaker (less restrictive) than B</li>
+  <li>A’s postconditions are equal to or stronger (promise more) than B</li>
+  <li>A modifies the same or more objects</li>
+  <li>A throws the same or fewer exceptions than B</li>
+</ul>
+
+<h1 id="representation-invariants-and-abstraction-functions">Representation Invariants and Abstraction Functions</h1>
+
+<p>**Representation invariant: **defines the valid set of concrete values of an ADT’s implementation</p>
+
+<p><strong>Abstraction function:</strong> maps the concrete values of implementation of an ADT to the abstract values they mean</p>
+
+<p>The key difference between the representation invariant and the abstraction function is that representation invariants are boolean predicates and abstraction functions are function definitions.</p>
+
+<p>To identify representation invariants, think about the structural properties of your ADT, the valid values for fields in your ADT, keeping fields of your ADT in sync, and invalid values for fields in your ADT.</p>
+
+<p>**Representation exposure: **occurs when you have non-private data members, when you make something which someone else has a reference to a part of your own ADT, and when you output your internal members or give someone else an iterator over your internal members</p>
+
+<p>See the slides and tutorial for examples.</p>
+
+<h1 id="exceptions">Exceptions</h1>
+
+<p><strong>Exception:</strong> an object thrown to represent the occurrence an error, handle with try-catch blocks</p>
+
+<p>We can define our own exception classes, or we can inherit from std::exception and override the what() method.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Rational</span> <span class="p">{</span>
+<span class="nl">public:</span>
+ <span class="c1">// Custom exception class</span>
+ <span class="k">class</span> <span class="nc">DivideByZeroException</span> <span class="p">{</span>
+   <span class="nl">public:</span>
+     <span class="n">DivideByZeroException</span><span class="p">(</span> <span class="kt">int</span> <span class="n">n</span> <span class="p">)</span> <span class="o">:</span> <span class="n">numer_</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{}</span>
+     <span class="kt">int</span> <span class="n">numer</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">numer_</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// accessor</span>
+     <span class="nl">private:</span>
+     <span class="kt">int</span> <span class="n">numer_</span><span class="p">;</span> <span class="c1">// exception data</span>
+ <span class="p">};</span>
+
+ <span class="c1">// Inherited from std::exception</span>
+ <span class="k">class</span> <span class="nc">My_Exception</span> <span class="o">:</span> <span class="k">public</span> <span class="n">std</span><span class="o">::</span><span class="n">exception</span> <span class="p">{</span>
+   <span class="nl">public:</span>
+    <span class="kt">char</span> <span class="k">const</span> <span class="o">*</span><span class="n">what</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span> <span class="p">{</span> <span class="k">return</span> <span class="s">"Something bad happend."</span><span class="p">;</span> <span class="p">}</span>
+ <span class="p">};</span>
+<span class="p">...</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>When an exception is caught and control is handed over to the catch block, the C++ runtime has to pop everything on the call stack leading up to the catch block execution. Say we’ve got some method called trouble on that call stack which originally threw the error. If trouble only created variables on the stack, we’re good, because the C++ runtime will dealloc those properly. It’ll also take care of anything that was halfway created, like the failed construction of an object on the stack. However, it won’t properly delete objects on the heap.</p>
+
+<p>Also, if anybody’s destructor throws an error which it does not handle itself, the whole program will terminate, since there’s no way to tell the C++ runtime to try-catch as it’s unwinding the stack. So, destructors should never throw exceptions.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">X</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="k">class</span> <span class="nc">Trouble</span> <span class="p">{};</span>
+  <span class="k">class</span> <span class="nc">Small</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Trouble</span> <span class="p">{};</span>
+  <span class="k">class</span> <span class="nc">Big</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Trouble</span> <span class="p">{};</span>
+  <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="n">Big</span><span class="p">();</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+ <span class="n">X</span> <span class="n">x</span><span class="p">;</span>
+ <span class="k">try</span> <span class="p">{</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">f</span><span class="p">();</span> <span class="c1">// This prints "Trouble"</span>
+ <span class="p">}</span>
+ <span class="k">catch</span><span class="p">(</span><span class="n">X</span><span class="o">::</span><span class="n">Small</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
+   <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Small Trouble"</span><span class="p">;</span>
+   <span class="k">throw</span> <span class="n">X</span><span class="o">::</span><span class="n">Trouble</span><span class="p">();</span> <span class="c1">// This is going to end the program, because catch blocks don't chain!</span>
+ <span class="p">}</span>
+ <span class="k">catch</span><span class="p">(</span><span class="n">X</span><span class="o">::</span><span class="n">Trouble</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span> <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Trouble"</span><span class="p">;</span> <span class="p">}</span>
+ <span class="k">catch</span><span class="p">(</span><span class="n">X</span><span class="o">::</span><span class="n">Big</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span> <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Big Trouble"</span><span class="p">;</span> <span class="p">}</span>
+ <span class="k">catch</span><span class="p">(...)</span> <span class="p">{</span> <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"catches any type of exception"</span><span class="p">;</span> <span class="k">throw</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We call an operation <strong>exception-safe</strong> if leaves the program in a valid state after terminating by throwing an exception. There are several different guarantees we can make to classify an exception-safe operation.</p>
+
+<p><strong>Basic guarantee:</strong> basic invariants of all the objects invoked are maintained and there are no resource leaks e.g. most std operations</p>
+
+<p><strong>Strong guarantee:</strong> basic guarantee + the program reverts back to the state it was in before the operation was called e.g. std::vector.push_back</p>
+
+<p><strong>Nothrow guarantee:</strong> basic guarantee + the program will never throw an exception e.g. std::swap, std::stack.pop. You can tell the compiler than a function has the nothrow guarantee using the <code class="language-plaintext highlighter-rouge">noexcept</code> keyword.</p>
+
+<blockquote>
+  <p>Don’t throw exceptions to try to catch programming errors, since doing so should unwind your callstack and destroy your program state. Use assertions in order to preserve the program state and help you debug.</p>
+</blockquote>
+
+<h2 id="smart-pointers">Smart Pointers</h2>
+
+<p>**Problem: **Pointers aren’t deleted properly by the C++ runtime, since it never goes to what the pointer is pointing to and deletes that. But objects on the stack are deleted just fine when they have destructors.</p>
+
+<p>**Solution: **Allocate a wrapper around a pointer on the stack, create something on the heap with it so you still get to do pointer things, and then specify in the destructor of the pointer wrapper that you want what the pointer was pointing to deleted as well. That’s a smart pointer!</p>
+
+<blockquote>
+  <p>Smart pointers have customizable deleters which destroy the heap object that they point to, so two smart pointers that have different deleters can’t point to the same object or be assigned to each other, even if the type of object they’re supposed to be pointing to is the same.</p>
+</blockquote>
+
+<h4 id="unique_ptr">unique_ptr</h4>
+
+<p>A unique pointer can’t be shared, so if you straight up try to assign one to the other or use a copy constructor, it won’t compile. You can however use std::move to transfer ownership, and you can call reset() on the pointer to delete the memory.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">p1</span><span class="p">(</span><span class="k">new</span> <span class="nf">int</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">p1</span><span class="p">;</span> <span class="c1">// Compile error.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">p1</span><span class="p">);</span> <span class="c1">// Transfers ownership. p3 now owns the memory</span>
+                                         <span class="c1">// and p1 is rendered invalid.</span>
+
+<span class="n">p3</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span> <span class="c1">//Deletes the memory.</span>
+<span class="n">p1</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span> <span class="c1">//Does nothing.</span>
+</code></pre></div></div>
+
+<p>You can also use the source and sink idiom to grab unique pointers or get rid of them. For example, every time you make a unique pointer a shared pointer for whatever reason, you can’t convert it back. So you have to throw the pointer away and get a new one.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Source</span>
+<span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Source</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">(</span> <span class="k">new</span> <span class="n">T</span> <span class="p">);</span> <span class="c1">// return by copy</span>
+<span class="p">}</span>
+<span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">pt</span> <span class="o">=</span> <span class="n">Source</span><span class="p">();</span>
+
+<span class="c1">// Sink</span>
+<span class="kt">void</span> <span class="nf">Sink</span> <span class="p">(</span> <span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">pt</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// passed in by copy == transfer of ownership</span>
+    <span class="n">pt</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">Sink</span><span class="p">(</span> <span class="n">pt</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<h4 id="auto_ptr">auto_ptr</h4>
+
+<p>Auto pointers are deprecated and less efficient, so don’t use them. They can use copy semantics (unlike unique pointers) and they can’t be used in STL containers.</p>
+
+<h4 id="shared_ptr">shared_ptr</h4>
+
+<p>Shared pointers are designed so that multiple references can go to the same memory, and once all references go out of scope, the memory will delete itself. You can make a reference go out of scope early by calling reset() on it.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">p1</span><span class="p">(</span><span class="k">new</span> <span class="nf">int</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">p1</span><span class="p">;</span> <span class="c1">// Both now own the memory.</span>
+
+<span class="n">p1</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span> <span class="c1">// Memory still exists, due to p2.</span>
+<span class="n">p2</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span> <span class="c1">// Deletes the memory, since no one else owns the memory.</span>
+</code></pre></div></div>
+
+<h4 id="weak_ptr">weak_ptr</h4>
+
+<p>A weak pointer handles cases of cycles in shared ptr, where the internal counter would never reach 0. It doesn’t impact the reference count that the shared pointers keep, and when all the shared pointers go out of scope and the memory is deleted, the weak pointer becomes empty as well.</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">B</span><span class="p">;</span>
+<span class="k">struct</span> <span class="nc">A</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">B</span><span class="o">&gt;</span> <span class="n">aData</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="nc">B</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span> <span class="n">bData</span><span class="p">;</span> <span class="c1">// if this was a shared_pointer too, then neither a or b would be dealloc'd</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">useAnB</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">b</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">B</span><span class="o">&gt;</span><span class="p">();</span> <span class="c1">// we can assign a shared pointer to a weak pointer,</span>
+                                  <span class="c1">// and it'll have no effect on the reference count</span>
+  <span class="n">a</span><span class="o">-&gt;</span><span class="n">aData</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+  <span class="n">b</span><span class="o">-&gt;</span><span class="n">bData</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="n">useAnB</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To use a weak pointer, you have to convert it into a shared pointer first by calling lock() on it. You can check if there’s still something inside the weak pointer using expired().</p>
+
+<h2 id="resource-acquisition-is-initialization">Resource Acquisition is Initialization</h2>
+
+<p><strong>Resource Acquisition is Initialization (RAII):</strong> equates resource management with the lifetime of an object, resource is allocated inside an object’s constructor, resource is deallocated inside an object’s destructor</p>
+
+<h1 id="uml">UML</h1>
+
+<p><strong>UML:</strong> Unified modelling language</p>
+
+<p><strong>Aggregation:</strong> An aggregate class is a collection of its member class objects. It’s not responsible for deleting the objects in its collection; think a class of students</p>
+
+<p><strong>Composition:</strong> A composite class is made up of its member class objects. It’s responsible for creating and deleting the objects it is made up of; think a student with body parts</p>
+
+<p>We call a derived class a <strong>generalization</strong> of a base class.</p>
+
+<p><img src="Screen Shot 2017-08-06 at 6.24.42 PM.png" alt="" /></p>
+
+<p><img src="Screen Shot 2017-08-06 at 6.20.01 PM.png" alt="" /></p>
+
+<h1 id="design-patterns-i-ii">Design Patterns I, II</h1>
+
+<p>We use design patterns because they encapsulate a ready-made solution to some design problem, making the code more modular and more flexible. Since everybody knows them, they improve efficiency in finding a good solution, they improve predictability of the end product, they come with a higher abstraction than a class or a function, and they should be easier to understand/refactor.</p>
+
+<p><strong>Coupling:</strong> measures the amount of dependency between classes, we always want low coupling</p>
+
+<p><strong>Cohesion:</strong> measures the amount of relatedness within a module, we always want high cohesion (we want everything in a module strongly related together)</p>
+
+<h3 id="template-method-pattern">Template Method Pattern</h3>
+
+<p><strong>Problem:</strong> Duplicate code</p>
+
+<p><strong>Solution:</strong> Localize duplicate code structure in an abstract class</p>
+
+<p>Imagine you’ve want to output a bill for some cellphone accounts, a cheap one and an expensive one. Clearly, the format of the bill is going to be the same (\(bill = monthlyFee + callCharges\)). To output this bill using the template pattern, you could create an abstract base class Account with two child classes CheapAccount and ExpensiveAccount, and then implement a <code class="language-plaintext highlighter-rouge">bill</code> method in Account which uses the pure virtual methods <code class="language-plaintext highlighter-rouge">monthlyFee</code> and <code class="language-plaintext highlighter-rouge">callCharges</code>, which are be implemented by the ExpensiveAccount and CheapAccount subclasses.</p>
+
+<p>This way, we avoid having duplicate code in the ExpensiveAccount and CheapAccount classes. Think of the template pattern as defining a “fill-in-the-blank” method in your parent class which your child classes then complete.<img src="Screen Shot 2017-08-06 at 6.59.23 PM.png" alt="" /></p>
+
+<h3 id="adapter-design-pattern">Adapter Design Pattern</h3>
+
+<p><strong>Problem:</strong> Interface mismatch between two modules</p>
+
+<p><strong>Solution:</strong> Define an Adapter class that maps one interface to another</p>
+
+<p>Imagine you’ve got a whole codebase that uses stacks, and one day, you have to change the implementation for that, but all you have on hand is some code for STL deques. So what you can do is create a “stack” class which is basically just a wrapper around an instance of a deque. We call that stack class an adapter, and the deque an adaptee.<img src="Screen Shot 2017-08-06 at 7.06.54 PM.png" alt="" /></p>
+
+<h3 id="facade-design-pattern">Facade Design Pattern</h3>
+
+<p><strong>Problem:</strong> Complex interface</p>
+
+<p><strong>Solution:</strong> Create a single, simplified interface (class)</p>
+
+<p>Imagine you’re a wedding planner, and you’ve got clients who want to get married. No couple walks in and says to you, “I want 126 white peonies delivered from the flower shop to arrive at 4:35 PM the day of the wedding, please call and make a reservation in advance for the cake which should serve at least 60 guests…”. That would be crazy complicated! Instead, the couple generall just picks a theme and a venue from some choices you provide, and you schedule the rest of it. You are the facade between your clients and the complex system of wedding dress makers, bakeries, flower shops etc. that is involved in a wedding.<img src="Screen Shot 2017-08-06 at 7.16.02 PM.png" alt="" /></p>
+
+<h3 id="strategy-design-pattern">Strategy Design Pattern</h3>
+
+<p><strong>Problem:</strong> Want to vary an algorithm at run-time</p>
+
+<p><strong>Solution:</strong> Encapsulate the algorithm decision</p>
+
+<p>Say you’re a master card player at a casino, who can tell at a glance inexperienced players from grandmasters. So if you’re up against some newbies, you want to bet more aggressively, and if you’re up against a champion card player, you want to bet more conservatively.</p>
+
+<p>To implement this, we can create a BiddingStrategy class which has two subclasses, a ConservativeStrategy and a AggressiveStrategy. Each player then has a pointer to their own BiddingStrategy class object, and when they want to change up their strategy, they just delete their old strategy and assign the BiddingStrategy to a new one.<img src="Screen Shot 2017-08-06 at 7.38.24 PM.png" alt="" /></p>
+
+<hr />
+
+<h3 id="observer-pattern">Observer Pattern</h3>
+
+<p>**Problem: **maintaining consistency among related objects.</p>
+
+<p><strong>Solution:</strong> Subject sends updates to collection of abstract Observers</p>
+
+<p>Imagine you have a bunch of graphs that you have to display which are pulling from the same data. Whenever someone messes with your data table, you have redraw all your graphs! So, you can create an abstract base class called Observer which all of your graphs can inherit from. Observer defines a public function called update which each of your graphs can implement to draw the data in their own unique way. Next, your data table can inherit from a Subject class which has a protected implemented notify method and a way to subscribe and unsubscribe Observers. The next time your data table changes, it can just call notify, and every Observer will know it needs to update.</p>
+
+<p>This is called “pushing” your state information. Alternatively, you could have Observers request information from the Subject when they noticed something’s changed, and that would be “pulling” state information. Which version of Observer pattern you choose depends on the complexity of the information you want and the frequency at which you’re updating it.</p>
+
+<p><img src="Screen Shot 2017-08-06 at 7.48.38 PM.png" alt="" /></p>
+
+<h3 id="model-view-controller-mvc-pattern">Model View Controller (MVC) Pattern</h3>
+
+<p>MVC is three design patterns in one. It uses the Composition pattern since all the View objects are part of the View superclass, it uses the Strategy pattern to translate between events caught by View objects and operations on the Model, and it uses the Observer pattern to communicate between the View and the Model.</p>
+
+<p>Concretely, this means that the Model class has no references to anyone at first, the Controller class has a reference to the model, and the View has references to both the Model class and the Controller class. This allows any new instantiated View to subscribe itself to the model, and to let the Controller class know about any events it has gotten.</p>
+
+<blockquote>
+  <p>The fact that we identify the mapping between UI events and model updates as the Strategy pattern is kind of confusing, since don’t we need a proper Strategy class with subclasses to use the strategy method?</p>
+
+  <p>Actually, that isn’t necessarily the case. The way to think about this part of MVC is to imagine the View as the card player, and the Controller and Model as one combined strategy class. View has a pointer to the Controller in order to communicate, and the behavior of the Controller and Model is always changing, so it’s as if we’re using a strategy pattern to adapt the Controller and Model, even though we never swap out any pointers.</p>
+</blockquote>
+
+<p>There are loads of examples of MVC. Think about the Straights game that we implemented–the View was a gtkmm window, there was a Controller class, and the Card, Deck, Player, Straights etc. classes made up the Model.</p>
+
+<p><img src="Screen Shot 2017-08-06 at 8.14.39 PM.png" alt="" /></p>
+
+<h1 id="object-oriented-design-principles">Object Oriented Design Principles</h1>
+
+<h3 id="open-closed-principle">Open Closed Principle</h3>
+
+<p><strong>Principle:</strong> A module should be open for extension but closed for modification.</p>
+
+<p>We can achieve this with inheritance, or with composition. Using inheritance, we could have the client use the existing abstract base class reference which it can switch out for different extended subclasses of that abstract base class. Or we could use composition and simply have that existing abstract base class be a member of our new extended class.</p>
+
+<blockquote>
+  <p>Using an abstract base class to reference different subclass methods like this is called dynamic polymorphism (a fancy word for method overriding). Method overloading is static polymorphism.</p>
+</blockquote>
+
+<p>Which do we choose? We should favor inheritance when we’re trying to take advantage of <strong>subtyping</strong>, which is when we can use our extended class wherever we used to have our base class. We should also favor inheritance when we know we’re going to be using the entirety of the base class interface.</p>
+
+<p>We should favor composition for simple use cases when we don’t <em>need</em> to override the function. Composition is more flexible since the wrapper class is able to cast the existing class to whatever they choose, thus changing the data and functions of the class at runtime. Also, composition by definition obeys the Single Responsibility Principle and prevents class hierarchies from getting too bloated with subclasses.</p>
+
+<blockquote>
+  <p><strong>BP:</strong> Favor composition over inheritance</p>
+</blockquote>
+
+<p><strong>Delegation:</strong> returning the value of another class’s method when your method is called, composition uses this to simulate method inheritance</p>
+
+<h3 id="single-responsibility-principle">Single Responsibility Principle</h3>
+
+<p><strong>Principle:</strong> Encapsulate one design decision or responsibility per module.</p>
+
+<p>Consider a Deck class which has the methods: hasNextCard() : bool, nextCard() : Card, addCard(Card), removeCard(Card), and shuffle. The Deck is responsible for iterating over the contents, the order of the contents, and maintaining the membership of the contents. That’s technically 3 responsibilities, which is kind of pushing it, but since these responsibilities all have high cohesion, it’s OK.</p>
+
+<h3 id="liskov-substitutibility-principle">Liskov Substitutibility Principle</h3>
+
+<p><strong>Principle:</strong> A derived class must be substitutable for its base class.</p>
+
+<p>A subclass has an “is-a” relationship with its parent class, so it should handle all of its parent class’s responsibilities as well. A rule of thumb: if it looks like a duck and it quacks like a duck but it needs batteries, it doesn’t satisfy LSP.</p>
+
+<p>Consider a bounded stack, which is stack that only stores a limited number of items. Is this bounded stack substituable for its superclass stack? Clearly not. But it is substitutable the other way around!</p>
+
+<p>What about a count stack, which counts how many items there are in the stack? Yes, this is substitutable for the parent stack class.</p>
+
+<h4 id="lsp-signature-rules">LSP Signature Rules</h4>
+
+<p>The subclass has to match all the signatures of the superclass methods it overrides. You can’t change the parameters to the method, since that would be overloading instead of overriding, and if you change the return type, you can only change it so that it’s a subtype of the original type the superclass used to return.</p>
+
+<h4 id="lsp-method-rules">LSP Method Rules</h4>
+
+<p>The specification of a subclass must be as strong as or stronger than that of its superclass. It should have preconditions that are no stronger than that of the base class, and its postconditions should be no weaker.</p>
+
+<h4 id="lsp-property-rules">LSP Property Rules</h4>
+
+<p>The subclass has to preserve all the invariants of the superclass as well as all of its required optimizations. An \(O(2^n)\) algorithm is not substitutable for an O(n) one.</p>
+
+<p>**Information hiding: **hide design and implementation details; when using composition, use the accessors and mutators for the existing abstract base class inside your wrapper methods so that you can reveal less about what’s actually happening</p>
+
+<h3 id="law-of-demeter">Law of Demeter</h3>
+
+<ol>
+  <li>You can play with yourself.</li>
+  <li>You can play with your toys (but you can’t take them apart).</li>
+  <li>You can play with toys that were given to you.</li>
+  <li>You can play with toys that you made yourself.</li>
+</ol>
+
+<p>This is a metaphor for how encapsulated classes obeying the Law of Demeter can only access their class’s data members and functions, and parameters which were given, and any object the class itself constructed. In particular, if you’re given a reference to an object, to say, output, you should never try to call the methods of that object, since you don’t own it, so you shouldn’t change it.</p>
+
+<p>Encapsulation has pros and cons.</p>
+
+<p>Pros:</p>
+
+<ul>
+  <li>reduces coupling between client and supplied code</li>
+  <li>class interface easer to understand for someone who didn’t write the code</li>
+  <li>can test using stubs for both client and composition</li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+  <li>interface increases in size</li>
+  <li>performance hit due to indirection (unlike using friends)</li>
+</ul>
+
+<h1 id="refactoring">Refactoring</h1>
+
+<p><strong>Refactoring:</strong> improving the design of code i.e. reducing coupling, improving cohesion, consolidating near duplicate code, improve understandibility, maintainibility etc.</p>
+
+<p>After refactoring, we should run full unit tests to see if we messed anything up while cleaning, but we often don’t need system level tests, since we didn’t change the functionality at all.</p>
+
+<p><strong>Technical debt:</strong> the idea that doing quick things rather than clean designs leads to bad designs which are harder to maintain and add to over time, which then means that bad design decisions will fossilize over time</p>
+
+<p>Ideally, you’re refactoring a little bit every time you make a contribution (new function, bug fix, code review etc.), since refactoring sooner rather than later leads to less technical debt. However, if refactoring is invasive and is going to take up an inordinate amount of time for others on your team to understand, don’t do it. Similarly, if refactoring is time-consuming, expensive, or requires a ton of testing, don’t do it. Also, if the code is garbage and it’d be easier just to write it from scratch, you could do that instead.</p>
+
+<h4 id="the-rule-of-3">The Rule of 3</h4>
+
+<p>The first time you need to do something, do it. The second time, cringe and do it again. The third time, refactor the code (this is Just-in-time abstraction).</p>
+
+<p><strong>Bad smells:</strong> signs that you should refactor e.g. duplicate code, long method, large class, long parameter list etc.</p>
+
+<h1 id="design-patterns-iii-iv">Design Patterns III, IV</h1>
+
+<h3 id="composite-design-pattern">Composite Design Pattern</h3>
+
+<p><strong>Problem:</strong> composite object consists of several heterogenous parts (i.e. a internal node class and a leaf class)</p>
+
+<p><strong>Solution:</strong> create a uniform interface for the object’s components</p>
+
+<p>Consider modelling a directory, which could contain directories or files. The client doesn’t care about the distinction between files and directories, so we can simply have the Directory and File classes both subclass from the the same abstract base class Component and thus have the same uniform interface. This works because Component actually defines the interface for both the leaf case (File class) and the internal node case (Directory class), and each subclass just overrides the part of Component which makes sense for it to override.</p>
+
+<p>Of course, all of this is definitely violating Liskov’s Substitutability Principle. Clearly, leaf classes shouldn’t be able to be substituted for internal node classes and vice versa (what does it mean to add a node to a leaf?). This is the safety tradeoff that we have to make to get a uniform interface for the composite object. In general, we can make this tradeoff when:</p>
+
+<ul>
+  <li>The client is going to treat the structure uniformly</li>
+  <li>We have to traverse the whole composition</li>
+  <li>There exist reasonable default implementations of operations</li>
+</ul>
+
+<p>If these don’t hold, we could implement the composite design pattern with distinct leaf and internal node classes, and this way, we could catch all illegal operations made to either class.</p>
+
+<p><img src="Screen Shot 2017-08-07 at 3.09.54 AM.png" alt="" /></p>
+
+<h3 id="iterator-pattern">Iterator Pattern</h3>
+
+<p><strong>Problem:</strong> we want to iterate over a collection of objects</p>
+
+<p><strong>Solution:</strong> we have the collection class we’re interested in implement its own specialized iterator class</p>
+
+<p>An iterator takes in an instance of the Collection class it’s iterating over and implements methods to check if the next element in the collection exists, to walk over to the next element in the collection, and to get the current element. There can be multiple iterators at once iterating in different orders. The specific concrete Collection could be a subclass of a general Collection class, and the specific concrete Iterator class could be a subclass of a general Iterator class. This way, the client can get generic iterators and collections.</p>
+
+<p>Iterating over list structures is pretty intuitive, since the Collection class probably already implements all the methods necessary to get the correct element in the collection, and all the iterator needs to do is keep track of an index.</p>
+
+<p>To implement iterators over composite structures is pretty weird though. We keep a stack of IteratorNodes in the Iterator, each of which has a reference to a Component and a cursor to check how far we’ve looked into that particular Component.<img src="Screen Shot 2017-08-07 at 3.42.05 AM.png" alt="" /></p>
+
+<h3 id="decorator-design-pattern">Decorator Design Pattern</h3>
+
+<p>**Problem: **many independent features are needed in some combination at runtime</p>
+
+<p>**Solution: **build wrapper classes with the same interface as your original class</p>
+
+<p>Consider a class which draws a window on your screen. Windows have a ton of independent features, like what buttons they have, whether they have a horizontal or a vertical scrollbar, or how they draw their content. Using inheritance to solve this kind of problem would be a very bad idea, since not only do we have a ton of features, we could have a window which uses any subset of those features (consider a HorizontalScrollBarWithBorder class and a VertialScrollBarWithBorder class). So instead, we’ll use composition to create successive wrapper classes that add functionality.<img src="Screen Shot 2017-08-07 at 1.15.04 PM.png" alt="" /></p>
+
+<h3 id="factory-design-pattern">Factory Design Pattern</h3>
+
+<p><strong>Problem:</strong> encapsulate the code that creates concrete objects</p>
+
+<p><strong>Solution:</strong> use the Template Method</p>
+
+<p>By definition, we can’t instantiate abstract base classes. This sucks for the client, because at some point, they’re going to have to program to our implementation of the subclasses, instead of the abstract base class interface that we designed for them.</p>
+
+<p>So, to fix up this issue, we could build a simple factory. This gist of it is that the client gives us some parameters for an object they want to instantiate, the simple factory instantiates it, and then gives back to the client the abstract base class that it wants to work with. Simple factory is technically not a design pattern, since this would be pretty specific to the type of object we’re creating.</p>
+
+<p>What if we want a general polymorphic factory? In that case, we can try a Factory Method Pattern approach, which uses an abstract Creator class to define a template/factory method calls operations that ConcreteCreators classes implement in order to create different kinds of objects. For example, you could have an abstract Creator class called ShapeFactory, which has child classes SquareFactory and CircleFactory which know how to make Squares and Circles that they return as Shapes.</p>
+
+<p>Now we have a polymorphic class ShapeFactory, but instantiating one still isn’t very useful, since it can only make one type of shape at a time. To make a polymorphic ShapeFactory which can manufacture both Squares and Circles, we can use the Singleton design pattern with composition to make ShapeFactory hold a SquareFactory and a CircleFactory.<img src="Screen Shot 2017-08-08 at 9.38.13 PM.png" alt="" /><img src="Screen Shot 2017-08-08 at 9.52.09 PM.png" alt="" /></p>
+
+<h1 id="stl-containers">STL Containers</h1>
+
+<p>The STL is composed of:</p>
+
+<ul>
+  <li>Generic containers of any element type e.g. vector, stack, deque etc.</li>
+  <li>Different kinds of iterators for those generic containers</li>
+  <li>Algorithms which perform operations on a range of elements in containers via iterators</li>
+</ul>
+
+<p>If you’re using a STL generic container which has order, you should probably implement a comparison operator on the type of object you want to insert, or define a functor. A functor is a class which overloads operator () so that you can call the functor object like a method.</p>
+
+<p>Note that the STL uses value semantics, so if you’re putting a type into an STL container, make sure that it has copy and assignment operations overloaded, since the STL copies things around a lot.</p>
+
+<p>A related point to how much the STL copies things around: try to have containers of object pointers instead of the object itself. This way, you’re just copying pointers, and you don’t get object slicing (assigning <code class="language-plaintext highlighter-rouge">Base b = Derived d;</code> gives you b as a Base class!).</p>
+
+<h3 id="sequence-containers">Sequence Containers</h3>
+
+<p>Containers which store things in the order they were added e.g. vector, linkedlist, deque, list (doubly linked list), forward_list (singly linked list) etc.</p>
+
+<h3 id="container-adapters">Container Adapters</h3>
+
+<p>This is what you get if you apply the Adapter design pattern to containers e.g. stack, queue, priority_queue etc.</p>
+
+<p>The STL doesn’t believe in inheritance, so you shouldn’t inherit from its classes.</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2017-08-06T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2016/05/19/animating-conways-game-of-life-on-the-html5-canvas.html">Animating Conway's Game of Life on the HTML5 canvas</a></div><div class="next"><span>NEXT</span><a href="/2017/08/22/alg1.html">Algorithms, Part 1</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+

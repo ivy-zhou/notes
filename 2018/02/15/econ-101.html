@@ -1,0 +1,2186 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>ECON 101 - Sentences</title>
+
+<meta name="description" content="Module 1: The Economic ProblemDefinition of EconomicsEconomics: Social science that studies choices that individuals, businesses, government, and societies m...">
+<link rel="canonical" href="/2018/02/15/econ-101.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24">
+<style type="text/css">
+	.st0{fill:#515151;}
+</style>
+<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
+	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>ECON 101</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2018-02-15-econ-101.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="ECON 101"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=notes">notes</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=incomplete">incomplete</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 15, 2018</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2018-02-15T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes,incomplete"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><h2 id="module-1-the-economic-problem">Module 1: The Economic Problem</h2>
+
+<h3 id="definition-of-economics">Definition of Economics</h3>
+
+<p><strong>Economics</strong>: <em>Social science</em> that studies <em>choices</em> that individuals, businesses, government, and societies make as they cope with <em>scarity</em> and <em>incentives</em>.</p>
+
+<p>People have unlimited wants, but resources are finite, so this creates a scarcity. We must then make choices or tradeoffs based on incentives. Incentives can be positive or negative (i.e. scholarship money, or criminal laws).</p>
+
+<p>Remember, economics is a social science. This means that it doesn’t just apply to making money. We can also apply economics to problems like global warming, or higher overall education, or choices of medication. The focus is on what choices <em>people</em> make under conditions of scarcity and incentive.</p>
+
+<p>Economics deals with positive statements rather than normative statements. A positive statement is testable and generally agreed on by most economists. For example, a positive statement would be, “Raising taxes on cigarettes would lead more individuals to stop smoking, thus reducing overall healthcare costs”. A normative statement is generally an opinion, and may not be testable or agreed upon. For example, a normative statement would be, “Taxes on cigarettes should be raised.”</p>
+
+<p>To test positive statements, we create an economic model to describe how the economy works, and then we test whether that positive statement holds under this economic model. A model is judged only by its ability to predict outcomes, not on the “realism” of the model. We can test a model by using natrual experiments, statistical investigations (analyzing data using regression), or economic experiments (social experiments).</p>
+
+<p>Economics is split up into two disciplines:</p>
+
+<ul>
+  <li>Microeconomics: focuses on individual economic market components like consumers, firms, and and specific market activity.</li>
+  <li>Macroeconomics: focuses on exonomy from a broader level of activity, larger market sectors, and the relationships between market sectors. See other courses.</li>
+</ul>
+
+<h3 id="economic-questions">Economic Questions</h3>
+
+<ol>
+  <li>How do choices end up determing what, how, and for whom goods and services get produced?</li>
+</ol>
+
+<p><em>Answer:</em> Recall that people have unlimited wants. These wants determine what goods and services are produced. Goods and services are produced using factors of production (i.e. land, labour, capital, entrepreneurship), each of which has an associated rental price (i.e. rent, wages, interest, profit). This is the “how”. The “whom” refers to the people affected by the production process (e.g. workers recieving a wage, entrepreneurs who get a profit) and also to the recipients of the good or service.</p>
+
+<ol>
+  <li>How can choices made in the pursuit of self-interest also promote the social interest?</li>
+</ol>
+
+<p>Self interest often conflicts with social interest, but in some cases, the two are mutually beneficial. Consider for example higher education. If I educate myself, then I increase my earning potential, which is in my own self-interest. However, it is also in society’s best interest to have a better informed citizen, since better informed citizens are more likely to participate in governance, have better health, and care more about environmental issues.</p>
+
+<h3 id="economic-way-of-thinking">Economic Way of Thinking</h3>
+
+<p>How do we answer economic questions? By using an economic way of thinking!</p>
+
+<h5 id="choice-and-tradeoffs">Choice and Tradeoffs</h5>
+
+<p>When we make a choice, we have to give up one thing to get something else. For example, consider consumption and savings. When we add to our savings, we are trading current consumption for later growth in consumption.</p>
+
+<p>Another example would be efficiency and equity. Efficiency means obtaining the most of scarce resources. Equity refers to how resources are divided among members of society. We can think of all the resource in a society as a pie. A more efficient society makes a larger pie in a shorter amount of time. Equity refers to how the pie is divided between citizens. Suppose we tax citizens so that everybody receives an equal amount of pie. This has a tradeoff, since it might deter people from working longer hours, as everybody will have the same amount of pie in the end anyways, thus lowering efficiency and the overall size of the pie.</p>
+
+<h5 id="choice-and-change">Choice and Change</h5>
+
+<p>Choices change over time. People’s wants change, and technology advances.</p>
+
+<h5 id="choice-and-opportunity-cost">Choice and opportunity cost</h5>
+
+<p><strong>Opportunity cost:</strong> The highest value alternative that we must give up in order to get something, the highest possible cost of choosing something</p>
+
+<p>What is the opportunity cost of going to university? Clearly, students going to university give up capital since they have to pay tuition, but they also have to consider the loss in income/leisure time they take on by going to school instead of working.</p>
+
+<h5 id="choice-and-the-margin">Choice and the margin</h5>
+
+<p>Choices are made one by one, considering the benefit/cost of each action. When considering a choice, we compare the marginal benefit of an action to the marginal cost of that action. The margin is the difference between the marginal benefit and the marginal cost. We want the largest margin possible.</p>
+
+<p>For example, consider studying for an exam. Each hour you study for an exam has a marginal benefit in terms of more marks you will earn, and it has a marginal cost in how you could also use that time to study for something else. Notice that you consider each hour’s margin, rather than the total hours studying or the average number of hours studying.</p>
+
+<h5 id="choice-and-incentives">Choice and incentives</h5>
+
+<p>Choices are influenced by incentives, since anybody rational is going to look at rewards and penalties to see how they’re affecting the margin.</p>
+
+<h3 id="economic-co-ordination">Economic Co-ordination</h3>
+
+<p>Economic co-ordination studies how economic systems work (how their components interact). There are two major forms of economic co-ordinated systems: decentralized economic co-ordinated systems and centralized economic co-ordinated systems. Some systems are a mix of both. In this course, we study decentalized economic co-ordinated systems.</p>
+
+<p>Decentalized economic co-ordinated systems have a circular flow model of goods and services.</p>
+
+<p><strong>Firm</strong>: Hires factors of production and organizes them to produce and sell goods or services</p>
+
+<p><strong>Market</strong>: Any arrangment that allows a buyer and seller to do business</p>
+
+<p><strong>Factor markets</strong>: Selling labour, land, capital, entrepreneurship</p>
+
+<p><strong>Goods markets</strong>: Selling goods and services</p>
+
+<p><strong>Household</strong>: 1 or more persons that provides economy with resources, purchase goods/services with money</p>
+
+<p>There is no mention of government or international markets, because the model reflects self-governance.</p>
+
+<h3 id="production-possibility-frontier">Production Possibility Frontier</h3>
+
+<p>Production Possibility Frontier is a graph which shows various combinations of goods and services (outputs) that can be produced given all available factors of production (inputs).</p>
+
+<p>We plot two different goods/services on two different axes (i.e. movies on one axis and books on another axis). Points on and inside the PPF line are attainable. Points on the PPF are efficient. Points outside the PPF line are unattainable, due to the scarcity of resources.</p>
+
+<p>The PPF line often has a bowed out shape, illustrating an increasing opportunity cost. For example, we may have to take many people off of the production of movies in order to significantly increase the production of books. We call this relationship between movies and books non-homogeneous. If the PPF were a straight line, that would illustrate a constant opportunity cost.</p>
+
+<p><strong>Opportunity cost</strong>: the ratio of what we give up to what we get e.g. 150 movies to get 200 books, or 0.75 movies per book. It is slope of two points on the PPF line, as a positive number since we are describing cost</p>
+
+<h6 id="what-point-on-the-ppf-best-serves-public-interest">What point on the PPF best serves public interest?</h6>
+
+<p><strong>Marginal costs</strong>: the opportunity costs of producing one more unit of a good or service. The marginal cost is the slope between two points on the PPF line, and increases as we move along the PPF curve. The marginal cost graphs the cost of one good or service as another good or service is produced in greater quantities.</p>
+
+<p><strong>Marginal benefits</strong>: the benefits received from consuming one or more unit of a good or service. Marginal benefit decreases as we move along the marginal benefit curve. The marginal benefit curve graphs the willingness of a consumer to pay up 1 good or service to obtain another good or service</p>
+
+<p><strong>allocative efficiency</strong>: the point at which the marginal cost graph and the marginal benefit graph meet</p>
+
+<p>We want to always gravitate to the point of allocative efficiency</p>
+
+<p>If we move out the PPF line, the economy grows. Economic growth occurs because of 2 key factors, technological advance and captital accumulation.</p>
+
+<h3 id="specialization-and-trade">Specialization and Trade</h3>
+
+<p>Roles in an economy become specialized over time because everyone will move to their own comparative advantage.</p>
+
+<p><strong>Comparative advantage</strong>: One person has a lower opportunity cost for producing a particular good or service when compared to another person</p>
+
+<p><strong>Absolute advantage</strong>: One person is more productive at producing a particular good or service than others when using the same quantity of resources.</p>
+
+<p>A person can have absolute advantage in all activities, but they can’t have a comparative advantage in all activities because of the opportunity cost associated with each activity. For example, a country might be better at producing every good and service that exists than any other country. This country still does not produce every good and service, just because they can out-produce everybody else, because they want to focus on making the most money on what they produce.</p>
+
+<p>This is why you could have the absolute advantage over somebody else, but you might not have the comparative advantage—the opportunity cost for you is different than the opportunity cost of others. So, you should always produce goods or services that you have a comparative advantage in.</p>
+
+<p>Consider Canada and Japan, which produce wheat and computers. We can draw a PPF between wheat and computers for both countries. Let’s say that in Canada, the opportunity cost is a quarter of a computer per bushel of wheat. In Japan, the opportunity cost is 1 computer per bushel of wheat. This means that Canada has a comparative advantage in wheat, since it only costs them a quarter of a computer per bushel of wheat and thus they have a lower opportunity cost than Japan. Similarly, Japan has a comparative advantage in computers, since they give up 1 bushel of wheat per computer, while Canada has to give up 4 bushels of wheat per computer.</p>
+
+<p>So, Canada should produce only bushels of wheat and Japan should produce only computers. This way, more total goods will be produced. and both nations can move beyond their PPF.</p>
+
+<p>We can draw a trade line on the PPF graph which graphs how many of a good/service is worth another good/service. If countries trade along that line, they will benefit.</p>
+
+<h3 id="key-concepts-and-review-questions">Key Concepts and Review Questions</h3>
+
+<p>You should know:</p>
+
+<ul>
+  <li>the definition of economics</li>
+  <li>the two big economic questions</li>
+  <li>choice and tradeoff, change, opportunity cost, margin, and incentives</li>
+  <li>circular flow model in the market economy</li>
+  <li>production possibility frontier model</li>
+  <li>the definition of comparative and absolute advantage, and nations should produce and trade a good/service they have a comparative advantage in</li>
+</ul>
+
+<h6 id="why-is-there-a-tradeoff-between-equity-and-efficiency">Why is there a tradeoff between equity and efficiency?</h6>
+
+<p>Taxes and welfare paryments make people more equal in monetary terms. But both taxes and welfare payments can reduce the incentive to be more productive, and thus they can make the overall economy less efficient.</p>
+
+<h6 id="what-factors-of-production-cause-the-ppf-to-bow-out-and-what-will-cause-the-ppf-to-shift-out-to-the-right">What factors of production cause the PPF to bow out and what will cause the PPF to shift out to the right?</h6>
+
+<p>The PPF bows out due to unequal opportunity costs between goods and services. The PPF shifts out to the right due to overall economic growth, two key factors being technological advance and capital accumulation.</p>
+
+<h6 id="water-is-considered-essential-for-sustaining-human-life-diamonds-are-considered-a-luxury-good-then-why-are-disamonds-so-expensive-in-relation-to-water-in-canada-would-the-value-of-water-compared-to-diamonds-change-if-we-were-in-the-middle-of-a-desert">Water is considered essential for sustaining human life. Diamonds are considered a luxury good. Then why are disamonds so expensive in relation to water in Canada? Would the value of water compared to diamonds change if we were in the middle of a desert?</h6>
+
+<p>Diamonds are expensive in Canada because they are scarce and water is not scarce. If we were in the middle of a desert, water would be more expensive, since it would be more scarce and it is more in demand than diamonds.</p>
+
+<h6 id="when-mandatory-seat-belt-laws-were-implemented-in-cars-deaths-from-accidents-were-reducedbut-not-as-much-as-originally-anticipated-leveraging-the-conomic-way-of-thinking-why-would-this-situation-occur">When mandatory seat belt laws were implemented in cars, deaths from accidents were reduced—but, not as much as originally anticipated. Leveraging the conomic way of thinking, why would this situation occur?</h6>
+
+<p>Perhaps the negative incentive of breaking the law was not enough to overcome the minor inconvenience of buckling your seatbelt. People are not often pulled over because of their seatbelt, since it is hard to reliably see inside a vehicle.</p>
+
+<h6 id="a-university-elects-to-lower-parking-fees-on-campus-by-half-from-40-per-term-to-200-per-term">A university elects to lower parking fees on campus by half from $40 per term to $200 per term.</h6>
+
+<ul>
+  <li>What happens to the number of parking spots desired?</li>
+</ul>
+
+<p>The number of parking spots desired goes up, since more people are able to afford a parking spot.</p>
+
+<ul>
+  <li>What happens to the time spent looking for a parking spot?</li>
+</ul>
+
+<p>The time spent looking for a parking spot goes up, since there are more people in the parking spots.</p>
+
+<ul>
+  <li>Does the lower cost of a parking spot reflect the true cost of parking?</li>
+</ul>
+
+<p>No it does not, because it does not take into account the amount of time you will have to spend looking for a parking spot.</p>
+
+<ul>
+  <li>Would the opportunuty costs be the same for students with a part-time job versus a student with no part-time job?</li>
+</ul>
+
+<p>It is not, since there students with part-time jobs may need parking spots more than students without parking spots. Students with part-time jobs might need to stay on campus for longer lengths of time.</p>
+
+<h6 id="draw-the-circular-flow-model-and-identify-where-the-following-transaction-would-appear-on-the-flow-diagram-gerry-buys-a-fridge-from-general-electric-for-1500-cad">Draw the circular flow model and identify where the following transaction would appear on the flow diagram: Gerry buys a fridge from General Electric for $1500 CAD.</h6>
+
+<p>This is an interaction between a household (Gerry) and a goods or services market which the firm General Electric supplies.</p>
+
+<p>The following table is the PPF for a sporting goods factory that produces tennis racquets and batting gloves.</p>
+
+<ul>
+  <li>Draw the PPF, with tennis racquets on the vertical axis and batting gloves on the horizontal axis.</li>
+  <li>If the factory produces 100 batting gloves and 400 tennis racquets, what is the opportunity cost of an additional 100 batting gloves?</li>
+  <li>If the factory produces 300 batting gloves and 300 tennis racquets, what is the opportunity cost of an additional 100 batting gloves?</li>
+  <li>Why does the additional production of 100 batting gloves differ in these two situations?</li>
+  <li>What happens if the company produces 200 batting gloves and 200 racquets?</li>
+</ul>
+
+<p>$…$</p>
+
+<h2 id="module-2-market-fundamentals---supply-and-demand-market-model">Module 2: Market Fundamentals - Supply and Demand Market Model</h2>
+
+<h3 id="markets-and-prices">Markets and Prices</h3>
+
+<p><strong>Market</strong>: any arrangement that allows buyers and sellers to get information and do business with each other, they can vary in complexity and competitveness</p>
+
+<p><strong>Competitive market:</strong> a market with many buyers and sellers, meaning no one buyer/seller can influence the price</p>
+
+<p>Money price of a good/service: number of dollars for which you can get a good/service</p>
+
+<p>A producer wants a higher price for their good or service which makes them a profit and covers their opportunity cost. A consumer wants a lower price for their desired good or service which covers their own opprtunity changing cost.</p>
+
+<p><strong>Relative price:</strong> ratio of one money price to the money price of another good. It is an opportunity cost describing how much of the next best alternative good must be forgone to buy a unit of a first good.</p>
+
+<h3 id="demand">Demand</h3>
+
+<p><strong>Quantity demanded of a good or service:</strong> the amount of a good or service that consumers plan to buy during a given period of time at a particular price, or a consumer’s willingness and ability to pay for a good or service at a particular price and time</p>
+
+<h6 id="ceteris-paribus-how-does-the-quantity-demanded-of-a-good-or-service-change-as-its-price-changes">Ceteris paribus, how does the quantity demanded of a good or service change as its price changes?</h6>
+
+<p>Ceteris paribus means that all other things remain the same.</p>
+
+<p><strong>The Law of Demand:</strong> Ceteris paribus, the higher the price of a good or service, the smaller quanitity demanded. The vice versa is also true.</p>
+
+<p>This is because of:</p>
+
+<ul>
+  <li>
+    <p><strong>Substitution effect:</strong> When price of a good or service increases, the relative price of the good changes and the opportunity cost of buying that good or service rises. Thus, consumers will buy more of its substitute.</p>
+
+    <p>When the relative price of a good or service rises, consumers purchase less of the good or service and more of a substitute for that good or service.</p>
+  </li>
+  <li>
+    <p><strong>Income effect:</strong> When the relative price of a good or service increases, consumers have less money to spend on all goods and services. This includes the good or service whose price increases. Normally, the good or service that experiences a rise in its price is purchased less.</p>
+  </li>
+</ul>
+
+<p><strong>Demand schedule:</strong> a table that shows the various quantities of a good or service that are demanded at each price, ceteris paribus.</p>
+
+<p><strong>Demand curve:</strong> the demand schedule, graphed. The inverse relationship between the prices of a good or service and the quantity demanded of that good or service. It is also called the willing-ness-and-ability-to-pay curve, or the marginal benefit curve.</p>
+
+<p>Demand curves can shift when any factor other than the price of the good or service being graphed is changed. An increase in demand causes a rightward shift of the remand curve. A decrease in deamnd causes a leftward shift of the demand curve.</p>
+
+<h3 id="factors-that-influence-demand">Factors that influence Demand</h3>
+
+<p>The key factors that influence buying of a good or service are:</p>
+
+<ul>
+  <li>The price of a related good or service
+    <ul>
+      <li>demand decreases if price of substitute falls and vice versa</li>
+      <li>demand decreases if the price of a complement rises and vice versa</li>
+    </ul>
+  </li>
+  <li>Expected future price
+    <ul>
+      <li>If the price is expected to rise, then demand will increase and vice versa</li>
+    </ul>
+  </li>
+  <li>Income
+    <ul>
+      <li>If income rises, then demand will increase and vice versa. This is true for normal goods. Inferior goods however, are goods whose demand relates inversely to income (i.e. hamburger meat versus steak, subway versus car).</li>
+    </ul>
+  </li>
+  <li>Expected future income and credit
+    <ul>
+      <li>If income/credit is expected to rise, then demand will increase and vice versa. Again this is true for normal goods and inversely true for inferior goods.</li>
+    </ul>
+  </li>
+  <li>Population size
+    <ul>
+      <li>If the population increases, demand increases and vice versa.</li>
+    </ul>
+  </li>
+  <li>Preferences
+    <ul>
+      <li>A perference determines the value that people place on a good or service. Preferences change based on marketing, personal life events (birth of a child), or social peer pressure. As preference for a good increases, demand increases and vice versa</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="supply">Supply</h3>
+
+<p><strong>quantity supplied of a good or service:</strong> the amount of a good or service that producers plan to sell during a given period of time at a particular price OR a producer’s willigness and ability to sell a good or service at a particular price and time.</p>
+
+<h6 id="ceteris-paribus-how-does-the-quantity-supplied-of-a-good-or-service-change-as-its-price-changes">Ceteris paribus, how does the quantity supplied of a good or service change as its price changes?</h6>
+
+<p><strong>The Law of Demand:</strong> Ceteris paribus, the higher the price of a good or service, the larger the quanitity supplied. The vice versa is also true.</p>
+
+<p>This is because of:</p>
+
+<ul>
+  <li>
+    <p><strong>marginal costs:</strong> As the quantity of goods or services produced increases, the marginal cost of the production of that good or service. Then, the price of a good or service must rise, since the producer needs to cover their marginal costs.</p>
+
+    <p>We could also think about it in terms of profit. As the opportunity cost of producing more goes up, the producer wants to make more of a profit.</p>
+  </li>
+</ul>
+
+<p><strong>Supply schedule:</strong> table shoing the vairious quantities of a good or service that are supplied at each price, ceteris paribus</p>
+
+<p><strong>Supply curve:</strong> graphs the supply schedule, reflects the direct relationship between the prices of a good or service and the quantitiy supplied for that good or service. Also known as the willingness-and-ability-to-sell curve, or the marginal cost curve.</p>
+
+<p>Like demand curves, supply curves shift when any factor other than the price of the good or service being graphed changes. The supply curve shifts right when the supply increases, and it shifts left when the supply decreases. This makes sense because as the supply increases, you get more goods for a lower price.</p>
+
+<h3 id="factors-that-influence-supply">Factors that influence supply</h3>
+
+<p>The key factors that influence selling of a good or service are:</p>
+
+<ul>
+  <li>The price of factors of production
+    <ul>
+      <li>Recall that the factors of production are land, labour, captial, and entrepreneurship. As the price of the factors of production increases, the supply decreases. This assuming that the price remains the same.</li>
+    </ul>
+  </li>
+  <li>The price of a related good or service
+    <ul>
+      <li>A substitute in production: goods or services that can be produced using the same resources. So if the price of a production substitute increases, then the producer will focus on producing that substitute and supply will decrease.</li>
+      <li>Complement in production: goods or services that must be produced together (e.g. cow hide and beef). So if the price of a production complement increases, the supply increases.</li>
+    </ul>
+  </li>
+  <li>Expected future price
+    <ul>
+      <li>If the price is expected to increase in the future, the producer will want to produce goods in the future, so supply will decrease.</li>
+    </ul>
+  </li>
+  <li>Number of suppliers
+    <ul>
+      <li>If the number of suppliers increases, then the total supply will increase.</li>
+    </ul>
+  </li>
+  <li>Change in technology
+    <ul>
+      <li>If technology to produce goods or services advances, then the cost of producing will lower, and the supply will increase.</li>
+    </ul>
+  </li>
+  <li>State of nature
+    <ul>
+      <li>State of nature refers to natural events which affect production e.g. good growing season, earthquake. Thus, a good natural event will increase supply and a natural disaster will decrease supply</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="market-equilibrium">Market Equilibrium</h3>
+
+<p>When we graph the demand curve and the supply curve together, they will meet at an equilibrium price and equilibrium quantity. A market will always move towards this equilibrium, since price will regulate towards an equilibrium. We can also solve for this equilibrium mathematically if we’re given the equations of the supply and demand curves.</p>
+
+<h3 id="predicting-changes-in-price-and-quantity-using-supply-and-demand-market-models">Predicting Changes in Price and Quantity Using Supply and Demand Market Models</h3>
+
+<p>When drawing a supply and demand market models, you should</p>
+
+<ul>
+  <li>Label the X, Y axis for each graph</li>
+  <li>Label each supply and demand curve</li>
+  <li>Label each equilibirium point</li>
+  <li>Title your graph</li>
+</ul>
+
+<p>If only the demand increases, ceteris paribus, then the demand curve shifts rightward, and the equilibrium price rises and equlibrium quantity increases. The vice versa is also true.</p>
+
+<p>If only the supply increases, ceteris paribus, then the supply curve shifts rightward, and the equilibrium price falls and the equilibrium quantity increases. If only the supply decreases, ceteris paribus, then the supply curve shiftwa leftward, and the equilbirium price rises and the equilibrium quantity decreases.</p>
+
+<p>If both supply and demand increase, ceteris paribus, the supply curve shifts rightward and the demand curve shifts rightward. The equilibrium quantity will increase, but we don’t know what will happen to the equlibrium price.</p>
+
+<p>If both supply and demand decrease, then the equibilirium quantity will decrease, but we don’t know what will happen to the equilibrium price.</p>
+
+<p>If supply decreases and demand increases, then equilibrium price will rise, but we don’t know what happens to the equilibrium quantity.</p>
+
+<p>If supply increases and demand decreases, then the equilbrium price will fall, but we don’t know what happesn to the equilibirium quantity.</p>
+
+<h6 id="assume-fire-destroyed-a-factory-for-the-major-supplier-of-headsets-and-at-the-same-time-an-increase-in-the-teenage-population-occurs-due-to-change-in-immigration-laws-what-happens-to-the-supply-and-demand-of-headsets">Assume fire destroyed a factory for the major supplier of headsets and at the same time an increase in the teenage population occurs due to change in immigration laws. What happens to the supply and demand of headsets?</h6>
+
+<p>Due to the fire, supply curve will shift leftward. Due to the increase in population, the demand will shift rightward. So, the price will rise, but quantity could change in any direction.</p>
+
+<h3 id="module-2-review">Module 2: Review</h3>
+
+<ol>
+  <li>
+    <p>Why is relative price considered an opportunity cost?</p>
+
+    <p>Relative price measures the price of a product over the price of a substitute product, and thus it measures how much of a substitute product has to be forgone in order to buy the product.</p>
+  </li>
+  <li>
+    <p>What does the demand curve tell us about the price that consumers are willing to pay?</p>
+
+    <p>The demand curve tells us the maximum price that consumers are willing to pay for a quantity of product. The price on the demand curve also indicates the marginal benefit to consumers for the last unit consumed at that quantity.</p>
+  </li>
+  <li>
+    <p>What does the supply curve tell us about the producer’s minimum price?</p>
+
+    <p>The supply curve tells us the minimum price that producers are willing to sell for a quantity of product. The price on the supply curve also indicates the marginal cost to consumers for the last unit sold at that quantity.</p>
+  </li>
+  <li>
+    <p>When does a price surplus arise and what happens to price when a surplus arises?</p>
+
+    <p>A surplus arises when market prices are above the equilibrium price. When a surplus arises, price goes down, which increases the quantity demanded until equilibrium price is achieved.</p>
+  </li>
+  <li>
+    <p>Consider the market for oranges. What happens to the demand curve, supply curve, and equilibrium price and quantity under the following situations, ceteris paribus?</p>
+
+    <ul>
+      <li>
+        <p>Early frost damages crops badly</p>
+
+        <p>The supply falls, which shifts the supply curve leftwards. There is no shift in demand. Thus, the equilibrium price increases and the equilibrium quantity decreases.</p>
+      </li>
+      <li>
+        <p>New health reports indicate that eating more oranges can stop cancer</p>
+
+        <p>The demand for oranges increases, causing the demand curve to shift rightwards. The supply curve does not shift. This causes the equilibrium price to increase, and it also causes the equilibrium quantity to increase.</p>
+      </li>
+      <li>
+        <p>An increase in consumer income AND and increase in wages for those that hand-pick oranges</p>
+
+        <p>There is a decrease in supply since oranges become more expensive to produce, and there is an increase in demand since oranges are more affordable (oranges are a normal product). This causes the supply curve to shift leftwards and the demand curve to shift rightwards. This increases the equilibrium price, but it is unknown what happens to the equilibrium quantity.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Identify one set of substittutes in production. Could substitutes in production even be considered substitute goods for consumers?</p>
+
+    <p>Examples of substitutes in production are:</p>
+
+    <ul>
+      <li>Baked potatoes and french fries</li>
+      <li>Leather purses and leather shoes</li>
+      <li>A diet soft drink and a regular soft drink</li>
+    </ul>
+
+    <p>It is possible that substitutes in production are also substitutes for consumers, for example in the case of diet soft drinks and regular soft drinks.</p>
+  </li>
+  <li>
+    <p>Can you identify a situation, where an increase of the price of a good impacts two markets in different ways?</p>
+
+    <p>When the good is a both a complement and a substitute to two different goods, its price increase will impact the market of the good it is a complement to in a negative way, and it will impact the market of the good it is a substitute for in a positive way. For example, butter is a complement to bread and a substitute for margarine.</p>
+  </li>
+</ol>
+
+<blockquote>
+  <h6 id="great-notes">Great notes</h6>
+
+  <p>University of Lethbridge — Department of Economics
+ECON 1012 — Introduction to Microeconomics
+Instructor: Michael G. Lanyi</p>
+</blockquote>
+
+<h2 id="module-3-market-fundamentals---elasticity">Module 3: Market Fundamentals - Elasticity</h2>
+
+<p>…</p>
+
+<h2 id="module-4-market-fundamentals---efficiency-and-fairness">Module 4: Market Fundamentals - Efficiency and Fairness</h2>
+
+<h3 id="resource-allocation-approaches">Resource Allocation Approaches</h3>
+
+<p><strong>market price approach:</strong> When people are willing and able to pay for a resource, they do so. For example, Canada has a decentralized market price approach.</p>
+
+<p><strong>command system:</strong> where resources are allocated by the command of someone in authority e.g. communism. This approach doesn’t scale well.</p>
+
+<p><strong>majority rules:</strong> resources are allocated in accordance with the majority vote which is represented by an elected government e.g. taxes</p>
+
+<p><strong>contest:</strong> where resources are allocated to a winner of a contest e.g. company offers an prize for the top seller</p>
+
+<p><strong>first-come, first-serve:</strong> resources are allocated in a queue</p>
+
+<p><strong>lottery:</strong> resources are allocated through luck e.g. student housing</p>
+
+<p>These two approaches are unacceptable:</p>
+
+<p><strong>personal characteristics:</strong> where resources are allocated to those with the “right” personal traits</p>
+
+<p><strong>force:</strong> where resources are allocated to those that forcibly take the resources</p>
+
+<h3 id="consumer-surplus">Consumer Surplus</h3>
+
+<p><strong>individual demand curve:</strong> the relationship between quantity demanded and the price of a good or service for a single individual</p>
+
+<p><strong>market demand curve (marginal social benefit curve):</strong> <em>horizontal</em> sum of all individual demand curves where horizontal sum means to sum the x values of two points on each individual demand curve with the same y value</p>
+
+<p><strong>consumer surplus:</strong> the excess of individual benefit (in $) received over the amount paid, or the area under the demand curve but above the market price. We can think of it as the total benefit that an individual receives when the marginal benefit they receive from a good or service is higher than the cost that they would have to pay out for it.</p>
+
+<p>Consumer surplus also refers to the total market consumer surplus, which is found by summing individual consumer surplus curves.</p>
+
+<h3 id="producer-surplus">Producer Surplus</h3>
+
+<p><strong>individual supply curve:</strong> the relationship between quantity supplied and the price of a good or service for a single individual</p>
+
+<p><strong>market supply curve (marginal social cost curve):</strong> <em>horizontal</em> sum of all individual supply curves</p>
+
+<p><strong>consumer surplus:</strong> the excess of benefit (in $) received over the amount it costs to produce, or the area above the supply cuve but below the market price</p>
+
+<h3 id="competitive-equilibrium-efficiency-and-market-failures">Competitive Equilibrium Efficiency and Market Failures</h3>
+
+<p>Since we know that market equilibrium is the point at which markets will gravitate towards, it defines the market price. Recall that market equilibrium is the point where the market demand curve and the market supply curve intersect. Then, the section of the graph before the market equilibrium has a section of positive consumer surplus and positive producer surplus. At the market equilibirum, both these sections of surplus are maximized.</p>
+
+<p><strong>total surplus:</strong> the sum of producer and market surplus</p>
+
+<p>We know that in a competitive market:</p>
+
+<ul>
+  <li>market equilibrium is achieved</li>
+  <li>allocative efficiency is achieved (where goods and services are produced at the lowest possible cost and at quantities that provide the greatest possible value)</li>
+  <li>resources are used where they are most valued</li>
+  <li>total surplus is maximized</li>
+</ul>
+
+<p>So, competitive markets are efficient as long as there are no obstacles. We will define obstacles later.</p>
+
+<p><strong>market failure:</strong> when the market does not produce an efficient outcome because a good or service is underproduced or overproduced</p>
+
+<h3 id="market-failures">Market Failures</h3>
+
+<p><strong>deadweight loss:</strong> the decrease in total surplus that results from an inefficeint level of production</p>
+
+<p>Obstacles which can lead to market failures:</p>
+
+<ul>
+  <li>price regulation</li>
+  <li>taxes and subsidies
+    <ul>
+      <li>Taxes generally lead to underproduction</li>
+      <li>Subsidies generally lead to overproduction</li>
+    </ul>
+  </li>
+  <li>Externality
+    <ul>
+      <li>An externality is a cost or benefit that affects someone other than the buyer or the seller of the good or service. They can be positive (e.g. methane detectors) or negative (e.g. pollution). Producers and consumers set the wrong market price when they don’t take into account externalities.</li>
+    </ul>
+  </li>
+  <li>Public goods and common resources
+    <ul>
+      <li>Public goods (e.g. lighting on roads) are underproduced, since there are free-rider consumers who do not pay for them</li>
+      <li>Common resources are overproduced (e.g. public drinking water), since consumers will use them often and free of charge</li>
+    </ul>
+  </li>
+  <li>Monopoly
+    <ul>
+      <li>A monopoly has no competition, so it sets the highest cost it can. This causes the monopoly to underproduce at a very high cost to consumers</li>
+    </ul>
+  </li>
+  <li>High transaction cost: causes underproduction</li>
+  <li>Information asymmetry
+    <ul>
+      <li>Information asymmetry is a situation where informatio nabout the product or good is not equal between the producer and the consumer e.g. false advertising</li>
+    </ul>
+  </li>
+</ul>
+
+<p>We solve market failures by using another approach to allocating resources in certain scenarios.</p>
+
+<h3 id="is-a-competitive-market-fair">Is a Competitive Market Fair?</h3>
+
+<p>In ECON 101, there are two ways to define fair: fair results view and the fair rules view.</p>
+
+<p><strong>fair results view:</strong> utilitarian view that if the result is not fair, then the situation is not fair</p>
+
+<p>The fair results view argues that all incomes should be equal, which necessitates that income be transferred between individuals. However, the transfer itself will come at a cost to the economy and thus reduce its total output, which is also not considered fair.</p>
+
+<p>In 1971, John Rawls tried to solve this by developing a set of rules for a modified utilitarian standpoint which divvies income based on your “inherent abilities” and your socioeconomic status.</p>
+
+<p>So, a competitive market equilibrium is not fair under a utilitarian fair results view for sure, but we don’t know whether we’re satisfying a modified utilitarian fair results view, since the parameters for your ideal income are so ill defined.</p>
+
+<p><strong>fair rules view:</strong> if the rule is not fair, it is not fair.</p>
+
+<p>Fair rules argues that people in similar circumstances should be treated similarly (equality of economic opporuntity vs. equality of economic outcome).</p>
+
+<p>Competitve market equilibirum in the fair rules view is usually fair in the absence of obstacles.</p>
+
+<h4 id="is-a-competitive-market-equitable">Is a competitive market equitable?</h4>
+
+<p><strong>equitable:</strong> equal shares for people</p>
+
+<p>There’s several ways we can talk about equality here. We’ll focus on income distribution as an example.</p>
+
+<p>The income Lorenz curve graphs the cumulative percentage of income earned against the cumulative percentage of households. A line of equality shows equal income distribution, and the closer a nation gets to that line of equality, the more equitable their income distribution.</p>
+
+<p>The Gini ratio is defined as the the ratio of the area between the line of equality and the Lorenz curve to the entire area under the line of equality. The higher your Gini ratio, the less equal your income distribution.</p>
+
+<h2 id="module-5-markets-and-consumers---consumers-budget-and-utility">Module 5: Markets and Consumers - Consumer’s Budget and Utility</h2>
+
+<h3 id="consumers-budget-line">Consumer’s Budget Line</h3>
+
+<p>Microeconomic consumer theory categorizes the influences on choices we make as buyers of a good or service into two streams; consumption possibilities and consumption preferences.</p>
+
+<p><strong>consumption possibilities:</strong> what a consumer can buy, given a limited income, and the price of a good/service that consumer is considering buying</p>
+
+<p><strong>budget line:</strong> all maximum combinations of goods and services an individual can afford to buy e.g. graph of movies worth $8 on x-axis, pop worth $2 a can on the y-axis, and a budget line of $40</p>
+
+<p>If income increases, the budget line shifts rightwards. If income decreases, the budget line shifts leftwards. If one price drops while the other remains constant, the graph will stretch in the direction of the good that dropped in price, while anchored at the intercept for the good which remained constant in price. If one price rises while other other remains constant, the graph will shrink in the direction of the good that rose in price, also while anchored.</p>
+
+<p><strong>consumption preferences:</strong> an individual’s likes or dislikes and the intensity of those feelings, further discussed in module 6</p>
+
+<h3 id="total-utility-and-marginal-utility">Total Utility and Marginal Utility</h3>
+
+<p><strong>utility:</strong> the benefit or satisfaction an individual gets from the consumption of a good or service</p>
+
+<p><strong>total utility:</strong> total benefit a person gets from the consumption of goods and services</p>
+
+<p><strong>marginal utility:</strong> change in utility that results from a one-unit increase in the quantity of a good or service consumed</p>
+
+<p>Recall that according to the law of demand, the marginal utility of a good or service will decrease as the quantity of the good consumed increases. In this course, we won’t ever consider marginal utility that decreases so much it becomes negative.</p>
+
+<p>Thus, the total utility peaks when marginal utility becomes zero.</p>
+
+<h3 id="utility-maximation-and-marginal-analysis">Utility Maximation and Marginal Analysis</h3>
+
+<p>We want the maximum available utility on the budget line which satisfies our individual preferences. We can use two approaches to do this.</p>
+
+<p>The first is the <strong>spreadsheet-like approach</strong>. Observe that the point of maximum availabe utility on the budget line is called the <strong>consumer equilibrium</strong>. However, the consumer equilibrium is not really a practical approach to maximizing utility since it doesn’t take into account individual preferences at all.</p>
+
+<p>Instead, we’ll use the <strong>marginal analysis approach</strong>. This says that the consumer’s utility is maximized when he or she spends all available income and the marginal utility per dollar goods and services is equal across all categories of goods and services purchased.</p>
+
+<p>Suppose we’re trying to maximize the utility of movies and pop purchased. Suppose that the marginal utility per dollar of movies was more than the marginal utility per dollar of pop. Then, we would watch more movies and consume less pop until we reached the point where marginal utility is the same for both goods.</p>
+
+<h3 id="using-marginal-utility-theory-to-make-predictions">Using Marginal Utility Theory to Make Predictions</h3>
+
+<p>We can use the marginal analysis approach to prove the law of demand. Suppose in another example with movies and pop, the price of pop drops and the price of movies remains constant. According to the law of demand, we should see that the quantity demanded should increase.</p>
+
+<p>Since pop has a lower price, we should see that the new marginal utility per dollar is higher than it was before. To offset it and reach the new consumption equilbrium, we need to increase the amount of pop we buy, since that should increase the price of the pop, Thus, we are increasing the demand for pop, which implies the law of demand. In fact, as the price of a good drops and the quantity demanded increases, we move downwards along the demand curve.</p>
+
+<p>Suppose that our income increased. In this case, we can afford to buy both more pop and more movies, so we see both demand curves shift rightwards, and we see the quantity of pop and movies at our consumption equilibrium increase.</p>
+
+<p><strong>total utility:</strong> the total economic benefit of <em>all</em> of a certain resource, for example the total utility of all water is very high, and the total utility of diamonds is very low</p>
+
+<p><strong>marginal utility:</strong> the total economic benefit of <em>the next</em> of a certain resource. For example, since water is abundant, the next drink of water has low marginal utility. Diamonds are scarce, so they have high marginal utility. Keep in mind that the marginal utility will keep going up with the amount of resource already consumed.</p>
+
+<h3 id="alternative-ways-of-explaining-consumer-choice">Alternative ways of explaining consumer choice</h3>
+
+<p>In marginal analysis, we assume that the consumer is acting rationally and in their own self interest. However, there are impediments to rationality.</p>
+
+<p><strong>bounded rationality:</strong> lack of computing power or information leads someone to make a decision based on gut instinct instead of rational thought e.g. not knowing which pop drink tastes better</p>
+
+<p><strong>bounded willpower:</strong> lack of willpower leading to decisions which should have been avoided due to their long-term ramifications e.g. diet plan</p>
+
+<p><strong>bounded self-interest:</strong> lack of self-interest leading to choices which do not advance self interest e.g. charity</p>
+
+<h2 id="module-6-markets-and-consumers---preferences-and-choice">Module 6: Markets and Consumers - Preferences and Choice</h2>
+
+<h3 id="consumers-budget-equation">Consumer’s Budget Equation</h3>
+
+<p>How can the budget line be represented as an equation?</p>
+
+<p>Let’s look at an example where Lisa is consuming movies and pops, with a limited income of $40, movies at $8 each, and pop at $4 each. Assume that expenditure is equal to income.</p>
+
+<p>Then, let $P_p$ be the price of pop, $Q_p$ be the quantity of pop, $P_m$ be the price of a movie, $Q_m$ be the quantity of movies, $Y$ be Lisa’s income.</p>
+
+\[Y = (P_p \cdot Q_p) + (P_m \cdot Q_m)\]
+
+<p>Notice that we can also rearrange this equation for $Q_p$:</p>
+
+\[Q_p = \frac{Y}{P_p} - \frac{P_m}{P_p}\cdot Q_m.\]
+
+<p>This is the general form of the budget line equation.</p>
+
+<p>Subbing in known values into the general form, we have: $Q_p = \frac{40}{4} - \frac{8}{4}\cdot Q_m = 10 - 2Q_m$. So, this is the budget line equation for Lisa. Generally, we would graph $Q_p$ on the y axis and $Q_m$ on the x axis.</p>
+
+<h3 id="indifference-curves-and-marginal-rate-of-substitution">Indifference Curves and Marginal Rate of Substitution</h3>
+
+<p><strong>indifference curve:</strong> on a graph of the quantity purchased of good A vs. quantity purchased on good B, the curve which represents all the combinations of A and B which the consumer prefers equally.</p>
+
+<p>So, the consumer reaches the same amount of utility at any point along an indifference curve.</p>
+
+<p>All points beneath the indifference curve are preferred less than the combinations of items on the indifference curve. All points above the indifference curve are preferred more than points on the indifference curve.</p>
+
+<p><strong>preference map:</strong> all of the indifference curves for a particular consumer’s preference. Notice that there is an indifference curve through every combination of items and indifference curves never cross one another.</p>
+
+<p>The maximal region for the consumer is the top right, at the highest indifference curve (recall that all combinations are on some indifference curves).</p>
+
+<p><strong>marginal rate of substitution (MRS):</strong> the rate at which a person is willing to give up good/service y to get an additional unit of good/service x (assuming that the new combination of goods and services has the same utility as the original combination). It is measured by the magnitude of the slope of the indifference curve at that point.</p>
+
+\[\text{MRS} = \frac{\text{marginal utility of good x}}{\text{marginal utility of good y}}\]
+
+<p>Recall the principal of diminishing marginal utility. This implies that MRS also diminishes as we move further right on the indifference curve.</p>
+
+<p>For ordinary goods, indifference curves slope downwards, bow out from the origin and become flatter at the ends.</p>
+
+<p>If a consumer has a strong preference for good X over good Y, the preference map will be flatter along the axis of good X.</p>
+
+<h3 id="degree-of-substitutability">Degree of Substitutability</h3>
+
+<p><strong>perfect substitutability:</strong> when a consumer is willing to substitute a good or service for another good service at a constant rate, for the same overall utility</p>
+
+<p>An indifference curve with perfect substitutability is perfectly linear and its slope refers to the rate at which the consumer is willing to exchange one good for the other. The constant rate is the MRS.</p>
+
+<p><strong>perfect complements:</strong> goods and services which must be consumed in a precise combination in order to provide a defined level of satisfaction</p>
+
+<p>An indifferece curve with perfect complements looks like series of Ls. The point at the corner of the L represents the correct combination which produces a level of satisfaction. The arms extending from the L represent the fact that more of one good without the other does not raise the overall utility.</p>
+
+<p>Note that goods must be <em>perfect</em> substitutes in order to have an indifference curve representing perfect substitutability. The same applies to perfect complements.</p>
+
+<h3 id="predicting-consumers-choice">Predicting Consumer’s Choice</h3>
+
+<p>The consumer will select their best affordable choice which is:</p>
+
+<ul>
+  <li>on the budget line (recall we assume that the consumer spends their full budget)</li>
+  <li>on the highest attainable indifference curve</li>
+  <li>has a marginal rate of substitution between the two goods and services equal to the relative prices of the two goods or services. This means that the slope of the budget line and the line tangent indifference curve at the point chosen are equal.</li>
+</ul>
+
+<p>Recall from marginal utility theory the utility maximizing rule which says that a consumer’s total utility is maximized if the consumer spends all of their total income and the consumer equalizes the marginal utility per dollar for all goods and services. This is the same as the choosing the consumer’s best affordable choice.</p>
+
+<blockquote>
+  <p>Intuitively, the following the utility maximizing rule using marginal analysis is the same as selecting the consumer’s best affordable choice. We know that marginal analysis measures the marginal utility per dollar of two goods/services and increases the amount purchased of one or the other until the marginal utilities are equal. At that point on the budget line:</p>
+
+\[\frac{\text{marginal utility of x}}{P_x} = \frac{\text{marginal utility of y}}{P_y}\]
+
+  <p>Rearranging this, we have:</p>
+
+\[\frac{\text{marginal utility of x}}{\text{marginal utility of y}} = \frac{P_x}{P_y}\]
+
+  <p>Thus, this is the point where MRS = relative price.</p>
+</blockquote>
+
+<p><strong>What happens to the best affordable choice when the price of a good or service changes?</strong></p>
+
+<p>Suppose that the price of good X graphed along the x axis falls. Then, the budget line would stretch from its y-intercept to be flatter. Thus, the best affordable choice would be further right (i.e. would require more of good X). This means that the consumer reaches a higher indifference curve.</p>
+
+<p>Suppose that the price of good X rises. Then the budget line would compress from the y axis to become steeper. Thus the best affordable choice would be further left (i.e. would require less of good X). This means that consumer reaches a lower indifference curve.</p>
+
+<p><strong>What happens to the best affordable choice when income changes?</strong></p>
+
+<p>Assume that the good/services are normal.</p>
+
+<p>Suppose income increases. We know that when this happens, the budget line has the same slope and shifts rightwards. At this point, the consumer consumes more at each price. This means that the consumer reaches a higher indifference curve.</p>
+
+<p>Suppose that income decreases. Then the budget line should shift leftwards. At this point, the consumer consumes less at each price. This means that the consumer reaches a lower indifference curve.</p>
+
+<h3 id="substitution-effect-and-income-effect">Substitution effect and income effect</h3>
+
+<p><strong>price effect:</strong> effect of changing the price of a good or service on the quantity consumed of that good or service, can be decomposed into a substitution effect and an income effect</p>
+
+<p>When the change in price causes no change in the utility of the good/service, the price effect is called the <strong>substitution effect</strong>. We can cause the change in price to have no change in the utility by changing income (shifting the new budget line line) so that we intercept with the same indifference curve, even after our budget line has shifted due to the change in price.</p>
+
+<p>For example, say that we are comparing movies and pop, and our current best affordable choice is 2 movies and 6 cases of pop. Suppose that the price of a movie is cut from $8 to $4, but our income is also cut by $12. This allows us to stay on the same indifference curve, at a new best affordable choice of 4 movies and 3 cases of pop. In this case, the substitution effect is +2 movies. This means that cutting prices in movies resulted in more movies being demanded, so a movie is a normal good.</p>
+
+<p>The <strong>income effect</strong> is defined as the inverse of the substitution effect, meaning that it is the change in quantity demanded of a good when we shift the line budget line produced by the substitution effect back to the original budget line.</p>
+
+<p>In the previous example, we cut income be $12, so to measure income effect, we would increase income by $12 and consider the difference between the final best affordable choice picked by the substitution effect (3 cases of pop and 4 movies) and the final best affordable choice picked by the new budget line (4 cases of pop and 6 movies). In this case, the income effect is +2 movies. Again, this means that cutting prices in movies resulted in more movies being demanded, so a movie is a normal good.</p>
+
+<p>Notice that despite this being an inverse direction, the inverse effect and the substitution effect move in the same direction (+). This is true for all normal goods.</p>
+
+<p>For an inferior good, the substitution effect would be positive and the income effect would be negative. Thus, comparing the substitution effect and the income effect, we have 3 scenarios:</p>
+
+<ul>
+  <li>income effect cancels out the substitution effect. Thus, a fall in price leaves quantity unchanged, meaning that the demand curve is vertical and demand is perfectly inelastic</li>
+  <li>negative income effect is less than the substitution effect. Thus, a fall in price means quantity demanded increases. The demand curve would be downward sloping like that of normal good, but it would be less elastic.</li>
+  <li>negative income effect is greater than the substitution effect. Thus, a fall in price means quantity demanded decreases. The demand curve would be upward sloping.</li>
+</ul>
+
+<p>So, we can see the Law of Demand (for normal goods) using the income effect and the substituttion effect, since as we cut the price of a good, we demand more of it and vice versa. We can derive a demand curve by dracing the best affordable choice for a good or service as its price changes.</p>
+
+<h2 id="module-7-markets-and-firms---organizing-production-and-costs">Module 7: Markets and Firms - Organizing production and costs</h2>
+
+<h3 id="the-firm-and-the-firms-goals">The firm and the firm’s goals</h3>
+
+<p>Accountants and economists measure profit in different ways. There is an <strong>accounting profit</strong> and an <strong>economic profit</strong>.</p>
+
+<p><strong>implicit cost:</strong> the sum of all hidden opportunity costs forgone, but not paid in real money.</p>
+
+<p>Notice that for every resource a firm uses, there is some opportunity cost associated with choosing that resource over its best alternative. For example, consider Mary, who owns a corner variety store. By using the building she owns, Mary gives up the potential rent earnings which could be earned by leasing the building out. Thus, those rental earnings are implicit costs.</p>
+
+<p>When a firm uses its own capital, it implicitly rents capital to itself. The implicit rental rate of capital is comprised of economic depreciation plus interest forgone (lost potential returns).</p>
+
+<p><strong>Explicit costs</strong> are actual costs associated with production. paid out in real money. An example would be the wages that the firm needs to pay its workers.</p>
+
+<p><strong>economic depreciation:</strong> fall in the value of a firm’s capital e.g. machines wear</p>
+
+<p><strong>accounting profit:</strong> total revenue $-$ (explicit costs $+$ concentional depreciation), where total revenue = quantity sold $\times$ price.</p>
+
+<p><strong>economic profit:</strong> total revenue $-$ total cost, where total cost is the total opportunity cost of production. The total opportunity cost includes both explicit and implicit costs.</p>
+
+<p><strong>normal profit:</strong> profit which an entrepreneur earns on average, or the average profit within the industry (minimum profit to keep firm in business). It is also a firm’s total opportunity cost, since it is the cost of a forgone alternative.</p>
+
+<p>Accounting profit measures whether a firm can pay for its expenses. Economic profit measures whether a firm is using its resources efficiently. Economic profit considers implicit costs, so economic profit is often less than accounting profit.</p>
+
+<h3 id="overview-of-a-firms-constraints">Overview of a firm’s constraints</h3>
+
+<p>…</p>
+
+<h2 id="module-8-markets-and-firms---perfect-competition">Module 8: Markets and Firms - Perfect Competition</h2>
+
+<h3 id="perfect-competition-further-explained">Perfect competition further explained</h3>
+
+<p><strong>perfect competition:</strong> a market which has many firms, each firm produces a good which is a perfect substitute for other goods in the market (i.e. the same good), and there are no restrictions to entry e.g. wheat market</p>
+
+<p>Firms in perfect compeitition are price takers because they cannot influence the market price. They set their own price equal to the market equilibrium price.</p>
+
+<p>The market demand curve for a good in a perfect competitive market is downward sloping and is perfectly elastic.</p>
+
+<p>Recall that marginal revenue is the change in revenue caused by a one unit increase in quantity sold. In a perfectly competitve market, the marginal revenue is a constant horizontal line, and is equal to the market price.</p>
+
+<p>A firm can sell any quantity it wants at the market price (provided it does not go over the total market demanded quantity). Its demand curve is a constant horizontal line, since the same price will be demanded for any quantity of goods it produces. Thus, the demand curve is the same as the marginal revenue curve in a perfectly competitive market.</p>
+
+<p>To achieve maximum economic profit, a firm considers:</p>
+
+<ul>
+  <li>
+    <p>How to produce at the minimum cost</p>
+
+    <p>By operating with a plant that minimizies long run average cost on its long run average cost curve.</p>
+  </li>
+  <li>
+    <p>What quantity to produce</p>
+  </li>
+  <li>
+    <p>Whether to enter or exit a market</p>
+  </li>
+</ul>
+
+<h3 id="the-firms-output-decision">The Firm’s output decision</h3>
+
+<p>What quantity shoud a firm produce in order to maximize economic profit?</p>
+
+<p>We can use two approaches to do this.</p>
+
+<h5 id="analyzing-the-firms-cost-curves-and-total-revenue-curves">Analyzing the firm’s cost curves and total revenue curves</h5>
+
+<p>We will graph the total revenue and total cost by quantity sold on the same graph. Where they intersect, economic profit is 0, so this is a break even point. We simply find from the graph the point where there is a maximal positive difference between the total revenue and the total cost.</p>
+
+<h5 id="marginal-analysis">Marginal analysis</h5>
+
+<p>We can graph the marginal cost curve and the marginal revenue curve by quantity sold. Where the two intersect, the cost of producing one more unit is equal to the revenue gained by selling one more unit, so this is the point of maximal economic profit.</p>
+
+<p>This is because when the cost of producing is less than the revenue gained from selling one more unit, a firm would produce more units in order to maximize profit. Likewise, a firm would produce less units if the cost of producing is more thant the revenue gained from selling one more unit. But, at the point where marginal cost is the same as marginal revenue, a firm has no more incentive to produce more units, since it would cost as much to produce as it does to cell.</p>
+
+<p>Notice that since in a perfectly competitive market, the marginal revenue is a constant horizontal line at the market price, the point at which the marginal cost curve and the marginal revenue curve intersect must be at the point where the marginal cost curve is equal to the market price.</p>
+
+<p>So, a firm maximizes profit at MR = MC. What if at the point where MR = MC, the price is still less than the average total cost?</p>
+
+<p>In this case, the firm is experiencing an economic loss, and should go out of business if it believes that it will continue to lose profit in the long run. If the firm believes the economic loss will be temporary, it may shut down temporarily or it may continue producing.</p>
+
+<p>A firm decides whether to to shut down production by considering the <strong>firm shutdown point</strong>, which is the price and quantity at which the firm is indifferent between producing and shutting down.</p>
+
+<p>At this point, the average variable cost curve intersects with the marginal revenue curve, meaning that the firm is producing just enough to cover its minimum average variable cost. So, the shutdown point is where price = average variable cost (P = AVC). This is the last point where a firm will continue to produce at a loss.</p>
+
+<p>This is because if P &lt; AVC, then the firm would have to pay its variable costs as well as its fixed costs. Recall that a firm has to pay its fixed costs regardless of whether it is producing or not.</p>
+
+<p>We can derive a supply curve from this graph of the average variable cost and the marginal cost graph, since the supply curve will be the marginal cost curve at all points above where it intersects with the average variable cost curve.</p>
+
+<h3 id="output-price-and-profit-in-the-short-run">Output, price, and profit in the short run</h3>
+
+<p>How do we know whether to enter or exit a market?</p>
+
+<p>Let’s consider this in the short run.</p>
+
+<p><strong>short run market supply curve:</strong> shows the quantity supplied by all firms in the market at each price when each firm’s plant and the number of firms remain the same. It is the sum of the supply curves for each firm in the market.</p>
+
+<p>Recall that when the demand curve shifts, the market equilibrium shifts as well. When demand increases, the market price rises and firms increase production. When demand decreases, the market price falls and firms decrease production.</p>
+
+<p>However, depending on the average total cost curve, the new market price equilibrium may or may not price profitable for a firm. Consider graphing the marginal revenue curve for the new market equilibrium, and the average total cost curve. Firms will produce at the point on the marginal revenue curve which is the same price as the new market price. Now, if this point is below the average total cost curve, the firms is operating at a loss. If the average total cost curve intersects with the marginal revenue curve at that point, then the firm breaks even. If the average total cost curve is below the marginal revenue curve, then the firm is making a profit.</p>
+
+<p>Firms will leave a market if they believe that the change in demand is permanent and they will continue to incur a loss.</p>
+
+<h3 id="output-price-and-profit-in-the-long-run">Output, price, and profit in the long run</h3>
+
+<p>How do we know whether to enter or exit a market?</p>
+
+<p>Let’s now consider this in the long run.</p>
+
+<p>Firms will enter a market where profit is being made in the short run, which means that the total supply of the market will increase and the supply curve shifts rightwards. When this happens, the market equilibrium price and quantity will decrease, so firms will make less and less profit. The inverse of this happens when firms leave a market and the market equilibrium increases.</p>
+
+<p>In the end, all firms in a market will reach a long run market equilibrium where no economic profit is being made and the firm makes just enough to stay in business.</p>
+
+<h3 id="changes-in-taste-and-technology">Changes in taste and technology</h3>
+
+<p>In real life, markets rarely reach a long run market equilibrium due to factors like changes in taste and technology.</p>
+
+<p>Consider a permanent decrease in demand. In this case the demand curve would shift leftward, thus decreasing the equilibrium price. Since at this price, the existing number of firms cannot make a profit (revenue is belong the minimum average total costs for the firm), some firms will leave, thus shifting the supply curve leftward until the original equilibrium price is reached and the firms left in the market can break even again.</p>
+
+<p>However, this is often not the case. The change in a long run equilibrium price depends on <strong>external economies</strong> and <strong>external diseconomies</strong>.</p>
+
+<p><strong>external economies:</strong> factors beyond the control of the firm which lower a firm’s costs as the industry output exapnds</p>
+
+<p><strong>external diseconomies:</strong> factors which raise a firm’s costs as the industry output expands</p>
+
+<p><strong>long run market suppply curve:</strong> shows how the quantity supplied in a market varies as the market price varies, after all possible adjustments (including external (dis)economies) have been made. It is a line between the equilbrium price on the initial supply curve to the new supply curve.</p>
+
+<p>When demand changes, there are 3 scenarios:</p>
+
+<p>Suppose demand increases and new firms enter the market.</p>
+
+<ol>
+  <li>
+    <p>When an industry faces constant costs</p>
+
+    <p>The long run equilibrium price is constant and the long run equilibrium quantity increases. The long run supply curve is perfectly elastic and a constant horizontal line.</p>
+  </li>
+  <li>
+    <p>When an industry faaces increasing costs (or an external diseconomy)</p>
+
+    <p>The long run equilibrium price increases and the long run equilibrium quantity increases. The long run supply curve is upwards sloping.</p>
+  </li>
+  <li>
+    <p>When an industry faces decreasing costs (or an external economy)</p>
+
+    <p>The long run equilibrium price decreases and the long run equilibrium quantity increases. The long run supply curve is downwards sloping.</p>
+  </li>
+</ol>
+
+<p>Advances in technology allows the firms which use it to lower their cost and shift the market supply curve rightwards. Firms which do not use the advances will incur economic losses until they either use the new technology or leave the intustry. Eventually, all firms will adopt the technology and economic profit should return to zero.</p>
+
+<h3 id="does-a-perfectly-competitive-market-efficiently-allocate-resources">Does a perfectly competitive market efficiently allocate resources?</h3>
+
+<p>Recall that resource use is efficient when the marginal social benefit of the good equals the marginal social cost. So, does a perfectly competitive market efficiently allocate resources?</p>
+
+<p>If there are no externalities, the demand curve is the same as the marginal social benefit curve (since consumers see the benefit of a good) and the supply curve is the same as the marginal social cost curve (since producers incur the cost of producing a good). So, at the market equilibrium, the marginal social benefit is the same as the marginal social cost. At this point, resources are being used efficiently.</p>
+
+<p>Since we know that baring externalities, a perfectly competitive market will return to equilibrium, then we can see that a perfectly competitive market efficiently allocates resources.</p>
+
+<h2 id="module-9-markets--firms---monopolies">Module 9: Markets &amp; Firms - Monopolies</h2>
+
+<h3 id="monopoly-further-explained">Monopoly Further Explained</h3>
+
+<p><strong>monopoly:</strong> market structure with one firm, no close substitutes, and barriers to entry</p>
+
+<p><strong>barrier to entry:</strong> a constraint that protects a firm from potential competition. There are 3 types of barriers to entry:</p>
+
+<ul>
+  <li>Natural: due to economies of scale, one firm can supply the entire market at the lowest possible cost e.g. railways, water treatment</li>
+  <li>Ownership: one firm owns a significant portion of a key resource e.g. DeBeers diamonds</li>
+  <li>Legal: a legal barrier to entry exists when competition and entry are restricted by the granting of:
+    <ul>
+      <li>public franchise: an exclusive right that is granted to supply a good or service e.g. Canada Post mail</li>
+      <li>government license: when the government controls entry into a particular occupation, profession, or industry e.g. electricity, gas, water</li>
+      <li>patent: exclusive right to the inventor of a product or service</li>
+      <li>copyright: exclusive right to the author of a literary, musical, dramatic, or artistic work</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Monopolies have market power, meaning they can set the price. However, they need to take into consideration what consumers are willing and able to buy.</p>
+
+<p><strong>single-price monopoly:</strong> a firm that sells each unit for the same price to all its customers</p>
+
+<p><strong>price discrimination monopoly:</strong> a firm that practices selling different units of a good or service for different prices e.g. airlines charging different prices for different types of seats, for time of booking</p>
+
+<p>###The Single Price Monopoly’s Output and Price Decision</p>
+
+<p>In a monopoly, the demand curve slopes down. Consider 2 points on the demand curve, C and D. We can compute the total revenue at each of these points by computing the area of the rectangle they define (quantity sold vs. price). Then, we can compute the marginal revenue (the change in total revenue) by $D_\text{total revenue} - C_\text{total revenue}$.</p>
+
+<p>The marginal revenue curve also slopes downwards and is steeper than the demand curve.</p>
+
+<p>Recall that when demand is elastic, an decrease in price results in an increase in total revenue, because the revenue gained from increase in quantity sold is greater than the loss of revenue from a lower price. So, since marginal revenue is the change in total revenue, a decrease in price results in a positive marginal revenue.</p>
+
+<p>When demand is inelastic, a decrease in price results in a decrease in total revenue, so marginal revenue is negative.</p>
+
+<p>When demand is unit elastic, a fall in price doesn’t change total revenue, so marginal revenue is 0.</p>
+
+<p>A firm will never operate in the inelastic part of a demand curve since it will have negative profit. If it does find itself in this position, the firm will try to decrease its output.</p>
+
+<p>Total revenue is maximized when marginal revenue is 0. So, it will maximize profit by producing an quantity of output such that marginal revenue equals marginal cost. Thus, monopolies behave like companies in a perfectly competitive markets in order to price their goods.</p>
+
+<p>However, notice unlike companies in perfectly competitive markets, monopolies will be able to keep their profits. This is because a monopoly earning a profit will not have other firms entering its market which could shift the supply curve rightwards and create a new market equilibrium. So, a monopoly firm can earn an economic profit over the long run.</p>
+
+<p>This doesn’t mean that a monopoly firm is guaranteed an economic profit. Profit depends on the average total cost curve being beneath the point of total revenue. If a monopoly doesn’t make an economic profit over the long run, it will leave that market.</p>
+
+<h3 id="comparing-single-price-monopoly-to-perfectly-competitive-market">Comparing Single Price Monopoly to Perfectly Competitive Market</h3>
+
+<p>Perfectly competitive markets price their product at the point on the demand curve which intersects with the marginal cost curve (the supply curve). Monopolies can price their product at any point on the demand curve above where the marginal revenue curve intersects with the marginal cost curve.</p>
+
+<p>Thus, monopolies will produce less output at a higher price. This is because a firm in a competitive market always receives marginal revenue equal to the price of every unit sold regardless of what quantity it sells. However, a monpoly faces a downwards sloping demand curve, meaning that it will receive less per unit as it produces more units. So, a monopoly will artificially restrict the supply in order to receive a higher profit.</p>
+
+<p>Recall that in a perfectly competitive market with no externalities, the marginal social benefit curve is the same as the demand curve and the marginal social cost curve is the same as the supply curve. We know that a perfectly competitive market is efficient since it produces at the point where marginal social benefit is equal to marginal social loss.</p>
+
+<p>However, monopolies can create a <strong>deadweight loss</strong>, which is the total loss of consumer and producer surplus. We can split the area between the marginal social benefit curve and the marginal social cost curve into above the horizontal line of market price (supply = demand price) and below that line. The area above that line is defined as consumer surplus. The area below that line is defined as producer surplus. Thus, we see that when we have a monopoly, consumer surplus decreases and producer surplus increases. This is because the monopoly has converted some consumer surplus into producer surplus.</p>
+
+<p>The deadweight loss is considered inefficient.</p>
+
+<p><strong>economic rent:</strong> any form of consumer surplus, producer surplus, or ecoonomic profit</p>
+
+<p><strong>rent seeking:</strong> the pursuit of wealth by capturing economic surplus, i.e. trying to become a monopoly</p>
+
+<p>Notice that rent seeking requires resources (e.g. lobbying the government). These resources are costs to society which add to the monopoly’s deadweight loss.</p>
+
+<p>We also have to consider rent seeking when considering a monopoly’s economic profit, since rent seeking is a fixed cost which adds to a monopoly’s average total cost curve.</p>
+
+<h3 id="price-discrimination">Price discrimination</h3>
+
+<p><strong>price discrimination:</strong> the practice of selling different units of a good or service for different prices. We want to get buyers to pay a price for a good or price that is closest to the buyer’s willingness to pay. To price discriminate a firm must:</p>
+
+<ul>
+  <li>Classify buyers according to their willligness to pay</li>
+  <li>Sell a product which cannot be resold</li>
+  <li>Address any challenge that may arise from those customers paying a higher price</li>
+</ul>
+
+<p>Firms could discriminate based between units for reasons other than cost e.g. based on time of purchase. The goal is for the monopoly to convert consumer surplus into producer surplus.</p>
+
+<p><strong>perfect price discrimination:</strong> when a firm is able to sell each unit of output for the highest price that anyone is willing to pay for it. In this case, all consumer surplus is converted to producer surplus, and the demand curve is equal to the marginal revenue curve.</p>
+
+<p>The more perfectly a monopoly can price discriminate, the greater the amount the firm will generate and the firm becomes more efficient</p>
+
+<blockquote>
+  <p>Let’s look at an example, ticket scalping.</p>
+
+  <p>Ticket scaping is a form of price discrimination since the scalper can set the price of the ticket at the maximum the consumer is willing to pay. It’s tough to decide whether it is fair or not, since it can increase profits for the reseller while increasing efficiency for society, but the price of the ticket may not be fair to the consumer.</p>
+</blockquote>
+
+<h3 id="monopoly-regulations">Monopoly Regulations</h3>
+
+<p>We want to ensure the monopolies are somewhat efficient (i.e. higher output ant lower prices).</p>
+
+<p><strong>regulation:</strong> a government rule that influences prices, quantities and entry, along with other aspects of economic activity in a firm or an industry</p>
+
+<p>Efficient regulation of a natural monopoly:</p>
+
+<ul>
+  <li>Marginal cost pricing rule: set price to where marginal cost intersects with demand. This maximizes the total surplus cost, but may result in an economic cost. This is the same as pricing in a perfectly competitive market.</li>
+  <li>Average cost pricing rule: set price to where average cost intersects with demand. This results in 0 economic profit. This is less efficient than marginal cost pricing rule but better than nothing. This is tough to implement in practice since we might not know the average cost for each firm.</li>
+  <li>Rate of return regulation: price is set to the target rate of return on capital. The firm will justify its price by showing that the price enables it to hit some target rate of return on captial. This results in 0 economic profit. However, there is an incentive here to fudge the numbers such that the price is high but there is no resulting change in how well the firm hit’s that target, since the additional capital can be used on amenities which don’t help the business.</li>
+  <li>Price cap regulation: specify the highest price possible in a market. Firms which decrease costs can earn a profit, so usually they do so.</li>
+</ul>
+
+<h3 id="in-defense-of-monopolies">In defense of monopolies</h3>
+
+<p>Monopolies create a societal loss in the form of deadweight, but they also produce some societal gains. 3 advantages:</p>
+
+<ul>
+  <li>Big monpoly firms have the potential to use their profits for innovation which benefit the firm and society e.g. Bell Labs</li>
+  <li>Monopolies can take advantage of economies of scale</li>
+  <li>Monopolies offer better wages and working conditions than small firms</li>
+</ul>
+
+<h2 id="module-10-markets--firms---monopolistic-competition-and-oligopoly">Module 10: Markets &amp; Firms - Monopolistic Competition and Oligopoly</h2>
+
+<h3 id="monopolistic-competition-further-explained">Monopolistic Competition Further Explained</h3>
+
+<p><strong>monopolistic competition:</strong> market which has market has many firms where each firm sells slightly differentiated products e.g. multiple cellphone producers</p>
+
+<p>In a monopolitic competitive market:</p>
+
+<ul>
+  <li>Each firm has a relatively small share of the overall market</li>
+  <li>No one firm can decide market price</li>
+  <li>No collusion (firms co-operating to fix the price)</li>
+  <li>Firms are independent</li>
+  <li>There are no barriers to entry, meaning that no economic profit will exist in the long run.</li>
+</ul>
+
+<p><strong>product differentiation:</strong> each firm makes a good or service that is slightly different (i.e. not perfect substitutes). So, firms can advertise their differences.</p>
+
+<p>The demand curve of a monpolistic competitive market slopes down and is not perfectly elastic due to product differentiation.</p>
+
+<h3 id="the-monpolistic-competitive-firms-output-and-price-decision">The Monpolistic Competitive Firm’s Output and Price Decision</h3>
+
+<p>In the short run, a firm will price itself the same way a monopoly firm does (i.e. where MC = MR).</p>
+
+<p>Suppose in the short run, a firm A makes an economic profit. New firms see this and enter the market, thus shifting the demand curve for A leftwards, since it now has less of a market share. Eventually, the demand curve will move the point where the price equals average total cost, and all firms will make 0 economic profit in the long run. Similarly, the demand curve will shift leftward if A was not making an economic profit in the short run, since firms will leave the market.</p>
+
+<h3 id="comparing-monopolistic-competition-to-perfect-competition">Comparing Monopolistic Competition to Perfect Competition</h3>
+
+<p>In perfect compeition, the marginal revenue curve is the same as the demand curve (since the demand curve is always a horizontal line) and firms produce at MR = MC. The quantity at this point is called an <strong>efficient scale</strong>, and it should be the point on the demand curve which minimizes total average cost.</p>
+
+<p>In a monopolistic competitive market, the demand curve is downwards sloping, and the marginal revenue curve is a different steeper downwards sloping line. Thus a firm in such a market can produce at MR = MC and not hit the point on the demand curve which minimizes average total cost. We call this gap in quantity between the efficient scale and the quantity produced by the monopolistic competitive firm <em>excess capacity</em>. Excess capcaity is considered inefficient.</p>
+
+<p>Monopolistic competitive firms don’t care that they don’t minimize average total cost since if they produced more, they would produce at a point where the marginal cost is greater than marginal revenue and thus incur a loss.</p>
+
+<p><strong>markup:</strong> the amount by which price exceeds marginal cost. This increase in price is considered inefficient.</p>
+
+<p>A markup can exist even with the firm making no economic profit due to the average total cost curve.</p>
+
+<p>Monopolistic competitive firms are clearly less efficient than perfectly competitive firms since the produce less output at a higher price. But it’s debatable whether they have added social benefit due to the variation of goods and services they provide.</p>
+
+<h3 id="product-development-and-marketing">Product Development and Marketing</h3>
+
+<p>Firms in a monopolistic competitive market can compete through:</p>
+
+<ul>
+  <li>price adjustment</li>
+  <li>innovation and product development: efficient if the marginal benefit of the new product under development is equal to the marginal benefit of the old product</li>
+  <li>advertising: conveys information and signals. Debatable how to measure efficiency:
+    <ul>
+      <li>If the marginal social benefit (consumer getting information about a good or service) gained is more than the marginal social cost</li>
+      <li>If it pays for itself through increased profits</li>
+      <li>If it increases demand</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Competition is necessary since new firms will enter the market in order to try to capture economic profit.</p>
+
+<p><strong>brand name:</strong> a name that is owned by a firm that distinguishes the firm’s product</p>
+
+<p>Advertising is an added fixed cost, not a marginal cost.</p>
+
+<p>When advertising helps firms survive in the marketplace, there can be more firms in the market, which decreases the demand for the product and makes the demand more elastic. So, when there is a lot of advertising in a market, the price will fall and the markup shrinks, while all firms produce more of the product.</p>
+
+<h3 id="oligopoly-further-explained">Oligopoly Further Explained</h3>
+
+<p><strong>oligopoly:</strong> market structure with few firms (less than 5), no close substitutes and medium restrictions to entry</p>
+
+<p>In an oligopoly:</p>
+
+<ul>
+  <li>Each firm has some market power</li>
+  <li>Firms are interdependent</li>
+  <li>Possible collusion (e.g. cartel of firms acting together, which is illegal in Canada)</li>
+  <li>Natural or legal barriers preventing entry to market e.g. economies of scale</li>
+</ul>
+
+<p><strong>duoploy:</strong> an oligopoly with 2 firms</p>
+
+<p>We analyze the behaviour of firms in an oligopoly using game theory. It’s tough to tell how firms will price their goods since they’re so interrelated.</p>
+
+<h3 id="game-theory---the-prisoners-dillema">Game Theory - The Prisoner’s Dillema</h3>
+
+<p>Imagine A and B have been caught stealing a car. Both are sentenced to two years in jail for the crime, and both are suspected of assault which the prosecutor needs more evidence for.</p>
+
+<p>Each prisoner goes into a separate room. If A confesses to assault in collusion with B, and B does not, then A gets a sentence of 1 year and B gets a sentence of 10. If they both confess, both will get 3 years in jail. If neither confess, then both will get 2 years in jail.</p>
+
+<p><strong>Nash equilibrium:</strong> each player makes his or her best possible action given the action of the other players</p>
+
+<p>Regardless of what the other prisoner does, the better strategy is to confess since if they confess you do 3 years in jail as opposed to 10, and if they deny you do 1 year in jail instead of 2. But, this is not the optimal outcome, since both A and B could have done 2 years in jail instead of doing 3 years each. So, A and B must trust each other to deny, even though that’s not the best strategy.</p>
+
+<p>We can apply the prisoner’s dilemma to price fixing in an oligopoly. Each firm can comply to a collusion agreement to restrict ouput and raise price, or it can cheat. Cheating is the better strategy, but both firms would be better off if they all complied.</p>
+
+<h2 id="module-11-markets-and-government---government-action-in-markets">Module 11: Markets and Government - Government Action in Markets</h2>
+
+<h3 id="price-controls---price-ceiling">Price Controls - Price Ceiling</h3>
+
+<p><strong>price ceiling:</strong> a government regulation that makes it illegal to charge a price higher than a specified level. A price ceiling above the market equilibrium has no impact on the market, but a price ceiling below the market equilibrium forces the market price down.</p>
+
+<p>Price ceilings allow consumers to purchase essential goods where the market equilibrium price is out of their purchasing power. For example, a crisis can cause a price spike which hurts consumers.</p>
+
+<p>An example of a price ceiling is rent control, which makes it illegal for people to charge rent above a certain price. It causes:</p>
+
+<ul>
+  <li>a housing shortage: landlords will try to convert their rented rooms in order to get a higher rate of return, and construction of new units will decline. Thus, there will be more homes demanded than homes supplied, causing a housing shortage.</li>
+  <li>increase in search activity: due to the housing shortage, costly and inefficient use of resources</li>
+  <li>black market: illegal market in which the price exceeds a legally imposed price ceiling (tenants bribe landlords), landlords can also cutback on maintenance since</li>
+</ul>
+
+<p>Rent ceilings lead to inefficiency since the producer and consumer surplus are both reduced, resulting in a deadweight loss. There is also potential loss of surplus devoted to resources used in searching for a home.</p>
+
+<p>There are two ways to look at whether rent ceilings are fair. Under the fair results view, it’s fair if it helps the poor find homes. Under the fair rules view, it’s not fair because it blocks voluntary trade.</p>
+
+<h3 id="price-controls---price-floors">Price Controls - Price Floors</h3>
+
+<p><strong>price floor:</strong> a government regulation that makes it illegal to charge a price lower than a specified level. If the price floor is below the market equilibrium price, then the price has no impact on the market, but a price floor above the market equilibrium price forces the market price up.</p>
+
+<p>An example of price floor is the minimum wage. It causes:</p>
+
+<ul>
+  <li>Unemployment: Employers will be willing to hire less workers, but there will be a greater number of workers willing to work for a higher rate, resulting in unemployment</li>
+</ul>
+
+<p>Similar to rent ceilings, minimum wage causes producer and consumer surplus to reduce, resulting in a deadweight loss. There is also potential loss of surplus devoted to resources used in searching for a job.</p>
+
+<p>There are two ways to look at whether minimum wage is fair. Under the fair results view, it’s unfair, since workers who become unemployed are worse off than they would be with no minimum wage. Under the fair rules criteria, it’s unfair because it blocks voluntary work.</p>
+
+<h3 id="taxes-and-tax-incidence">Taxes and Tax Incidence</h3>
+
+<p><strong>tax incidence:</strong> the division of the burden of tax between a buyer and a seller</p>
+
+<p>If the burden falls on the seller, then the supply curve will shift leftwards by the amount of the tax, since the supply price at every point on the supply curve will have increased by the tax amount. This shifts the equilibrium to have a lower quantity and a higher price.</p>
+
+<p>If the burden falls on the buyer, then the demand curve will shift leftwards by the amount of the tax, since the demanded price at every point will have decreased by the tax amount (buyer is less willing to pay the seller ). This shifts the equilbirium to have a lower quantity at a lower price.</p>
+
+<p>In both cases, both the buyer and the seller are affected. The same equilibrium will arise whether the buyer or the seller is made to carry the burden, but they may not split the burden the same way.</p>
+
+<h3 id="tax-incidence-and-the-elasticity-of-supply-and-demand">Tax Incidence and the Elasticity of Supply and Demand</h3>
+
+<p>How we determine tax incidence depends on the elasticity of supply and demand.</p>
+
+<p>In general, the less elastic the demand, the larger the tax burden paid by the buyer and the smaller the tax burden paid by the seller.</p>
+
+<p>In general, the less elastic the supply, the larger the tax burden paid by the seller and the larger the tax burden paid by the buyer.</p>
+
+<p>Taxes are inefficient:</p>
+
+<ul>
+  <li>Taxes cause the marginal social benefit from the last unit sold to be higher than the marginal social cost and the market underproduces the taxed product</li>
+  <li>Taxes cause a wedge between the marginal social benefit and the marginal social cost</li>
+</ul>
+
+<p>We can evaluate the fairness of taxes 2 ways:</p>
+
+<ul>
+  <li><strong>benefits principle:</strong> people should pay taxes equal to the benefits they receive from the services provided by the government. Under this principle, taxes are fair depending on what services are used.</li>
+  <li><strong>ability to pay principle:</strong> people should pay taxes according to how easliy they can bear the burden of the tax. Under this principle, taxes are fair since we take into account income.</li>
+</ul>
+
+<h3 id="production-quotas-and-subsidies">Production Quotas and Subsidies</h3>
+
+<p><strong>production quota:</strong> an upper limit on the quantity of a good that may be produced during a specific period of time e.g. amount of salmon a fishery can catch in a season</p>
+
+<p>A production quota above the market equilibrium has no impact on the market, but a production quota below the market equilibrium forces the market quantity down. It can result in a decrease in supply, a rise in price, a decrease in marginal cost, inefficiency from underproduction, and an incentive to cheat and overproduce.</p>
+
+<p><strong>subsidy:</strong> a payment made by the government to a producer. It results in a fall in a price, and increase in the quantity produced, an increase in marginal cost, and inefficiency from overproduction</p>
+
+<h3 id="illegal-markets">Illegal Markets</h3>
+
+<p>Let’s assume that there’s a law which imposes a cost per unit of breaking the law. This law can be applied to the either the seller or the buyer or both, similar to taxes.</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2018-02-15T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/02/14/cs-349.html">CS 349</a></div><div class="next"><span>NEXT</span><a href="/2018/02/15/se-350-textbook-notes.html">SE 350 Textbook Notes</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+

@@ -1,0 +1,2294 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>CS 348 - Sentences</title>
+
+<meta name="description" content="Overview of Data Managementdata: formalized representation of information about some entity (e.g. a person)History of Data Management      Magnetic tapes: Ev...">
+<link rel="canonical" href="/2018/12/18/cs-348.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24">
+<style type="text/css">
+	.st0{fill:#515151;}
+</style>
+<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
+	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>CS 348</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2018-12-18-cs-348/2018-12-18-cs-348.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="CS 348"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=notes">notes</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Dec 18, 2018</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2018-12-18T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><h2 id="overview-of-data-management">Overview of Data Management</h2>
+
+<p><strong>data:</strong> formalized representation of information about some entity (e.g. a person)</p>
+
+<h4 id="history-of-data-management">History of Data Management</h4>
+
+<ol>
+  <li>
+    <p><strong>Magnetic tapes:</strong> Every program only uses 1 tape at a time, so programs cannot manage the same data at the same time. Data set 1, 2, and 3 are duplicates.</p>
+  </li>
+  <li>
+    <p><strong>File management:</strong> Multiple programs can use the system file I/O to access the same file data at the same time. Concurrent reads can happen, concurrent writes can’t.</p>
+  </li>
+  <li>
+    <p><strong>Hierarchical data model:</strong> IBM’s IMS organizes data in a tree structure, allows concurrent access</p>
+  </li>
+  <li>
+    <p><strong>Network data model:</strong> Bachman’s IDS organizes data as sets of records, pointers between records represent relationships</p>
+  </li>
+  <li>
+    <p><strong>Relational data model:</strong> Proposed by Codd in 1970, Entity-Relationship model proposed by Chen in 1976, implemented by IBM system R and UC Berkeley’s Ingres systems in late 1970s</p>
+
+    <p>In the 1980s, commercial relational technology is developed and SQL is standardized. We start to see object oriented databases. In the 1990s, object oriented databases come to the relational model.</p>
+  </li>
+</ol>
+
+<h3 id="database-defintions">Database defintions</h3>
+
+<p><strong>database:</strong> large, persistent collection of data and metadata organized for retrieval and revision e.g. file cabinet, libaray system, inventory control system</p>
+
+<p><strong>data model:</strong> specifies what types of metadata/data can be stored and specifies how to query/modify data e.g. relational data model</p>
+
+<p><strong>database management system (DBMS):</strong> program that implements a data model e.g. SQL implements the relational data model.</p>
+
+<p>The DBMS needs to have:</p>
+
+<ul>
+  <li>A data model</li>
+  <li>Access control</li>
+  <li>Concurrency control</li>
+  <li>Database recovery</li>
+  <li>Database maintenance (e.g. revise schema within the bounds of the data model)</li>
+</ul>
+
+<p><strong>schema:</strong> definition of what metadata is stored for some use case of a data base e.g. EMP(ENO, ENAME, TITLE), PROJ(PNO, PNAME, BUDGET) is a schema for an employee records database</p>
+
+<p><strong>instance:</strong> collection of data stored according to some schema e.g. the EMP and PROJ tables</p>
+
+<h3 id="three-level-schema-architecture">Three Level Schema architecture</h3>
+
+<ol>
+  <li><strong>External schema:</strong> the view of the schema that users see (e.g. some tables may be restricted due to access control)</li>
+  <li><strong>Conceptual schema:</strong> the full schema of the database</li>
+  <li><strong>Physical schema:</strong> how the data is phyiscally persisted e.g. file mappings and storage algorithms</li>
+</ol>
+
+<p><strong>data independence:</strong> accessing data through an abstract data model rather than directly. On the <em>physical</em> level, this means that applications will be immune to changes in storage structures. On the <em>logical</em> level, this means that data can be stored and access in a modular, user defined way (i.e. payroll and inventory control apps can exist on the same database, accessing different tables).</p>
+
+<p><strong>transaction:</strong> some sequence of instructions provided to the DBMS. The DBMS must ensure that transactions are <strong>ACID</strong>; <strong>A</strong>tomic (transactions occur entirely or not at all), <strong>C</strong>onsistent (the database is the same in between transactions), <strong>I</strong>solated (concurrent transactions cannot interfere with each other), and <strong>D</strong>urable (once completed, a transaction is permanent)</p>
+
+<p><strong>Data Definition Langauge (DDL):</strong> language for specifying schemas at each level</p>
+
+<p><strong>Data Manipulation Language (DML):</strong> language for querying and modifying data.</p>
+
+<p>The DML can be navigational, meaning we write a <em>procedure</em> telling the database how to fetch the data.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>get department with name='Sales'
+get first employee in set department-employees
+until end-of-set do {
+  get next employee in set department-employees
+  process employee
+}
+</code></pre></div></div>
+
+<p>The DML can also be non-navigational, meaning we write a <em>declaration</em> of what we would like to fetch from a database e.g. SQL</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employee</span>
+	<span class="k">left</span> <span class="k">join</span> <span class="n">department</span> <span class="k">on</span> <span class="n">employee</span><span class="p">.</span><span class="n">department_code</span> <span class="o">=</span> <span class="n">department</span><span class="p">.</span><span class="n">code</span>
+	<span class="k">where</span> <span class="n">department</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'Sales'</span>
+</code></pre></div></div>
+
+<p>Database users: end user, application developer, database administrator</p>
+
+<h2 id="relational-model">Relational Model</h2>
+
+<p>Set comprehension syntax: all k-tuples that satisfy some condition.</p>
+
+\[\{ (x_1, x_2, \dots, x_k) \mid &lt;\text{condition} &gt;\}\]
+
+<p>Imagine we have an infinite table <code class="language-plaintext highlighter-rouge">PLUS</code> with columns x, y and sum, where x + y = sum for every record. We can express all pairs of natural numbers that add to 5 as the following:</p>
+
+\[\{ (x, y) \mid \text{PLUS}(x, y, 5) \}\]
+
+<p>All pairs of numbers that add to the same number they subtract to:</p>
+
+\[\{ (x, y) \mid \exists z \cdot \text{PLUS}(x, y, z) \and \text{PLUS}(x, -y, z)\}\]
+
+<p>Imagine we have an employee table <code class="language-plaintext highlighter-rouge">EMP(name, dept, boss)</code>.</p>
+
+<p>All employees that work for “Bob”:</p>
+
+\[\{ (x, y) \mid \text{EMP}(x, y, \text{Bob})\}\]
+
+<p>All pairs of employees working for the same boss. Each pair must be distinct and contain 2 different employees i.e. no (Sue, Bob) and (Bob, Sue), no (Sue, Sue).</p>
+
+\[\{ (x_1, x_2) \mid \exists y_1, y_2, z \cdot
+	\text{EMP}(x_1, y_1, z) \and \text{EMP}(x_2, y_2, z)
+		\and x_1 &lt; x_2
+\}\]
+
+<p>All employees who are their own bosses:</p>
+
+\[\{ (x) \mid
+	\exists y \cdot \text{EMP}(x, y, x)\}\]
+
+<p><strong>Relational model</strong> components:</p>
+
+<ul>
+  <li><strong>Universe:</strong> a set $D$, with equality defined on its elements
+    <ul>
+      <li><strong>Relation:</strong> a predicate name $R$ with arity k (k is the number of columns). An instance of a relation is a table e.g. <code class="language-plaintext highlighter-rouge">PLUS</code>, <code class="language-plaintext highlighter-rouge">TIMES</code>. Columns are labelled by identifiers called attributes e.g. x, y in <code class="language-plaintext highlighter-rouge">PLUS</code>.</li>
+    </ul>
+  </li>
+  <li><strong>Database:</strong> a finite set $p$ of predicate names, $p = (R_1, R_2, \dots, R_n)$. An instance of a database is a set of tables e.g. DB = (Z (integers), equals operation, <code class="language-plaintext highlighter-rouge">PLUS</code>, <code class="language-plaintext highlighter-rouge">TIMES</code>)</li>
+</ul>
+
+<p>A relation is a predicate because we assume the database contains all data. Therefore if a relationship is in a relation/table, it is true and if it is absent it is false e.g. John is an author with ID 1 because $(1, John) \in \text{AUTHOR}$, and John has not written “Trans. Databases” because $(1, 3) \notin \text{WROTE}$.</p>
+
+<p>Using first order logic and relations in condition $\varphi$:</p>
+
+\[\varphi := R_i(x_i, \dots, x_k) \mid x_i = x_j \mid \varphi \and \varphi
+				\mid \exists x_i \cdot \varphi \mid \varphi \or \varphi
+            \mid \neg \varphi\]
+
+<p>A valuation is a function $\theta$ that maps free variables $x_1, x_2, \dots$ to values $v_1, v_2, \dots$ in the universe e.g. $\theta[x_i \rightarrow v_i ]$ e.g. <code class="language-plaintext highlighter-rouge">EMP</code>, ${x \rightarrow \text{Sue} }$ is the mapping in <code class="language-plaintext highlighter-rouge">EMP</code> where the employee name is Sue. Queries are answered by results from a valuation that satisfy a given condition.</p>
+
+<p>All syntax for conditions:</p>
+
+<p><img src="image-20181014123957498.png" alt="image-20181014123957498" /></p>
+
+<p><img src="image-20181014124557512.png" alt="image-20181014124557512" /></p>
+
+<p><img src="image-20181014124617741.png" alt="image-20181014124617741" /></p>
+
+<h4 id="query-examples">Query examples</h4>
+
+<ol>
+  <li>
+    <p>Over numbers:</p>
+
+    <ol>
+      <li>List all composite numbers</li>
+      <li>List all prime numbers</li>
+    </ol>
+  </li>
+  <li>
+    <p>Over bibliography database:</p>
+
+    <p><img src="image-20181014131740777.png" alt="image-20181014131740777" /></p>
+
+    <ol>
+      <li>
+        <p>List titles of all publications</p>
+
+\[\{ (t) \mid
+	\exists p \cdot \text{PUB}(p, t)\}\]
+      </li>
+      <li>
+        <p>List titles of all books</p>
+      </li>
+      <li>
+        <p>List all publications without authors</p>
+      </li>
+      <li>
+        <p>List pairs of coauthor names</p>
+
+\[\{ (an1, an2) \mid
+	\exists aid_1, aid_2, p \cdot
+	\text{AUTHOR}(aid_1, an1) \and \text{AUTHOR}(aid_2, an2) \\
+	\and aid_1 &lt; aid_2
+    \and \text{WROTE}(aid_1, p) \and \text{WROTE}(aid_2, p)
+\}\]
+      </li>
+      <li>
+        <p>List titles of publications written by a single author
+\(\begin{align}
+\{ (t) \mid
+	\exists p &amp;\cdot \text{PUB}(p, t) \\
+	&amp;\begin{aligned}
+	  \and \exists a &amp;\cdot (\text{WROTE}(a, p) \\
+			&amp; \and \neg \exists a_2 \cdot \text{WROTE}(a_2, p) \and a_2 \ne a \\) \}  \end{aligned}
+\end{align}\)</p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p><strong>integrity constraints:</strong> yes/no conditions (first order forumlas) that must be true in every valid database instance</p>
+
+<p>Examples of integrity constraints:</p>
+
+<p><img src="image-20181014132759667.png" alt="image-20181014132759667" /></p>
+
+<p>There are many kinds of constraints: typing, domain, uniqueness of values/ID, referential integrity, foreign keys etc.</p>
+
+<p>A <strong>relational database schema</strong> is a signature $p$ and a set of integity constraints $\Sigma$ over $p$.</p>
+
+<p>Views are answers to queries that can themselves be queried. They’re like a specific view of the database created by a query.</p>
+
+<p><img src="image-20181014133819423.png" alt="image-20181014133819423" /></p>
+
+<p><img src="image-20181014134045157.png" alt="image-20181014134045157" /></p>
+
+<p>Safe queries are both domain independent and occur over a finite database. Examples of unsafe queries:</p>
+
+<p><img src="image-20181014135332981.png" alt="image-20181014135332981" /></p>
+
+<p><img src="image-20181014134526462.png" alt="image-20181014134526462" /></p>
+
+<p>A query being range restricted implies that it is domain independent. Every domain independent query can be written as a range restricted query.</p>
+
+<p><img src="image-20181014134721666.png" alt="image-20181014134721666" /></p>
+
+<p>We use query subsumption for simplifying queries, since we can replace a query A with a query B which subsumes A. Given any queries A, B it is generally undecidable to write an algorithm which would compute whether B subsumes A.</p>
+
+<p>Because relational calculus is not Turing complete, there are computable queries that it cannot express. These include: ordering, arithmetic, string operations, counting/aggregation, reachability/connectivitiy etc.</p>
+
+<p>We can extend the relational model to account for incompleteness/inconsistency by allowing for:</p>
+
+<ul>
+  <li>tuples with null values</li>
+  <li>incomplete relations and open world assumption</li>
+  <li>conflicting information from different data sources</li>
+</ul>
+
+<h2 id="introduction-to-sql---the-good-parts">Introduction to SQL - The Good Parts</h2>
+
+<p>There are 3 major parts of SQL:</p>
+
+<ul>
+  <li>DML for query and update, also embedded SQL and ODBC for application development</li>
+  <li>DDL for defining schema for relations</li>
+  <li>DCL (Data Control Language) for access control</li>
+</ul>
+
+<p>SQL data types:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">integer</span> <span class="c1">-- integer (32 bit)</span>
+<span class="nb">smallint</span> <span class="c1">-- integer (16 bit)</span>
+<span class="nb">decimal</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="c1">-- fixed decimal, m total digits with precision of n</span>
+<span class="nb">float</span> <span class="c1">-- IEEE float (32 bit)</span>
+<span class="nb">char</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c1">-- character string (length n)</span>
+<span class="nb">varchar</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c1">-- variable length string (at most n)</span>
+<span class="nb">date</span> <span class="c1">-- year/month/day</span>
+<span class="nb">time</span> <span class="c1">-- hh:mm:ss.ss</span>
+</code></pre></div></div>
+
+<p>SQL is not case sensitive.</p>
+
+<h3 id="examples">Examples</h3>
+
+<p>The bibliography database in SQL:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">AUTHOR</span><span class="p">(</span><span class="n">aid</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">name</span> <span class="nb">char</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+<span class="n">WROTE</span><span class="p">(</span><span class="n">author</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">publication</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">PUBLICATION</span><span class="p">(</span><span class="n">pubid</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">title</span> <span class="nb">char</span><span class="p">(</span><span class="mi">70</span><span class="p">))</span>
+<span class="n">BOOK</span><span class="p">(</span><span class="n">pubid</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">publisher</span> <span class="nb">char</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="nb">year</span> <span class="nb">integer</span><span class="p">)</span>
+<span class="n">JOURNAL</span><span class="p">(</span><span class="n">pubid</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">volume</span> <span class="nb">integer</span><span class="p">,</span> <span class="k">no</span> <span class="nb">integer</span><span class="p">,</span> <span class="nb">year</span> <span class="nb">integer</span><span class="p">)</span>
+<span class="n">PROCEEDINGS</span><span class="p">(</span><span class="n">pubid</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="nb">year</span> <span class="nb">integer</span><span class="p">)</span>
+<span class="n">ARTICLE</span><span class="p">(</span><span class="n">pubid</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">crossref</span> <span class="nb">char</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="n">startpage</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">endpage</span> <span class="nb">integer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all authors in database.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="o">*</span> <span class="k">from</span> <span class="n">author</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">R [as] p</code> in SQL stands for $R(p.a_1, p.a_2, \dots, p.a_n)$ in RC, where $a_1, \dots, a_n$ are attribute names declared for $R$. We call p a <em>corelation</em> because it’s a variable that appears in the $R$ tuple.</p>
+
+<blockquote>
+  <p>List all publications with at least 2 authors.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">r1</span><span class="p">.</span><span class="n">publication</span>
+	<span class="k">from</span> <span class="n">wrote</span> <span class="n">r1</span><span class="p">,</span> <span class="n">wrote</span> <span class="n">r2</span>
+		<span class="k">where</span> <span class="n">r1</span><span class="p">.</span><span class="n">publication</span> <span class="o">=</span> <span class="n">r2</span><span class="p">.</span><span class="n">publication</span>
+				<span class="k">and</span> <span class="n">r1</span><span class="p">.</span><span class="n">author</span> <span class="o">!=</span> <span class="n">r2</span><span class="p">.</span><span class="n">author</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List titles of all books.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">title</span>
+	<span class="k">from</span> <span class="n">publication</span><span class="p">,</span> <span class="n">book</span>
+		<span class="k">where</span> <span class="n">publication</span><span class="p">.</span><span class="n">pubid</span> <span class="o">=</span> <span class="n">book</span><span class="p">.</span><span class="n">pubid</span>
+</code></pre></div></div>
+
+<p>Notice that <code class="language-plaintext highlighter-rouge">publication</code> is a corelation because we’re doing <code class="language-plaintext highlighter-rouge">publication.pubid</code> with it, but it’s also the name of the publication relation. So, relation names can serve as corelations when the name is unambiguous.</p>
+
+<blockquote>
+  <p>For every article list the number of pages.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span><span class="p">,</span> <span class="n">endpage</span> <span class="o">-</span> <span class="n">startpage</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">from</span> <span class="n">article</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>For every article list the number of pages, and name the resulting attributes</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span> <span class="n">endpage</span> <span class="o">-</span> <span class="n">startpage</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">as</span> <span class="n">numberofpages</span> <span class="k">from</span> <span class="n">article</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">where &lt;condition&gt;</code> clause accepts atomic conditions that have:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;&gt;, !=</code> as not equal, <code class="language-plaintext highlighter-rouge">=</code> as equal, <code class="language-plaintext highlighter-rouge">&gt;, &lt;=, &gt;, &gt;=</code> as less than, less than or equal, greater than, greater than or equal to</li>
+</ul>
+
+<blockquote>
+  <p>Find all journals printed since 1997</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">journal</span> <span class="k">where</span> <span class="nb">year</span> <span class="o">&gt;=</span> <span class="mi">1997</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Find all articles with more than 20 pages</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">endpage</span> <span class="o">-</span> <span class="n">startpage</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">20</span>
+</code></pre></div></div>
+
+<p>Atomic conditions can be combined using boolean connectives (<code class="language-plaintext highlighter-rouge">AND, OR, NOT</code>).</p>
+
+<blockquote>
+  <p>List all publications with at least 2 authors</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="k">from</span> <span class="n">w1</span><span class="p">.</span><span class="n">publication</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">w1</span><span class="p">,</span> <span class="n">wrote</span> <span class="n">w2</span>
+<span class="k">where</span> <span class="n">w1</span><span class="p">.</span><span class="n">publication</span> <span class="o">=</span> <span class="n">w2</span><span class="p">.</span><span class="n">publication</span> <span class="k">and</span> <span class="k">not</span> <span class="n">w1</span><span class="p">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">w2</span><span class="p">.</span><span class="n">author</span>
+</code></pre></div></div>
+
+<p>Results of <code class="language-plaintext highlighter-rouge">select</code> blocks are relations, so we can apply set operations (<code class="language-plaintext highlighter-rouge">UNION, EXCEPT, INTERSECT</code>) on them when they have the same number and types of attributes. Notice, <code class="language-plaintext highlighter-rouge">OR</code> doesn’t return any results when one of the sets it’s operating on has no elements, so it’s not the same as <code class="language-plaintext highlighter-rouge">UNION</code>.</p>
+
+<blockquote>
+  <p>List all publication ids for books or journals.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">book</span><span class="p">)</span> <span class="k">union</span> <span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">journal</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all publication ids except those for articles</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">publication</span><span class="p">)</span> <span class="k">except</span> <span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">article</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Subqueries are <code class="language-plaintext highlighter-rouge">select</code> blocks used as arguments. We can name them using <code class="language-plaintext highlighter-rouge">with</code>, or just use them inline as unnamed arguments for <code class="language-plaintext highlighter-rouge">from</code>, <code class="language-plaintext highlighter-rouge">union</code>, etc.</p>
+
+<blockquote>
+  <p>List all publications for books or journals</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">with</span> <span class="n">bookorjournal</span><span class="p">(</span><span class="n">pubid</span><span class="p">)</span> <span class="k">as</span>
+	<span class="p">(</span>
+        <span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">book</span><span class="p">)</span> <span class="k">union</span> <span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">journal</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="k">select</span> <span class="k">distinct</span> <span class="n">title</span>
+<span class="k">from</span> <span class="n">publication</span><span class="p">,</span> <span class="n">bookorjournal</span>
+<span class="k">where</span> <span class="n">publication</span><span class="p">.</span><span class="n">pubid</span> <span class="o">=</span> <span class="n">bookorjournal</span><span class="p">.</span><span class="n">pubid</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all publication titles for journals or books</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">title</span> <span class="k">from</span> <span class="n">publication</span><span class="p">,</span> <span class="p">(</span>
+	<span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">journal</span><span class="p">)</span> <span class="k">union</span> <span class="p">(</span><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">book</span><span class="p">)</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">bookorjournal</span> <span class="k">where</span> <span class="n">publication</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">bookorjournal</span><span class="p">.</span><span class="n">pubid</span>
+</code></pre></div></div>
+
+<p>First Order SQL covers all of relational calculus, and is efficient (PTIME, LOGSPACE). However, some queries are hard to write, there’s no aggregation (e.g. grouping, count, sum, max, min), and there’s no recursion (e.g. is there a friend of mine who’s name is Mark, if all of my friends’ friends are also my friends?).</p>
+
+<p>More things we can put in the <code class="language-plaintext highlighter-rouge">where</code> condition:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;attr&gt; in ( &lt;query&gt; )</code>, <code class="language-plaintext highlighter-rouge">&lt;attr&gt; not in ( &lt;query&gt; )</code></li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;attr&gt; &lt;op&gt; some ( &lt;query&gt; )</code>, <code class="language-plaintext highlighter-rouge">&lt;attr&gt; &lt;op&gt; all ( &lt;query&gt; )</code>, where op is one of <code class="language-plaintext highlighter-rouge">&lt;&gt;, !=, =, &lt;, &lt;=</code> etc.</li>
+  <li><code class="language-plaintext highlighter-rouge">exists ( &lt;query&gt; )</code>, <code class="language-plaintext highlighter-rouge">not exists ( &lt;query&gt; )</code></li>
+</ul>
+
+<p>To use <code class="language-plaintext highlighter-rouge">in, not in, some, all</code>, your query must only return one thing.</p>
+
+<blockquote>
+  <p>List all titles for articles.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">title</span> <span class="k">from</span> <span class="n">publication</span> <span class="k">where</span> <span class="n">pubid</span> <span class="k">in</span> <span class="p">(</span><span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">article</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all author-publication ids for all publications except books or journals</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="k">where</span> <span class="n">publication</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="p">(</span> <span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">book</span> <span class="p">)</span>
+	<span class="k">union</span>
+	<span class="p">(</span> <span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">journal</span> <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span>
+<span class="k">where</span> <span class="n">publication</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">book</span>
+<span class="p">)</span> <span class="k">and</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">journal</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Find the longest articles (a way expressing max):</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">endpage</span> <span class="o">-</span> <span class="n">startpage</span> <span class="o">&gt;=</span> <span class="k">all</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">article</span><span class="p">.</span><span class="n">endpage</span> <span class="o">-</span> <span class="n">article</span><span class="p">.</span><span class="n">startpage</span> <span class="k">from</span> <span class="n">article</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>A parametric subquery can mention attributes defined in the main query it is used in. Attributes in a subquery only have scope of the subquery.</p>
+
+<blockquote>
+  <p>List all publications with at least 2 authors.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">r</span> <span class="k">where</span> <span class="k">exists</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">s</span> <span class="k">where</span>
+		<span class="n">s</span><span class="p">.</span><span class="n">publication</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">publication</span> <span class="k">and</span> <span class="n">s</span><span class="p">.</span><span class="n">author</span> <span class="o">&lt;&gt;</span> <span class="n">r</span><span class="p">.</span><span class="n">author</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">r</span> <span class="k">where</span> <span class="n">publication</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">publication</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">s</span> <span class="k">where</span> <span class="n">s</span><span class="p">.</span><span class="n">author</span> <span class="o">&lt;&gt;</span> <span class="n">r</span><span class="p">.</span><span class="n">author</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all publications with only 1 author</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">r</span> <span class="k">where</span> <span class="k">exists</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">s</span> <span class="k">where</span>
+		<span class="n">s</span><span class="p">.</span><span class="n">publication</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">publication</span> <span class="k">and</span> <span class="n">s</span><span class="p">.</span><span class="n">author</span> <span class="o">&lt;&gt;</span> <span class="n">r</span><span class="p">.</span><span class="n">author</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>List all authors who always publish with someone else.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">a1</span><span class="p">.</span><span class="n">name</span> <span class="k">from</span> <span class="n">author</span> <span class="n">a1</span><span class="p">,</span> <span class="n">author</span> <span class="n">a2</span>
+<span class="k">where</span> <span class="k">not</span> <span class="k">exists</span> <span class="p">(</span>
+    <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">publication</span> <span class="n">p</span><span class="p">,</span> <span class="n">wrote</span> <span class="n">w1</span>
+    <span class="k">where</span> <span class="n">p</span><span class="p">.</span><span class="n">pubid</span> <span class="o">=</span> <span class="n">q1</span><span class="p">.</span><span class="n">publication</span> <span class="k">and</span> <span class="n">a1</span><span class="p">.</span><span class="n">aid</span> <span class="o">=</span> <span class="n">w2</span><span class="p">.</span><span class="n">author</span>
+    	<span class="k">and</span> <span class="n">a2</span><span class="p">.</span><span class="n">aid</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+            <span class="k">select</span> <span class="n">author</span> <span class="k">from</span> <span class="n">wrote</span> <span class="n">publication</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">pubid</span>
+            	<span class="k">and</span> <span class="n">author</span> <span class="o">&lt;&gt;</span> <span class="n">a1</span><span class="p">.</span><span class="n">aid</span>
+        <span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="modifying-a-db">Modifying a DB</h3>
+
+<p><code class="language-plaintext highlighter-rouge">insert into &lt;R&gt; values (&lt;v1, v2, v3, ... vk&gt;)</code>, or <code class="language-plaintext highlighter-rouge">insert into &lt;R&gt; ( query )</code></p>
+
+<blockquote>
+  <p>Add a new author</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="n">author</span> <span class="k">values</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">'JK Rowling'</span><span class="p">,</span> <span class="s1">'hp.com'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Add a new author without looking up author id</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="n">author</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="k">max</span><span class="p">(</span><span class="n">aid</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'JK Rowling'</span><span class="p">,</span> <span class="s1">'hp.com'</span> <span class="k">from</span> <span class="n">author</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">delete from &lt;R&gt; where &lt;condition&gt;</code></p>
+
+<blockquote>
+  <p>Delete all publications that are not articles or the collections an article appears in</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">delete</span> <span class="k">from</span> <span class="n">publication</span>
+<span class="k">where</span> <span class="n">pubid</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">pubid</span> <span class="k">from</span> <span class="n">article</span>
+<span class="p">)</span> <span class="k">and</span> <span class="n">pubid</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">crossref</span> <span class="k">from</span> <span class="n">article</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">update r set &lt;attribute = value&gt; where &lt;condition&gt; </code></p>
+
+<blockquote>
+  <p>Update the author Toman to a have a new url of <code class="language-plaintext highlighter-rouge">pokemon.com</code></p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">update</span> <span class="n">author</span>
+<span class="k">set</span> <span class="n">url</span> <span class="o">=</span> <span class="s1">'pokemon.com'</span>
+<span class="k">where</span> <span class="n">aid</span> <span class="k">in</span> <span class="p">(</span>
+	<span class="k">select</span> <span class="n">aid</span> <span class="k">from</span> <span class="n">author</span>
+	<span class="k">where</span> <span class="n">name</span> <span class="k">like</span> <span class="s1">'Toman%'</span> <span class="c1">-- % is a wildcard</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Database transactions continue until <code class="language-plaintext highlighter-rouge">commit</code> (make changes permanent) or <code class="language-plaintext highlighter-rouge">rollback</code> (revert changes).</p>
+
+<h3 id="aggregation">Aggregation</h3>
+
+<p><code class="language-plaintext highlighter-rouge">select &lt;x1, x2 ... xk, agg1, ... aggn&gt; from &lt;query&gt; group by &lt;x1, x2, ... xk&gt; </code></p>
+
+<p>Any <code class="language-plaintext highlighter-rouge">xi</code> not being used in some aggregate function <code class="language-plaintext highlighter-rouge">aggi</code> must appear in the group by. <code class="language-plaintext highlighter-rouge">aggi</code> can be <code class="language-plaintext highlighter-rouge">count(*), count(&lt;expr&gt;), sum(&lt;expr&gt;), min(&lt;expr&gt;), max(&lt;expr&gt;), avg(&lt;expr&gt;)</code>.</p>
+
+<blockquote>
+  <p>For each publication, count the number of authors.</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">publication</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">author</span><span class="p">)</span> <span class="k">from</span> <span class="n">wrote</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">publication</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>For each author, count the number of article pages</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">author</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">endpage</span> <span class="o">-</span> <span class="n">startpage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="n">pgs</span> <span class="k">from</span> <span class="n">wrote</span><span class="p">,</span> <span class="k">left</span> <span class="k">join</span> <span class="n">article</span>
+<span class="k">where</span> <span class="n">publication</span> <span class="o">=</span> <span class="n">pubid</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">author</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">having</code> is <code class="language-plaintext highlighter-rouge">where</code> for aggregate values.</p>
+
+<blockquote>
+  <p>List publications with exactly 1 author</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">publication</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">author</span><span class="p">)</span> <span class="k">from</span> <span class="n">wrote</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">publication</span>
+<span class="k">having</span> <span class="k">count</span><span class="p">(</span><span class="n">author</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>For every author count the number of books and articles</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="k">distinct</span> <span class="n">aid</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">publication</span><span class="p">)</span>
+<span class="k">from</span> <span class="n">author</span><span class="p">,</span> <span class="p">(</span>
+	<span class="p">(</span> <span class="k">select</span> <span class="k">distinct</span> <span class="n">author</span><span class="p">,</span> <span class="n">publication</span>
+		<span class="k">from</span> <span class="n">wrote</span><span class="p">,</span> <span class="n">book</span>
+		<span class="k">where</span> <span class="n">publication</span> <span class="o">=</span> <span class="n">pubid</span> <span class="p">)</span>
+	<span class="k">union</span> <span class="k">all</span>
+	<span class="p">(</span> <span class="k">select</span> <span class="k">distinct</span> <span class="n">author</span><span class="p">,</span> <span class="n">publication</span>
+		<span class="k">from</span> <span class="n">wrote</span><span class="p">,</span> <span class="n">article</span>
+		<span class="k">where</span> <span class="n">publication</span> <span class="o">=</span> <span class="n">pubid</span> <span class="p">)</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">ba</span> <span class="k">where</span> <span class="n">ba</span><span class="p">.</span><span class="n">author</span> <span class="o">=</span> <span class="n">aid</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">name</span><span class="p">,</span> <span class="n">aid</span>
+</code></pre></div></div>
+
+<h2 id="normalization-theory">Normalization Theory</h2>
+
+<ul>
+  <li>
+    <p>Anomalies are caused by integrity constraints, and are repaired by schema decompositions</p>
+  </li>
+  <li>
+    <p>Change anomalies:</p>
+
+    <ul>
+      <li>update: one or more records in the database are updated, but not all</li>
+      <li>deletion: deletion of a record results in removal of all information about some entity</li>
+      <li>insertion: even if you only have information about 1 attribute of a relation, you have to update the table with information on all attributes</li>
+    </ul>
+  </li>
+  <li>
+    <p>If X determines Y then every X has at most 1 Y e.g. each course has only 1 teacher</p>
+  </li>
+  <li>
+    <p>If X multivalue determines Y then every X has at most N Ys e.g. each course has some class times</p>
+  </li>
+  <li>
+    <p>Armstrong’s axioms</p>
+
+    <ul>
+      <li>completeness: Anything in F+ can be be derived from F</li>
+      <li>soundness: Any FD derived from F is in F+</li>
+    </ul>
+  </li>
+  <li>
+    <p>superkey: key K $\subseteq$ R s.t. K determines R</p>
+  </li>
+  <li>
+    <p>candidate key: minimal superkey</p>
+  </li>
+  <li>
+    <p>primary key: candidate key chosen by DBA</p>
+  </li>
+  <li>
+    <p>If X determines Y, then Y is in Compute(X+). We find X+ by looking at every functional dependency of X contained in a given set F, and adding its right sides to X+ if the left side exists in X. We do this until there are no more FDs in F that are eligible.</p>
+  </li>
+  <li>
+    <p>decomposition: $R_1$, $R_2$, … $R_n$, such that the union of the $R_i$’s is R</p>
+  </li>
+  <li>
+    <p>loseless decomposition: the intersection of the decomposition determines some element of the decomposition e.g. $R_1\cap R_2$ determines either $R_1$ or $R_2$.</p>
+  </li>
+  <li>
+    <p>dependency preserving decomposition: testing FDs in F on the decomposition doesn’t require joins between the tables</p>
+  </li>
+  <li>
+    <p>BCNF decomposition: For all X determines Y in F+ where X, Y is in some $R_i$, either X determines Y is trivial or X is a superkey of $R_i$</p>
+  </li>
+  <li>
+    <p>Computing BCNF decomposition:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Lossless
+Given R, F:
+set result = {}
+// Not efficient, depends on order in which FDs in F+ are examined
+while there is X -&gt; Y in F+ s.t. X is not a superkey of R and X -&gt; Y not trivial
+	R -= Y - X // removes results of X from R
+	result += (XY) // XY becomes an element of the decomp
+return result
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>3rd Normal form: For all X determines Y in F+ where X, Y is in some $R_i$, either X determines Y is trivial or X is a superkey for $R_i$ or $Y - X$ is contained in a candidate key for $R_i$</p>
+  </li>
+  <li>
+    <p>Sometimes there are no lossless dependency preserving BCNFs.</p>
+
+    <p>R = {A, B, C}, F = {AB -&gt; C, C -&gt; B} has possible decompositions</p>
+
+    <p>None of these are dependency preserving due to AB -&gt; C.</p>
+
+    <ol>
+      <li>
+        <p>R = {BA, BC}</p>
+
+        <p>$R_1 \cap R_2 = B$, not lossless because B doesn’t determine either BA or BC. BCNF because C -&gt; B has C a superkey of BC, AB -&gt; C doesn’t apply to BA.</p>
+      </li>
+      <li>
+        <p>R = {CA, CB}</p>
+
+        <p>$R_1 \cap R_2 =C $, lossless because C determines CB. BCNF because C -&gt; B has C a superkey of BC, AB -&gt; C doesn’t apply to CA.</p>
+      </li>
+      <li>
+        <p>R = {AC, AB}. not lossless because A doens’t determine AB or AC. BNCF because neither AB -&gt; C nor C -&gt; applies to AC or AB.</p>
+      </li>
+    </ol>
+
+    <blockquote>
+      <p>A 2 element decomposition in the form $R_i = AB$ is always BCNF.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Minimal cover:</p>
+
+    <ul>
+      <li>Every RHS is a single attribute</li>
+      <li>No X -&gt; A can be removed from F</li>
+      <li>Every component of X is necessary (X is minimal)</li>
+    </ul>
+  </li>
+  <li>
+    <p>Computing minimal cover for F</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given F:
+// Step 1, decomp every compound RHS
+for every X -&gt; AB in F
+	replace X-&gt; AB with X -&gt; A and X -&gt; B
+
+// Step 2,
+for every X -&gt; A in F
+	if A in computeX+(X, F - (X -&gt; Y)) // A is in X+
+		remove X -&gt; A from F
+
+// Step 3
+for every X -&gt; A in F
+	for every component A of X
+		Z = X - {A}
+		if A in computeX+(Z, F)
+			replace X -&gt; A in F with Z -&gt; A
+
+// Step 4
+for every X -&gt; A, X -&gt; B in F
+	replace X -&gt; A, X -&gt; B with X -&gt; AB
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Computing a dependency preserving 3NF decomp: add each FD from minimal cover of F to the result (dependency preserving)</p>
+  </li>
+  <li>
+    <p>Definition of 4th normal form is the same as BCNF except it tests MVDs instead of FDs</p>
+  </li>
+  <li>
+    <p>1st normal form: every attribute lies in a single valued domain</p>
+  </li>
+</ul>
+
+<h2 id="optimization">Optimization</h2>
+
+<ul>
+  <li><strong>Clustering index</strong> - tuples in the relation with similar values for A are stored together in the same block</li>
+  <li>
+    <p><strong>Non-clustering</strong> - Other indices that are not clustering indices (also called secondary indices)</p>
+  </li>
+  <li>Equivalences</li>
+  <li>
+    <p>Operator implementation</p>
+  </li>
+  <li>Not computationally possible to find an optimal plan</li>
+</ul>
+
+<h5 id="simple-cost-model-for-disk-io">Simple Cost Model for disk I/O</h5>
+
+<p><strong>Uniformity</strong>: All possible values of an attribute are equally likely to appear in a relation</p>
+
+<p><strong>Independence</strong> - the likelihood that an attribute has a particular value does not depend on values of other attributes</p>
+
+<h3 id="join-order">Join Order</h3>
+
+<ul>
+  <li>Try to order intermediate results</li>
+  <li>Nested loop join’s cost is not symmetric</li>
+</ul>
+
+<h3 id="pipelined-plans">Pipelined Plans</h3>
+
+<ul>
+  <li>All operators (except sorting) operator without storing intermediate results
+    <ul>
+      <li>No recomputation for left-deep plans</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="temporary-store">Temporary Store</h3>
+
+<ul>
+  <li>
+    <p>General pipelined plans lead to recomputation</p>
+  </li>
+  <li>
+    <p>Introduce store operator</p>
+    <ul>
+      <li>Store intermediate result in a relation</li>
+      <li>Build a hash index</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="hardware-parallelism">Hardware Parallelism</h3>
+
+<ul>
+  <li>Multiple mass storage units</li>
+  <li>Relational operators amenable to parallel execution</li>
+</ul>
+
+<h2 id="concurrency">Concurrency</h2>
+
+<h3 id="acid-requirements">ACID Requirements</h3>
+
+<p><strong>Atomicity</strong> - all or nothing execution</p>
+
+<p><strong>Consistency</strong> - execution preserves database integrity</p>
+
+<p><strong>Isolation</strong> - transaction execute independently</p>
+
+<p><strong>Durability</strong> - update made by a committed transaction will not be lost of subsequent failure</p>
+
+<h4 id="implementation-of-transaction-depends-on">Implementation of Transaction Depends on</h4>
+
+<ul>
+  <li>
+    <p><strong>Concurrency control</strong> - transactions do not interfere</p>
+  </li>
+  <li>
+    <p><strong>Recovery Management</strong> - committed transactions are durable, aborted transactions have no effect on the database</p>
+  </li>
+</ul>
+
+<h3 id="serializable-schedules">Serializable Schedules</h3>
+
+<ul>
+  <li>An execution is serializable if it is equivalent to a serial execution of the same transactions</li>
+</ul>
+
+<h3 id="conflict-equivalence">Conflict Equivalence</h3>
+
+<ul>
+  <li>Two operations conflict if they
+    <ul>
+      <li>Belong to different transactions</li>
+      <li>Access the same data item</li>
+      <li>At least one of them is a write operation</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="recoverable-schedules">Recoverable Schedules</h3>
+
+<ol>
+  <li>\(T_j\) reads a value \(T_i\) has written</li>
+  <li>\(T_j\) succeeds to commit</li>
+  <li>\(T_i\) tries to abort</li>
+</ol>
+
+<ul>
+  <li>
+    <p>In this situation we need to undo the effects of \(T_j\) before we can abort \(T_i\)</p>
+  </li>
+  <li>
+    <p>To avoid this, we should commit only in order of the read-from dependency</p>
+  </li>
+</ul>
+
+<h3 id="cascadeless-schedules">Cascadeless Schedules</h3>
+
+<ul>
+  <li>
+    <p>Referring to the previous example, by aborting one transaction, it may lead to cascading aborts of many other transactions</p>
+  </li>
+  <li>
+    <p>No reading of uncommitted data</p>
+  </li>
+</ul>
+
+<h3 id="get-serializable-schedule">Get Serializable Schedule</h3>
+
+<ul>
+  <li>
+    <p>Operations that a scheduler can perform</p>
+
+    <ul>
+      <li>Execute</li>
+      <li>Delay</li>
+      <li>Reject</li>
+      <li>Ignore</li>
+    </ul>
+  </li>
+  <li>
+    <p>Two main kinds of schedulers</p>
+    <ul>
+      <li><strong>Conservative</strong> - favours delaying operations</li>
+      <li><strong>Aggressive</strong> - favours rejecting operations</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="two-phase-locking">Two Phase Locking</h3>
+
+<ul>
+  <li>
+    <p>Transactions must have a lock on objects before access</p>
+  </li>
+  <li>
+    <p><strong>Shared lock</strong> - required to read an object</p>
+  </li>
+  <li>
+    <p><strong>Exclusive lock</strong> - required to write an object</p>
+  </li>
+  <li>
+    <p>A transaction has to <em>acquire</em> all locks before it <em>releases</em> any of them</p>
+  </li>
+  <li>
+    <p><strong>Theorem</strong>: Two-phase locking guarantees that the produced transaction schedules serializable</p>
+  </li>
+</ul>
+
+<p><strong>STRICT 2PL</strong> - locks held till commit; guarantees ACA</p>
+
+<h3 id="deadlocks">Deadlocks</h3>
+
+<ul>
+  <li>
+    <p><strong>Deadlock Prevention</strong></p>
+
+    <ul>
+      <li>Locks granted only if they can’t lead to a deadlock</li>
+      <li>Ordered data items and locks granted in this order</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Deadlock Detection</strong></p>
+    <ul>
+      <li>Wait for graphs and cycle detection</li>
+      <li>Resolution: the system aborts one of the offending transactions</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="different-locks">Different Locks</h3>
+
+<ul>
+  <li>
+    <p><strong>Multi-granularity locking</strong></p>
+
+    <ul>
+      <li>Not all locked bojects have the same size</li>
+      <li>Advantageous in presence of bulk vs. tiny updates</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Predicate locking</strong></p>
+
+    <ul>
+      <li>Locks based on selecrtion predicate rather on a value</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Tree locking</strong></p>
+    <ul>
+      <li>Tries to avoid congestion in roots of B-trees</li>
+      <li>Allows relaxation of 2PL due to tree structure of data</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="inserts-and-deletes">Inserts and Deletes</h3>
+
+<ul>
+  <li>
+    <p>Plain 2PL does not handle variable sets of data</p>
+  </li>
+  <li>
+    <p>This is called the <strong>phantom problem</strong></p>
+  </li>
+  <li>
+    <p><strong>Solution</strong>: operations that ask for all records have to lock against insertion/deletion of a qualifying record</p>
+    <ul>
+      <li>Locks on tables</li>
+      <li>Index locks</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="isolation-levels">Isolation Levels</h3>
+
+<p><strong>Level 3</strong> - serializability</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Table-level strict 2PL
+</code></pre></div></div>
+
+<p><strong>Level 2</strong> - repeatable read</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Tuple-level strict 2PL
+</code></pre></div></div>
+
+<p><strong>Level 1</strong> - cursor stability - Tuple-level exclusive-lock only strict 2PL - Reading the same object twice</p>
+
+<p><strong>Level 0</strong> - Neither read nor write locks are required - Transaction may read uncommitted updates</p>
+
+<h3 id="recovery-goals-and-setting">Recovery: Goals and Setting</h3>
+
+<ol>
+  <li>
+    <p>Allow transactions to be</p>
+
+    <ul>
+      <li>Committed (with a guarantee that the effects are permanent)</li>
+      <li>Aborted (with a guarantee that the effects disappear)</li>
+    </ul>
+  </li>
+  <li>
+    <p>Allow the database to be recovered to a consistent state in case on HW/power/… failure</p>
+  </li>
+</ol>
+
+<h3 id="approaches-to-reovery">Approaches to Reovery</h3>
+
+<h4 id="shadowing">Shadowing</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Copy-on-write and merge-on-commit approach
+- Poor clustering
+- Used in system R, but not modern systems
+</code></pre></div></div>
+
+<h4 id="logging">Logging</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Use of LOG to avoid forced writes
+- Good utilization of buffers
+- Preserves original clusters
+
+- A **log** is a read/append only data structure
+- Transactions add logs records about what they do
+</code></pre></div></div>
+
+<ul>
+  <li>Log records
+    <ul>
+      <li>UNDO information</li>
+      <li>REDO information</li>
+      <li>BEGIN/COMMIT/ABORT</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="write-ahead-logging-wal">Write-Ahead Logging (WAL)</h3>
+
+<ul>
+  <li>
+    <p>Make sure LOG is consistent with the main database</p>
+  </li>
+  <li>
+    <p>Requires</p>
+
+    <ul>
+      <li>
+        <p><strong>UNDO rule</strong> - a log record for an update is written to log disk before the corresponding data is written to the main disk</p>
+      </li>
+      <li>
+        <p><strong>REDO rule</strong> - all log records for a transaction are written to log disk before commit</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="database-tuning">Database Tuning</h2>
+
+<ul>
+  <li>
+    <p><strong>Physical Design</strong> - the process of selecting a physical schema (collection of data structures) to implement the conceptual schema</p>
+  </li>
+  <li>
+    <p><strong>Tuning</strong> - periodically adjusting the physical and/or conceptual schema of a working system to adapt to changing requirements and/or performance characteristics</p>
+  </li>
+</ul>
+
+<h3 id="workload">Workload</h3>
+
+<ul>
+  <li><strong>Workload Description</strong>
+    <ul>
+      <li>The most important queries and their frequency</li>
+      <li>The most important updates and their frequency</li>
+      <li>The desired performance goal for each query or update</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="example">Example</h5>
+
+<ul>
+  <li>
+    <p>Query</p>
+
+    <ul>
+      <li>which relations are accessed</li>
+      <li>which attribute are retrieved</li>
+      <li>which attributes occur in selection/join conditions? how selective is each condition</li>
+    </ul>
+  </li>
+  <li>
+    <p>Update</p>
+    <ul>
+      <li>Type of update and relations/attributes affected</li>
+      <li>Which attributes occur in selection/join conditions? How selective is each condition</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="tuning">Tuning</h3>
+
+<ul>
+  <li>Make a set of application execute as fast as possible</li>
+</ul>
+
+<h3 id="overheads">Overheads</h3>
+
+<h5 id="table-scan">Table Scan</h5>
+
+<ul>
+  <li>e.g. SELECT blocks will require DBMS to search the blocks of the database to find a match</li>
+  <li>Assuming not sorted, all blocks of the file must be scanned if the entry is not found</li>
+</ul>
+
+<h5 id="creating-indexes">Creating Indexes</h5>
+
+<ul>
+  <li>Substantially reduce execution time for selection</li>
+  <li>Increase execution for insertions</li>
+  <li>Increase or decrease execute time for updates or deletions</li>
+  <li>Increase required space</li>
+</ul>
+
+<h5 id="clustering-vs-non-clustering-indexes">Clustering vs. Non-clustering Indexes</h5>
+
+<ul>
+  <li>relation may have at most one clustering index, and any number of non-clustering indices</li>
+</ul>
+
+<h5 id="co-clustering-relations">Co-Clustering Relations</h5>
+
+<ul>
+  <li>
+    <p>Two relations are co-clustered if their tupes are interleaved within the same file</p>
+  </li>
+  <li>Can speed up joins (particularly foreign key joins)</li>
+  <li>Sequential scans of either relation become slower</li>
+</ul>
+
+<h5 id="range-queries">Range Queries</h5>
+
+<ul>
+  <li>B-trees can help for range queries
+    <ul>
+      <li>Using forward pointers in the leaf blocks when finding the first qualifying entry</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="multi-attribute-indices">Multi-Attribute Indices</h5>
+
+<ul>
+  <li>
+    <p>It is possible to create an index on several attributes of the same relation</p>
+  </li>
+  <li>
+    <p>e.g. <code class="language-plaintext highlighter-rouge">CREATE INDEX NamerIndex ON Employee(Lastname,Firstname)</code></p>
+  </li>
+  <li>order matters</li>
+  <li>ordered first by Lastname, then Firstname</li>
+</ul>
+
+<h3 id="more-complex-designs">More Complex Designs</h3>
+
+<h5 id="multi-attribute-indices-1">Multi-Attribute Indices</h5>
+
+<ul>
+  <li>Complex search/join conditions</li>
+  <li>Join indices</li>
+  <li>Materialized views</li>
+</ul>
+
+<h5 id="join-indices">Join indices</h5>
+
+<ul>
+  <li>Allow replacing joins by index looups</li>
+</ul>
+
+<h5 id="materialized-views">Materialized views</h5>
+
+<ul>
+  <li>Allow replacing subqueries by index lookups</li>
+</ul>
+
+<h3 id="physical-design-guidelines">Physical Design Guidelines</h3>
+
+<ol>
+  <li>
+    <p>Use index only if performance increase outweighs update overhead</p>
+  </li>
+  <li>
+    <p>Attributes mentioned in WHERE clauses are candidates for index search keys</p>
+  </li>
+  <li>
+    <p>Multi-attribute search keys should be considered when</p>
+
+    <ul>
+      <li>A WHERE clause contains several conditions</li>
+      <li>Enables index-only plans</li>
+    </ul>
+  </li>
+  <li>
+    <p>Choose indexes that benefit as many as queries as possible</p>
+  </li>
+  <li>
+    <p>Each relation can have at most one clustering theme; therefore choose it wisely</p>
+
+    <ul>
+      <li>
+        <p>Target important queries that would benefit the most</p>
+
+        <ul>
+          <li>Range queries benefit the most from clustering</li>
+          <li>Join queries benefit the most from co-clustering</li>
+        </ul>
+      </li>
+      <li>
+        <p>A multi-attribute index that enables an index only plans does not benefit from being clustered</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="index-selection-and-tools">Index Selection and Tools</h3>
+
+<ul>
+  <li>Convert physical design into another optimization problem</li>
+</ul>
+
+<h3 id="tuning-conceptual-design">Tuning Conceptual Design</h3>
+
+<ul>
+  <li>To avoid expensive operations in query execution</li>
+  <li>Retrieve related data in fewer operations</li>
+</ul>
+
+<h5 id="techniques">Techniques</h5>
+
+<ul>
+  <li>Alternative normalization/weaker form</li>
+  <li>Co-clustering of relations</li>
+  <li>Vertical/horizontal partitioning of data</li>
+  <li>Avoiding concurrency hot-spots</li>
+</ul>
+
+<h3 id="denormalization">Denormalization</h3>
+
+<ul>
+  <li>
+    <p><strong>Normalization</strong> - the process of decomposing schema to reduce redundancy</p>
+  </li>
+  <li>
+    <p><strong>Denormalization</strong> - the process of merging schema to intentionally increase redundancy</p>
+  </li>
+  <li>
+    <p>Redundancy increase update overhead but decreases query overhead</p>
+  </li>
+</ul>
+
+<h3 id="partitioning">Partitioning</h3>
+
+<ul>
+  <li>
+    <p>Splitting a table into multiple tables for the purpose of reducing I/O cost or lock contention</p>
+  </li>
+  <li>
+    <p><strong>Horizontal Partitioning</strong></p>
+
+    <ul>
+      <li>Each partition has all original columns and subset of original rows</li>
+      <li>Often used to separate operational from archival data</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Vertical Partitioning</strong></p>
+
+    <ul>
+      <li>
+        <p>Each partition has a subset of the original columns and all the original rows</p>
+      </li>
+      <li>
+        <p>Used to separate frequently used columns from each other</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="tuning-queries">Tuning Queries</h3>
+
+<ol>
+  <li>Sorting is expensive. Avoid unnecessary uses of ORDER BY, DISTINCT or GROUP BY</li>
+  <li>Whenever possible, replace subqueries with joins</li>
+  <li>Whenever possible, replace correlated subqueries with uncorrelated subqueries</li>
+  <li>Use vendor-supplied tools to exmaine generated plan. update and/or create statistics if poor plan is due to poor cost estimation</li>
+</ol>
+
+<h3 id="tuning-applications">Tuning Applications</h3>
+
+<ol>
+  <li>
+    <p>Minimize communication costs</p>
+
+    <ul>
+      <li>Return the fewest columns and rows necessary</li>
+      <li>Update multiple rows with a WHERE clause</li>
+    </ul>
+  </li>
+  <li>
+    <p>Minimize lock contention and hot-spots</p>
+    <ul>
+      <li>Delay updates as long as possible</li>
+      <li>Delay operation son hot-spots as long as possible</li>
+      <li>Shorten or split transactions as much as possible</li>
+      <li>Perform insertions/updates/deletions in batches</li>
+      <li>Consider lower isolation levels</li>
+    </ul>
+  </li>
+</ol>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2018-12-18T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/12/16/cs-343.html">CS 343</a></div><div class="next"><span>NEXT</span><a href="/2019/06/19/cs-480.html">CS 480</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+

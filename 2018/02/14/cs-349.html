@@ -1,0 +1,2678 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>CS 349 - Sentences</title>
+
+<meta name="description" content="Professor Keiko Katsuragawa, Winter 2018  This course teaches the principles of creating user interfaces (UIs) including underlying UI architecture and algor...">
+<link rel="canonical" href="/2018/02/14/cs-349.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24">
+<style type="text/css">
+	.st0{fill:#515151;}
+</style>
+<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
+	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>CS 349</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2018-02-14-cs-349/2018-02-14-cs-349.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="CS 349"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=notes">notes</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 14, 2018</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2018-02-14T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><blockquote>
+  <p>Professor Keiko Katsuragawa, Winter 2018</p>
+</blockquote>
+
+<blockquote>
+  <p>This course teaches the principles of creating user interfaces (UIs) including underlying UI architecture and algorithms, how to implement UIs from scratch and using UI frameworks, theories and methods for UI design, and an introduction to the field of human-computer interaction.</p>
+</blockquote>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><strong>user interface:</strong> place where a person expresses intention to an artifact, and the artifact presents feedback to the person e.g. microwave screen</p>
+
+<p><strong>interaction:</strong> sequence of actions by the user and system over time</p>
+
+<p>Interaction design is challenging because of the variability in users and tasks. Users may have varying levels of expertise, and you may have to design an interface for many tasks at once.</p>
+
+<h2 id="history">History</h2>
+
+<p>Interaction has changed over the course of history to be more user friendly rather than machine friendly. This is because the time of humans has gradually become more valuable than the time of machines.</p>
+
+<h4 id="batch-interfaces">Batch Interfaces</h4>
+
+<p>Around 1945 to 1965, computers had batch interfaces. This means that you prepared a large set of instructions (medium could be punch cards, paper tape, magnetic tape), and then you received a paper printout after execution. These machines could only be used by specialists.</p>
+
+<h4 id="conversation-interfaces">Conversation Interfaces</h4>
+
+<p>From 1965 to 1985, interfaces improved to conversation interfaces, i.e. the command line. This allowed for feedback during execution, but not for modification during execution. One of the advantages of the commandline is that it is highly flexible since you can specify options and combine different commands very quickly. However, commands had to be learned and could be hard to discover (requires recall rather than recognition).</p>
+
+<h4 id="important-people">Important people</h4>
+
+<p>In 1945, <strong>Vannevar Bush</strong> published “As we may think”, a post-war article urging scientists to make knowledge more accessible, thus improving the human mind as a microscope might improve the human eye. In the article, Bush described a memex (memory index) machine, which could compress and store books, records, and communications. It was envisioned as an extension to the human memory. It proposed hyperlinks between content (later used in the internet), a dual display setup, direct annotation, and indexing. Nobody built a memex in 1945 because the hardware problems it posed were impossible and now I suppose it’s because nobody wants to now that there’s Youtube.</p>
+
+<p><strong>Ivan Sutherland</strong>, “father of computer graphics”, invented Sketchpad as a part of his 1963 PhD thesis, for which he later received a Turing Award. Sketchpad had a light pen with which you could directly interact with the computer screen. This was really very cool because nobody even had mice for their computers yet.</p>
+
+<p><strong>Douglas Engelbart</strong> led a team at Stanford Research Institute to create oN-Line System (NLS). This was demo’d at “The Mother of All Demos” in 1968, where Douglas showed off the <em>mouse</em>, hypertext, copy/paste, and shared-screen collaboration across a network among other things.</p>
+
+<p><strong>Alan Kay</strong> developed the Smalltalk programming language, and thus was one of the people who first came up with the idea of object oriented programming. He also described the Dynabook, which was a laptop computer, which was not built because the hardware was not feasible. His work influenced the Xerox Star (released in 1981), which was the first commercial system to have a window based GUI, icons, folders, mouse etc.</p>
+
+<h4 id="graphical-user-interface">Graphical User Interface</h4>
+
+<p>GUIs, which were refined from 1984 on by companies such as Microsoft and Apple, have a high resolution, high refresh graphics display. To interact with it, you might use a keyboard, or a pointing device such as a mouse. This puts the user in control and favours recognition over recall.</p>
+
+<p>In the future we could have voice interfaces, virtual reality, lots of other stuff!</p>
+
+<h2 id="windowing-systems">Windowing Systems</h2>
+
+<p><strong>windowing system:</strong> OS software that handles input device events (e.g. mouse and keyboard), provides drawing methods (e.g. bitmaps, text, primitives), and manages windows (e.g. resizing, reordering, redrawing windows, controlling what application has access to content area of window)</p>
+
+<p><strong>X Windows</strong> was developed in 1984 as the standard windowing system for Unix systems. It’s free and it doesn’t care what processor you’re using under the hood. It also has the following design criteria:</p>
+
+<ul>
+  <li>Should work on a variety of displays</li>
+  <li>Applications should be independent of the device</li>
+  <li>Must be network transparent, meaning it shouldn’t matter if the (X client) application being displayed is locally on the machine or if it’s being accessed over the network</li>
+  <li>Should support multiple, concurrent application displays
+    <ul>
+      <li>Then, each application display can have a hierarchy of resizable windows which may overlap with each other or the windows of other application displays</li>
+      <li>Each window within an application display can be oriented any which way across multiple computer monitors</li>
+    </ul>
+  </li>
+  <li>Should support many applications</li>
+  <li>Should be high performance and support text, 2D graphics, imaging</li>
+  <li>Should be extensible</li>
+</ul>
+
+<p>Remember that a windowing system is the base OS software—it doesn’t have any sort of style to it.</p>
+
+<h4 id="x-client-server-architecture">X Client-Server Architecture</h4>
+
+<p>The X Windows model is inverted—the X Client handles all the application logic, and the X server handles all display output and user input. The idea is that you could have many applications running on multiple machines which you have access to (maybe over a network), but each user has one X Server which deals with their user interface.</p>
+
+<p>We can look at the X Server as the view and the controller in an MVC model, and the X Client as the model.</p>
+
+<p>When we write an X Windows program, we’re actually writing an X Client program. Here’s some general pseudocode for such a program:</p>
+
+<pre><code class="language-t">Perform X Client initialization on self
+Connect to X Server // Note that the X Server must already be running
+Init X
+while(true) {
+  Get next event from X server
+  Handle the event
+  	If the event is quit, break;
+  Do client-initiated work
+  Send drawing requests to the X Server
+}
+Close connection to X Server
+Perform client cleanup
+</code></pre>
+
+<p><strong>Xlib:</strong> wrapper around low-level X Window protocol so we don’t have to implement message passing in order to create a window for an application</p>
+
+<p><strong>Base Window System:</strong> a windowing system which ensures that only one application is changing the frame buffer (contents of the monitor) at a time. This means that the base window system is single threaded.</p>
+
+<p>The BWS also translates between the global co-ordinate system, and each window’s canvas co-ordinate system, which assumes that the top-left is (0, 0).</p>
+
+<p><strong>Window Manager:</strong> layer on top of BWS which provides interactive components e.g. menus, close boxes, drag to resize, which it implements using BWS methods. The Window Manager styles the application window, and the application handles the canvas.</p>
+
+<p>By separating the window manager and the BWS, we can put a new skin on an operating system just by changing the style on the window manager. It’s also more robust, since now we have 2 codebases in different places.</p>
+
+<p>Nowadays, you don’t have to host your X clients on a server somewhere. Since you computer has a lot of processing power, it’s possible for the user’s computer to act as the X Client and the X Server.</p>
+
+<h2 id="drawing">Drawing</h2>
+
+<p>There are 3 conceptual modes for drawing:</p>
+
+<ul>
+  <li>Pixel: creating images by setting each pixel</li>
+  <li>Stroke: Drawing a line, or drawing a rectangle</li>
+  <li>Region: Drawing text, or drawing a filled in rectangle</li>
+</ul>
+
+<p>We’ve got a lot of options for drawing e.g. colour, stroke width, dashed etc. so we often just store the defaults in an object called a <strong>Graphics Context</strong>. The X Server then uses its copy of the graphics context to render its UI.</p>
+
+<p><strong>Painter’s algorithm:</strong> draw a complex shape by combing primitives, back to front, layering the image</p>
+
+<p>To implement painter’s algorithm, we will create a <code class="language-plaintext highlighter-rouge">Displayable</code> abstract class which forces each primitive to know how to draw itself. Then, we’ll just keep the <code class="language-plaintext highlighter-rouge">Displayable</code> objects in the display list order back to front so that the base of the image can be drawn first.</p>
+
+<p><strong>clipping:</strong> not allowing images to draw outside of a certain area</p>
+
+<h2 id="events">Events</h2>
+
+<p><strong>event-driven programming:</strong> program is structured as registered handlers for events e.g. window resizing/closing, keyboard presses, mouse movement</p>
+
+<p><strong>event:</strong> message to notify application that something happened</p>
+
+<p>Recall that the BWS is responsible for handling low level input device events and events from the window manager. This means that it will collect event information, place them in an <code class="language-plaintext highlighter-rouge">Event</code> class, order the events, decide which application needs to know about the event, and then deliver the events.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Structure of XEvent</span>
+<span class="k">typedef</span> <span class="k">union</span> <span class="p">{</span> <span class="c1">// in this case, union is the type</span>
+    <span class="k">enum</span> <span class="n">type</span> <span class="p">{</span> <span class="n">Key</span><span class="p">,</span> <span class="n">Button</span> <span class="cm">/*, others */</span> <span class="p">};</span>
+    <span class="n">XKeyEvent</span> <span class="n">xkey</span><span class="p">;</span>
+    <span class="n">XButtonEvent</span> <span class="n">xbutton</span><span class="p">;</span>
+    <span class="c1">// other types of events</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">serial</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">send_end</span><span class="p">;</span> <span class="c1">// isFromSendEvent request e.g. requested from XNextEvent</span>
+    <span class="n">Display</span> <span class="o">*</span><span class="n">display</span><span class="p">;</span> <span class="c1">// display this event was read from</span>
+    <span class="n">Window</span> <span class="n">window</span><span class="p">;</span> <span class="c1">// window which event is relative to</span>
+<span class="p">}</span> <span class="n">XEvent</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">XNextEvent(Display *display, XEvent *)</code>: Blocks the current thread of execution until the next <code class="language-plaintext highlighter-rouge">XEvent</code> arrives from the event queue</p>
+
+<p><code class="language-plaintext highlighter-rouge">XPending(Display *display)</code>: Checks if the event queue has another event, doesn’t block</p>
+
+<p>An application needs to select which input events it wants to listen to by sending the appropriate bit mask to the window manager.</p>
+
+<p>When animating, we want to repaint at 24/60 FPS, since any more than would be not detectable by the human eye, so it would be a waste of CPU resources. So, we implement the following event loop:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">XPending</span><span class="p">(</span><span class="n">display</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">XNextEvent</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// handle event</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// now() returns the current time in microseconds</span>
+  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="n">now</span><span class="p">();</span>
+
+  <span class="c1">// 1000000 / FPS is the time in microseconds it takes to display 1 frame</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">lastRepaint</span> <span class="o">&gt;</span> <span class="mi">1000000</span> <span class="o">/</span> <span class="n">FPS</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">handleAnimation</span><span class="p">(</span><span class="n">xinfo</span><span class="p">);</span>
+    <span class="n">repaint</span><span class="p">(</span><span class="n">xinfo</span><span class="p">);</span>
+    <span class="n">lastRepaint</span> <span class="o">=</span> <span class="n">now</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="c1">// sleep until next frame repaint</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">XPending</span><span class="p">(</span><span class="n">xinfo</span><span class="p">.</span><span class="n">display</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">usleep</span><span class="p">(</span><span class="mi">1000000</span> <span class="o">/</span> <span class="n">FPS</span> <span class="o">-</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">lastRepaint</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>double buffering:</strong> Double buffering solves flickering when an intermediate image is on the display by creating an offscreen image buffer, drawing to that buffer, and then fast-copying the buffer to the screen</p>
+
+<blockquote>
+  <p>Missing lectures: Java Basics, Java GUI</p>
+</blockquote>
+
+<h2 id="widgets">Widgets</h2>
+
+<p><strong>widget:</strong> part of an interface which has its own behaviour e.g. buttons, drop-downs. They have a defined appearance and they send/receive events. Container widgets can contain other container widgets, or they can contain simple widgets.</p>
+
+<p>Examples of container widgets: menu tree, dropdown, panel, tab</p>
+
+<p>Examples of simple widgets: textboxes, number slider, radio buttons, buttons, labels, toggles.</p>
+
+<p>You can also have special value widgets like a colour picker or a date picker.</p>
+
+<p><strong>logical device:</strong> essential function of a widget. Examples:</p>
+
+<ul>
+  <li>logical button device: generates push events e.g. keyboard shortcuts, menu items</li>
+  <li>logical number device: generates number change events e.g. numeric textbook, slider</li>
+  <li>logical boolean device: generates true/false events e.g. toggle</li>
+</ul>
+
+<p>The logical device can be considered the model of the widget.</p>
+
+<p><strong>widget toolkits:</strong> software bundled with window manager, OS, language, or hardware platform which defines GUI widgets. Widget toolkits use event-driven programming.</p>
+
+<p><strong>heavyweight widget:</strong> widget toolkit wraps native OS widgets, BWS/OS <em>treats</em> widget as an window and sends events directly to the widget e.g. X Windows, Java’s AWT, HTML forms.</p>
+
+<blockquote>
+  <p>Advantages: it preserves the OS look and feel and events generated by user are passed directly to components by BWS/OS.</p>
+
+  <p>Disadvantages: OS-specific programming means minimal portability. The multiplatform widget toolkits are bad.</p>
+</blockquote>
+
+<p><strong>lightweight widget:</strong> widget toolkit draws its own widgets and maps incoming events to widgets e.g. Java Swing, jQuery UI</p>
+
+<blockquote>
+  <p>Advantages: preserves application look and feel across platforms, guarantees consistent widget set across all platforms, can be very light/optimized</p>
+
+  <p>Disadvantages: widgets appear non-native and may have bad performance since they don’t directly communicate with the BWS/OS</p>
+</blockquote>
+
+<h2 id="event-dispatch">Event Dispatch</h2>
+
+<p>Event architecture:</p>
+
+<ol>
+  <li>Capture event, queue event</li>
+  <li>Dispatch event to correct window and widget. The BWS is used to dispatch the event to either the window (and then a toolkit will send the event to the widget) or the widget directly depending on whether the widget is lightweight or heavyweight</li>
+  <li>Bind event with application code</li>
+</ol>
+
+<p><strong>interactor tree:</strong> Hierarchy of widgets (container widgets are ancestors of simple widgets) e.g. file menu tree. Dispatch of events to an element of an interactor tree is done by traversing the tree.</p>
+
+<p><strong>positional dispatch:</strong> a way that an OS or a toolkit might try to dispatch an event, basically sends input to widget “under” mouse cursor. But what happens when widgets overlap?</p>
+
+<p>We can try a bottom-up approach or a top-down approach e.g. leaf node handles first and bubble up, or root node handles first and bubble down.</p>
+
+<p>Positional dispatch can lead to odd behaviour, because the mouse can switch between widget elements really quickly. Say you’re holding a scrollbar, but then you move outside the scrollbar area while scrolling. Do you send events outside of the scrollbar? What about if you click down on top of one button, but you release the click on top of another button? Do both buttons get clicked?</p>
+
+<p>We solve these problems with <strong>focus dispatch</strong>.</p>
+
+<p><strong>focus dispatch:</strong> events are dispatched to widget regardless of mouse cursor position e.g. keyboard focus and mouse focus. We change mouse focus when we get a mouse down event on top of another element. We change keyboard focus when the tab key is pressed.</p>
+
+<blockquote>
+  <p><em>We only have one keyboard focus and one mouse focus. Why is this?</em></p>
+
+  <p>Consider if you had two keyboard focuses. Then, you’re typing inside two textfields at the same time each time you hit a key. This is not really useful. Consider also changing focus—which keyboard focus changes? Both of them?</p>
+</blockquote>
+
+<p>In order to change focus for focus dispatch, we need to listen to mouse down events on other elements. This requires positional dispatch, to determine which widget has the new focus.</p>
+
+<p><strong>accelerator key dispatch:</strong> events are dispatched based on which special keys being pressed e.g. keyboard shortcuts</p>
+
+<h2 id="event-binding">Event Binding</h2>
+
+<p>After we dispatch an event, how do we make sure that the relevant handler to an event is executed? We do this with event binding.</p>
+
+<p>There are a lot of ways that we can approach event binding:</p>
+
+<h4 id="event-loop--switch-statement-binding">Event Loop + Switch Statement Binding</h4>
+
+<p>This is also called manual binding, and it’s used in Xlib and other early UI systems. Don’t confuse this with switch statement binding.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">XNextEvent</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">event</span><span class="p">);</span> <span class="c1">// blocking wait for next event</span>
+  <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">Expose</span><span class="p">:</span>
+      <span class="p">...</span> <span class="c1">// handle expose event</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">ButtonPress</span><span class="p">:</span>
+      <span class="p">...</span> <span class="c1">// handle button press event</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">...</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="switch-statement-binding">Switch statement binding</h4>
+
+<p>Each window implements a <code class="language-plaintext highlighter-rouge">WindowProc</code> function called each time an event is dispatched. The <code class="language-plaintext highlighter-rouge">WindowProc</code> function then switches on the types of events in order to handle them. This gets unwieldy because there are over 100 standard events, making for a very large function.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">LRESULT</span> <span class="n">CALLBACK</span> <span class="nf">WindowProc</span><span class="p">(</span><span class="n">HWND</span> <span class="n">hwnd</span><span class="p">,</span> <span class="n">UINT</span> <span class="n">uMsg</span><span class="p">,</span> <span class="n">WPARAM</span> <span class="n">wParam</span><span class="p">,</span> <span class="n">LPARAM</span> <span class="n">lParam</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">uMsg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">WM_CLOSE</span><span class="p">:</span>
+    <span class="n">DestroyWindow</span><span class="p">(</span><span class="n">hWnd</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="n">WM_SIZE</span><span class="p">:</span>
+    <span class="err">…</span>
+  <span class="k">case</span> <span class="n">WM_KEYDOWN</span><span class="p">:</span>
+  <span class="err">…</span>
+</code></pre></div></div>
+
+<h4 id="java-event-queue">Java Event Queue</h4>
+
+<p>Java has an event queue available in <code class="language-plaintext highlighter-rouge">java.awt.Toolkit</code> which allows you to get the current event, get the next event, peek at an event, replace an event, or place an event on the queue. It works a lot like the X11 event loop, but with more features.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EventLoop</span> <span class="kd">extends</span> <span class="nc">JPanel</span> <span class="o">{</span>
+  <span class="nc">EventLoop</span><span class="o">()</span>	<span class="o">{</span>
+    <span class="nc">EventQueue</span> <span class="n">eq</span> <span class="o">=</span> <span class="nc">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getSystemEventQueue</span><span class="o">();</span>
+    <span class="c1">// replaces the default system event queue with MyEventQueue</span>
+    <span class="n">eq</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="k">new</span>	<span class="nc">MyEventQueue</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">EventLoop</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">EventLoop</span><span class="o">();</span>
+    <span class="o">...</span>
+  <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">MyEventQueue</span> <span class="kd">extends</span> <span class="nc">EventQueue</span> <span class="o">{</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dispatchEvent</span><span class="o">(</span><span class="nc">AWTEvent</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getID</span><span class="o">()</span> <span class="o">==</span> <span class="nc">MouseEvent</span><span class="o">.</span><span class="na">MOUSE_DRAGGED</span><span class="o">)</span> <span class="o">{</span>
+          <span class="nc">MouseEvent</span> <span class="n">me</span> <span class="o">=</span> <span class="o">(</span><span class="nc">MouseEvent</span><span class="o">)</span> <span class="n">e</span><span class="o">;</span>
+          <span class="n">x</span> <span class="o">=</span>	<span class="n">me</span><span class="o">.</span><span class="na">getX</span><span class="o">();</span>
+          <span class="n">y</span> <span class="o">=</span>	<span class="n">me</span><span class="o">.</span><span class="na">getY</span><span class="o">();</span>
+          <span class="n">repaint</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">dispatchEvent</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="inheritance-binding">Inheritance binding</h4>
+
+<p>All events are dispatched to objects of a special class, which we’ll call <code class="language-plaintext highlighter-rouge">EventListener</code>. <code class="language-plaintext highlighter-rouge">EventListener</code> has methods which get called whenever a specific action has happened, like <code class="language-plaintext highlighter-rouge">onMousePress</code> or <code class="language-plaintext highlighter-rouge">onMouseMove</code>. Then, any new widget which needs to listen to a specific action can extend <code class="language-plaintext highlighter-rouge">EventListener</code> and override the handler method that it needs.</p>
+
+<p><strong>Problems:</strong></p>
+
+<ul>
+  <li>Each widget must handle its own events, so the widget container needs to check what widget the event is meant for</li>
+  <li>Multiple events are processed through each event method (switch statement problem)</li>
+  <li>No filtering of events (e.g. mouse movement has several associated events), which causes performance issues</li>
+  <li>Can’t easily add new events
+    <ul>
+      <li>Suppose we add a new event to listen to. Then, everyone who is currently using an EventListener needs to implement a new handler (remember the massive switch statement?), regardless of whether they use the event or not.</li>
+    </ul>
+  </li>
+  <li>Bad separation of concerns, since application logic now lives in a handler which the GUI holds</li>
+</ul>
+
+<h4 id="listener-interface-binding">Listener Interface binding</h4>
+
+<p>We can define a <code class="language-plaintext highlighter-rouge">EventListener</code> interface for each type of listener e.g. <code class="language-plaintext highlighter-rouge">MouseListener</code>, <code class="language-plaintext highlighter-rouge">MouseMotionListener</code>, etc. This way, each widget only listens to the types of events that it needs.</p>
+
+<p>So we’re no longer going to get massive switch statements, we can easily add a new event by implementing another interface, and we can filter by the type of event that each widget wants to listen to. That solves 3 problems from inheritance binding.</p>
+
+<p>We still have the problem of bad separation of concerns. We can solve this by implementing the <code class="language-plaintext highlighter-rouge">EventListener</code> subclass as an inner class of the application logic class, which then allows the handlers to hook into application logic without being a separate UI class.</p>
+
+<p><strong>Problems:</strong></p>
+
+<ul>
+  <li>Each widget must handle its own events, so the widget container needs to check what widget the event is meant for</li>
+</ul>
+
+<h4 id="listener-adapter-binding">Listener Adapter binding</h4>
+
+<p>We can improve on Listener Interface binding a little by not forcing developers to implement all of the methods from the interface. Instead of implementing <code class="language-plaintext highlighter-rouge">MouseMotionListener</code>, we can extend from <code class="language-plaintext highlighter-rouge">MouseMotionAdapter</code>, and that will allow us to only implement the <code class="language-plaintext highlighter-rouge">mouseDragged</code> method we need. This reduces the number of no-op methods inside the listener object.</p>
+
+<h4 id="delegate-binding-net">Delegate Binding (.NET)</h4>
+
+<p>Sometimes, defining a whole interface is too much work. We can get our handlers executed if we created a delegate for them. Delegates are like function pointers, but they’re object oriented, type checked, and can point to more than one method.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// declare delegate using a method signature</span>
+<span class="k">public</span> <span class="n">delegate</span> <span class="kt">void</span> <span class="nf">Del</span><span class="p">(</span><span class="n">string</span> <span class="n">message</span><span class="p">);</span> <span class="c1">// can type check your delegate</span>
+
+<span class="n">Del</span> <span class="n">handler</span><span class="p">;</span> <span class="c1">// object oriented</span>
+<span class="k">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="nf">handlerMethod1</span><span class="p">(</span><span class="n">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* implementation of handler 1 */</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="nf">handlerMethod3</span><span class="p">(</span><span class="n">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+   <span class="cm">/* implementation of handler 3 */</span>
+<span class="p">}</span>
+
+<span class="c1">// Assign handler to static method</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">ClassName</span><span class="p">.</span><span class="n">handlerMethod1</span><span class="p">;</span>
+<span class="n">handler</span> <span class="o">+=</span> <span class="n">delegate</span><span class="p">(</span><span class="n">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* anonymous implementation of handler 2 */</span>
+<span class="p">}</span>
+<span class="n">handler</span> <span class="o">+=</span> <span class="n">ClassName</span><span class="p">.</span><span class="n">handlerMethod3</span><span class="p">;</span>
+<span class="n">handler</span> <span class="o">-=</span> <span class="n">ClassName</span><span class="p">.</span><span class="n">handlerMethod3</span><span class="p">;</span>
+
+<span class="c1">// Invoke delegate, calls handlerMethod 1 and 2</span>
+<span class="n">handler</span><span class="p">(</span><span class="s">"Hello world"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>In .NET, there are special delegates called events. Events are delegates which restricts access to adding and removing handlers from the delegate to the enclosing class of the delegate only.</p>
+
+<h4 id="global-event-queue-hooks">Global Event Queue “Hooks”</h4>
+
+<p>Some applications may be able to monitor BWS events across all applications. They can then use this technique to inject events to another application e.g. mail application opens email attachment in preview application. This can also be a security issue, since the application might be able monitor your keystrokes for passwords.</p>
+
+<p>For example, IM clients hook into to these global event queues in order to determine whether you are “away” or not.</p>
+
+<p>Note that sometimes, we’re going to get too many events to process all of them. In this case, we get the final event, with an list of skipped events inside it.</p>
+
+<h2 id="layout">Layout</h2>
+
+<p><strong>responsive:</strong> universal design which adjusts to fit the screen size of devices</p>
+
+<p><strong>adaptive:</strong> switch between designs optimized for each screen size</p>
+
+<p>To make an interface layout, we need to:</p>
+
+<ol>
+  <li>Design a spatial layout of widgets in the container</li>
+  <li>Adjust the spatial layout when the container is resized</li>
+</ol>
+
+<p><strong>dynamic layout:</strong> modifying how widgets are displayed (e.g. location, size, visibility) when the window is resized so that we preserve consistency and visual quality of the spatial layout</p>
+
+<p>Widgets in Java Swing use the <em>Composite</em> design pattern, since composite elements like JPanels can contain other JPanels as well as leaf elements like JButtons and JLabels. So, since the layout is defined by the widget hierarchy, the layout also uses the Composite design pattern.</p>
+
+<p>A layout manager changes how widgets are displayed using a layout algorithm, which takes in a range of sizes from the widgets as hints. The layout manager uses a <em>Strategy</em> design pattern, since it can swap out different layout algorithms for different situations.</p>
+
+<h4 id="fixed-layout">Fixed Layout</h4>
+
+<p>Widgets have a fixed size and a fixed position. We can achieve this by setting the LayoutManager to null.</p>
+
+<p>This is useful if there’s very few widgets used, or if the application is only used on one type of screen. However, the UI can become non-aligned or fall off screen when the window is resized. If the application is run on a screen with a very high pixel density, the widgets may also become too small to be be usable.</p>
+
+<h4 id="intrinsic-size-layout">Intrinsic Size Layout</h4>
+
+<p>We start bottom up from each leaf widget and query it for its preferred size. Then, the container widgets will resize to fit around them. However, this requires each leaf widget to know its preferred height and width, and doesn’t account for the case where the total preferred height and width of all the leaf elements is larger than the window size provided. In that case, some UI will be cut off.</p>
+
+<p>We can achieve this by using BoxLayout or FlowLayout.</p>
+
+<h4 id="variable-intrinsic-size-layout">Variable Intrinsic Size Layout</h4>
+
+<p>Variable intrinsic height adds a top-down pass through the layout elements after traversing bottom up to get each leaf element’s preferred size. This adjusts for the case where leaf elements want to be too large for the window size.</p>
+
+<p>We can achieve this by using GridBagLayout or BorderLayout.</p>
+
+<p>####Struts and Springs Layout</p>
+
+<p><strong>strut:</strong> fixed distance between widgets</p>
+
+<p><strong>spring:</strong> stretches to expand distance between widgets when possible, also called glue</p>
+
+<p>We can achieve this by using SpringLayout or BoxLayout.</p>
+
+<h4 id="relative-layout">Relative Layout</h4>
+
+<p>Relative layouts allow you to constrain elements relative to one another e.g. A must be to the left of B.</p>
+
+<p>We can achieve this by using Spring Layout.</p>
+
+<blockquote>
+  <p><strong>Example</strong></p>
+
+  <p>Suppose we wanted a custom layout where all the components are going to be in one horizontal row, with equal spaces in between, and the row itself is centered in the screen. We can create a custom implementation of LayoutManager to achieve this.</p>
+
+  <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">AlignLayout</span> <span class="kd">implements</span> <span class="nc">LayoutManager</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">minSpacing</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">preferredSpacing</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+    <span class="c1">// Custom constructor, passing in the minimum spacing</span>
+</code></pre></div>  </div>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // between items on the row
+</code></pre></div></div>
+
+<blockquote>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public AlignLayout(int minSpacing, int preferredSpacing) {
+this.minSpacing = minSpacing;
+  this.preferredSpacing = preferredSpacing;
+}
+
+// Calculates the preferred layout size for the specified container
+public Dimension preferredLayoutSize(Container parent) {
+  ...
+}
+
+// Calculates the minimum size dimensions for the specified container
+public Dimension minimumLayoutSize(Container parent) {
+  ...
+}
+
+// Lays out the specified container using preferred size
+public void layoutContainer(Container parent) {
+  Dimension space = calculateSpace(parent, true);
+  // this container's padding
+  Insets insets = parent.getInsets();
+  // get actual space available in parent
+  int w = parent.getWidth() - insets.left - insets.right;
+  int h = parent.getHeight() - insets.top	- insets.bottom;
+
+  // vertical centre line to layout component
+  int y = h / 2;
+  // starting x is left side of all components to lay out
+  int x = (w - space.width) / 2;
+
+  int nComponents = parent.getComponentCount();
+  for(int i = 0; i &lt; nComponents; i++) {
+    Component c = parent.getComponent(i);
+    Dimension d = c.getPreferredSize();
+    c.setBounds(x, y - d.height / 2, d.width, d.height);
+    x += d.width + preferredSpacing;
+  }
+}
+
+// Custom method to calculate the full height and width of the center row
+// depending on whether we're accounting for the preferred or the minimum
+// spacing between components
+private Dimension calculateSpace(Container parent, boolean isPreferred){
+    // sum all widths and heights of components inside parent into result
+    Dimension result = new Dimension(0,0);
+
+    int nComponents = parent.getComponentCount();
+    for (int i = 0; i &lt; nComponents; i++) {
+      Dimension d;
+      if(isPreferred) {
+        d = parent.getComponent(i).getPreferredSize();
+      } else {
+        d = parent.getComponent(i).getMinimumSize();
+      }
+
+      // update the total	width and height required
+      result.width += d.width;
+      result.height =	Math.max(result.height,	d.height);
+    }
+
+    // add spacing in between components
+    if(isPreferred) {
+      result.width +=	(nComponents - 1) * preferredSpacing;
+    } else {
+      result.width += (nComponents - 1) *	minimumSpacing;
+    }
+    return result;
+}
+</code></pre></div>  </div>
+
+  <p>}</p>
+
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+**Exercise:** How would you implement an accordion layout manager? What about a ribbon layout manager?
+</code></pre></div>  </div>
+</blockquote>
+
+<h2 id="graphics">Graphics</h2>
+
+<p><strong>model:</strong> mathematical representation of an image (e.g. location, size, orientation, color, texture) stored in data structures</p>
+
+<p><strong>rendering:</strong> using properties of the model to create an image</p>
+
+<p><strong>image:</strong> rendered model</p>
+
+<p>As an example, a shape model would have a list of points, whether it’s a closed shape or not, and a fill color.</p>
+
+<p>Let’s consider one point on the shape $(x, y)$, which we translate by $(t_x, t_y)$. Then, $x’ = x + t_x$, $y’ = y + t_y$.</p>
+
+<p>Suppose we scale the shape by $(s_x, s_y)$. Then, $x’ = s_x \cdot x$, $y’ = s_y \cdot y$.</p>
+
+<p>Suppose we rotate the shape about the origin counterclockwise by $\theta$ . Then, $x’ = x\cos(\theta) - y\sin(\theta)$, $y’ = x\sin(\theta) + y\cos(\theta)$.</p>
+
+<p>Now, to do this in code, we could call the <code class="language-plaintext highlighter-rouge">scale</code>, <code class="language-plaintext highlighter-rouge">rotate</code>, and <code class="language-plaintext highlighter-rouge">translate</code> functions, but that’s slow. We want to instead represent all transformations as a matrix, since that’s more efficient for the GPU.</p>
+
+<p>The most intuitive thing would be to represent the point $(x, y)$ as a 2D matrix, and try to use matrix multiplication to rotate and scale. This works for rotation and scaling, but it breaks down for translation.</p>
+
+<p>$\begin{bmatrix} 1 &amp; t_x/y \ t_y/x &amp; 1 \end{bmatrix} \begin{bmatrix} x \ y \end{bmatrix} = \begin{bmatrix}   x + t_x \ y + t_y \end{bmatrix}$</p>
+
+<p>This doesn’t work if $x$ or $y$ is 0.</p>
+
+<p>So, we introduce <strong>homogeneous coordinates</strong> to solve this problem. We will represent points as a 3 x 1 matrix, containing $x$, $y$, and a scaling factor $w$.</p>
+
+<p>$\begin{bmatrix} x \ y \ w \end{bmatrix}$ represents a point at location $\begin{bmatrix} x/w \ y/w \end{bmatrix}$.</p>
+
+<h5 id="translation">Translation</h5>
+
+<p>$\begin{bmatrix} 1 &amp; 0 &amp; t_x \ 0 &amp; 1 &amp; t_y \ 0 &amp; 0 &amp; 1 \end{bmatrix} \begin{bmatrix} x \ y \ 1 \end{bmatrix} = \begin{bmatrix} x + t_x \ y + t_y \ 1 \end{bmatrix}$</p>
+
+<h5 id="scaling">Scaling</h5>
+
+<p>$\begin{bmatrix} s_x &amp; 0 &amp; 0 \ 0 &amp; s_y &amp; 0 \ 0 &amp; 0 &amp; 1 \end{bmatrix} \begin{bmatrix} x \ y \ 1 \end{bmatrix} = \begin{bmatrix} x(s_x) \ y(s_y) \ 1 \end{bmatrix}$</p>
+
+<h5 id="rotation">Rotation</h5>
+
+<p>$\begin{bmatrix} \cos(\theta) &amp; -\sin(\theta) &amp;  0 \ \sin(\theta) &amp; \cos(\theta) &amp; 0 \ 0 &amp; 0 &amp; 1 \end{bmatrix} \begin{bmatrix} x \ y \ 1 \end{bmatrix} = \begin{bmatrix} x\cos(\theta) - y\sin(\theta) \ x\sin(\theta) + y\cos(\theta) \ 1 \end{bmatrix}$</p>
+
+<p>An <strong>affine transformation matrix</strong> is the result of multiplying together translation, scaling and rotation matrices to get one combined transformation matrix. Note that the order of transformations is the order of matrix multiplication, right to left. This also applies to code (the last instruction to transform is the one that gets applied first).</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* Useful Graphics2D methods: */</span>
+<span class="kt">void</span> <span class="nf">rotate</span><span class="o">(</span><span class="kt">double</span> <span class="n">theta</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="c1">// rotates and then translates origin by (-x, -y)</span>
+<span class="kt">void</span> <span class="nf">rotate</span><span class="o">(</span><span class="kt">double</span> <span class="n">theta</span><span class="o">,</span> <span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="kt">void</span> <span class="nf">scale</span><span class="o">(</span><span class="kt">double</span> <span class="n">sx</span><span class="o">,</span> <span class="kt">double</span> <span class="n">sy</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="kt">void</span> <span class="nf">translate</span><span class="o">(</span><span class="kt">double</span> <span class="n">tx</span><span class="o">,</span> <span class="kt">double</span> <span class="n">ty</span><span class="o">)</span> <span class="o">{...}</span>
+
+<span class="c1">// gets the current transform in the Graphics2D context</span>
+<span class="nc">AffineTransform</span> <span class="nf">getTransform</span><span class="o">()</span> <span class="o">{...}</span>
+<span class="kt">void</span> <span class="nf">setTransform</span><span class="o">(</span><span class="nc">AffineTransform</span> <span class="n">affineTransform</span><span class="o">)</span> <span class="o">{...}</span>
+
+<span class="cm">/* Useful AffineTransform static methods */</span>
+<span class="c1">// These are like the Graphics2D methods, except they also give you the AffineTransform matrix back</span>
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">getRotateInstance</span><span class="o">(</span><span class="kt">double</span> <span class="n">theta</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">getRotateInstance</span><span class="o">(</span><span class="kt">double</span> <span class="n">theta</span><span class="o">,</span> <span class="kt">double</span> <span class="n">x</span><span class="o">,</span> <span class="kt">double</span> <span class="n">y</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">getScaleInstance</span><span class="o">(</span><span class="kt">double</span> <span class="n">sx</span><span class="o">,</span> <span class="kt">double</span> <span class="n">sy</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">getTranslateInstance</span><span class="o">(</span><span class="kt">double</span> <span class="n">tx</span><span class="o">,</span> <span class="kt">double</span> <span class="n">ty</span><span class="o">)</span> <span class="o">{...}</span>
+<span class="c1">// it also has versions of these methods which don't return an affine transform matrix</span>
+</code></pre></div></div>
+
+<p>Often, we’ll try to draw shapes in a relative context by saving our current context using <code class="language-plaintext highlighter-rouge">getTransform()</code>, modifying the context in order to draw, and then reseting the context using <code class="language-plaintext highlighter-rouge">setTransform()</code>.</p>
+
+<h2 id="graphics-hit-testing">Graphics Hit Testing</h2>
+
+<p>We will hit test open shapes like lines using edge hit test, and closed shapes like polygons using inside hit test.</p>
+
+<h3 id="edge-hit-test">Edge Hit Test</h3>
+
+<p>A line has no thickness, so we’ll define some threshold distance from the mouse position to the line. Then, we’ll compute the shortest perpendicular distance from the mouse position to the line, and compare it with the threshold distance in order to see if there is a hit.</p>
+
+<p>In order to do this, we need to find the closest point on the line to the mouse position.</p>
+
+<p>Recall that the orthogonal projection of a vector $b$ onto a vector $a$ is $\mathrm{proj \,\textbf{b}_{\textbf{a}}} = \frac{a \cdot b}{a \cdot a}a$</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">static</span> <span class="nc">Point2d</span> <span class="nf">closestPoint</span><span class="o">(</span><span class="nc">Point2d</span>	<span class="no">M</span><span class="o">,</span> <span class="nc">Point2d</span> <span class="no">P0</span><span class="o">,</span> <span class="nc">Point2d</span> <span class="no">P1</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Vector2d</span> <span class="n">v</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Vector2d</span><span class="o">();</span>
+  <span class="n">v</span><span class="o">.</span><span class="na">sub</span><span class="o">(</span><span class="no">P1</span><span class="o">,</span><span class="no">P0</span><span class="o">);</span> <span class="c1">// v = P2 - P1</span>
+
+  <span class="c1">// early out if line is less than 1 pixel long</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">lengthSquared</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="o">)</span>
+    <span class="k">return</span> <span class="no">P0</span><span class="o">;</span>
+
+  <span class="nc">Vector2d</span> <span class="n">u</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Vector2d</span><span class="o">();</span>
+  <span class="n">u</span><span class="o">.</span><span class="na">sub</span><span class="o">(</span><span class="no">M</span><span class="o">,</span> <span class="no">P0</span><span class="o">);</span> <span class="c1">// u = M - P1</span>
+  <span class="c1">// scalar of vector projection</span>
+  <span class="kt">double</span> <span class="n">s</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="na">dot</span><span class="o">(</span><span class="n">v</span><span class="o">)</span> <span class="o">/</span> <span class="n">v</span><span class="o">.</span><span class="na">dot</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+
+  <span class="c1">// find point for constrained line segment</span>
+  <span class="c1">// if the point is past the line start</span>
+  <span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
+    <span class="k">return</span> <span class="no">P0</span><span class="o">;</span>
+  <span class="c1">// if the point is past the line end</span>
+  <span class="k">else</span> <span class="nf">if</span><span class="o">(</span><span class="n">s</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span>
+    <span class="k">return</span>	<span class="no">P1</span><span class="o">;</span>
+  <span class="k">else</span> <span class="o">{</span>
+    <span class="nc">Point2d</span> <span class="no">I</span> <span class="o">=</span> <span class="no">P0</span><span class="o">;</span>
+    <span class="nc">Vector2d</span> <span class="n">w</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Vector2d</span><span class="o">();</span>
+    <span class="n">w</span><span class="o">.</span><span class="na">scale</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span> <span class="c1">// w = s * v</span>
+    <span class="no">I</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">w</span><span class="o">);</span> <span class="c1">// I = P1 + w</span>
+    <span class="k">return</span> <span class="no">I</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>This is implemented by <code class="language-plaintext highlighter-rouge">Line2D.ptSegDist(P0.x, P0.y, P1.x, P1.y, M.x, M.y)</code> in Java.</p>
+
+<h3 id="rectangle-shape-hit-test">Rectangle Shape Hit Test</h3>
+
+<p>Suppose we wanted to know whether a point is inside a shape. For efficiency, we can first check if the point is within the bounding box of the shape. Then if the point is within the bounding box, we can draw a ray outwards (horizontally or vertically, say) from the mouse point and determine how many times it intersects with an edge of the shape. If it intersects an odd number of times, then the point is within the shape. If it intersects an even number of times, the point is outside the shape.</p>
+
+<p>This is implemented by <code class="language-plaintext highlighter-rouge">contains(M.x, M.y)</code> in Java.</p>
+
+<p>Note that the mouse and the canvas live in different co-ordinate systems, so you will have to transform one co-ordinate system to the other for any of these approaches to work. Usually, we have more canvas objects than mice, so it’s less costly to translate the mouse co-ordinates into the canvas co-ordinate system. We do this by multiplying the inverse of the canvas transform with the mouse position (<code class="language-plaintext highlighter-rouge">canvas.createInverse().transform(origMouse, newMouse)</code>).</p>
+
+<p>This means that we’ll also have to transform the hit-test threshold.</p>
+
+<h2 id="model-view-controller">Model View Controller</h2>
+
+<p>MVC (model view controller) was developed in 1979 by Trygve Reenskaug.</p>
+
+<p>The view and the controller know everything about the model, but the model interacts with a view interface only. The view sends events to the controller, and the controller knows everything about the view in order to interpret events. Only the controller should be able to change the state of the model.</p>
+
+<p>An implementation:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">interface</span> <span class="nc">Observer</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateView</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">View</span> <span class="kd">implements</span> <span class="nc">Observer</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">Model</span> <span class="n">model</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Widget</span><span class="o">&gt;</span> <span class="n">widgets</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">View</span><span class="o">(</span><span class="nc">Model</span> <span class="n">model</span><span class="o">,</span> <span class="nc">Controller</span> <span class="n">controller</span><span class="o">)</span> <span class="o">{</span>
+    <span class="cm">/* init widgets here ... */</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Widget</span> <span class="n">widget</span> <span class="o">:</span> <span class="n">widgets</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">widget</span><span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="n">controller</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateView</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Widget</span> <span class="n">widget</span> <span class="o">:</span> <span class="n">widgets</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">widget</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="n">model</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Controller</span> <span class="kd">implements</span> <span class="nc">Listener</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">Model</span> <span class="n">model</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Controller</span><span class="o">(</span><span class="nc">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="c1">// event handler for a specific event e.g. MouseMotion</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">eventHandler</span><span class="o">(</span><span class="nc">Event</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">setValue</span><span class="o">(...);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Subject</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Observer</span><span class="o">&gt;</span> <span class="n">views</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">addView</span><span class="o">(</span><span class="nc">Observer</span> <span class="n">view</span><span class="o">);</span>
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">removeView</span><span class="o">(</span><span class="nc">Observer</span> <span class="n">view</span><span class="o">);</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">notifyObservers</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Observer</span> <span class="n">view</span> <span class="o">:</span> <span class="n">views</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">view</span><span class="o">.</span><span class="na">updateView</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Model</span> <span class="kd">extends</span> <span class="nc">Subject</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addView</span><span class="o">(</span><span class="nc">Observer</span> <span class="n">view</span><span class="o">)</span> <span class="o">{...}</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">removeView</span><span class="o">(</span><span class="nc">Observer</span> <span class="n">view</span><span class="o">)</span> <span class="o">{...}</span>
+
+  <span class="c1">// public getters for value</span>
+  <span class="kd">public</span> <span class="n">type</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{...}</span>
+
+  <span class="c1">// public setters for value</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="o">()</span> <span class="o">{</span>
+    <span class="cm">/* implementation ...*/</span>
+    <span class="c1">// note we refresh the entire interface, which might be slow,</span>
+    <span class="c1">// but in the interest of clarity, probably better</span>
+    <span class="n">notifyObservers</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>You can also implement the Controller as an inner class of the View, and you can use Java’s implementations of the Observer/Subject classes.</p>
+
+<h4 id="benefits-of-mvc">Benefits of MVC</h4>
+
+<ol>
+  <li>We can swap out the view for alternate interfaces, and the controller for alternate input methods, while not changing the model. This makes porting to a new OS or a new UI toolkit easy.</li>
+  <li>We can have as many views as we like at the same time. Each view can independently use the same data.</li>
+  <li>We can reuse code from one MVC architecture to another, since a Model may be compatible with many different Views, and a View is compatible with many different types of Models.</li>
+  <li>We can test the Model without any UI, and we can test the View/Controller without any model.</li>
+</ol>
+
+<h2 id="input-devices">Input Devices</h2>
+
+<p>Characteristics/dimensions to classify computer input:</p>
+
+<ul>
+  <li>Sensing method: mechanical (switch), motion (accelerometer), contact (pressure sensor), signal processing (audio)</li>
+  <li>Continuous or discrete input</li>
+  <li>Degrees of freedom</li>
+</ul>
+
+<p><strong>specific input devices:</strong> input device optimized for specific tasks e.g. tablet pen</p>
+
+<p><strong>general input device:</strong> input device adapted to many tasks e.g. mouse and keyboard</p>
+
+<h4 id="keyboards">Keyboards</h4>
+
+<p>In QWERTY, most typing is done with the left hand, so DVORAK was developed in order to alternate letters between hands. But there’s no significant difference between the two.</p>
+
+<p>Keyboards are often downsized (lower key travel, smaller keys) to increase portability.</p>
+
+<p>Virtual keyboards are keyboards displayed on a touch screen or some other kind of flat surface. These are portable and are customizable, but you could have difficulty identifying where to rest your hands.</p>
+
+<p><strong>Chording keyboards:</strong> hitting a combination of keys produces a letter. This can be very fast and portable (one handed) if you remember all of the combinations.</p>
+
+<p>Other letter input methods include graffiti/unistroke gestures, natural handwriting recognition, and gestural input (mapping movements to commands).</p>
+
+<p>Ways to improve keyboard usability:</p>
+
+<ul>
+  <li><strong>Predictive text:</strong> Disadvantages are that it’s easy to have collisions between common words and it’s hard for users to type and monitor predictions at the same time</li>
+</ul>
+
+<p><strong>positional input:</strong> use input to specify a position e.g. etch-a-sketch.</p>
+
+<p>Properties of positional input:</p>
+
+<ul>
+  <li>absolute positioning (touchscreen) vs. relative positioning (mouse)
+    <ul>
+      <li>Absolute positioning maps an input device position to a display position</li>
+      <li>Relative position maps changes in input device position to changes in display position e.g. mouse</li>
+    </ul>
+  </li>
+  <li>direct contact (touchscreen) vs. indirect contact (mouse)</li>
+  <li>force sensing (joysticks) vs. displacement sensing (mouse)
+    <ul>
+      <li>Elastic force sensing refers to where resistance increases with movement e.g. trackpoint. This doesn’t happen for pure force sensing.</li>
+      <li>We map force sensing to a rate and displacement sensing to a position.</li>
+    </ul>
+  </li>
+  <li>position control (mouse) vs. rate control (joysticks)</li>
+  <li>dimensions sensed (e.g. 1 = dial, 2 = mouse, 3 = Wii remote)</li>
+</ul>
+
+<p><strong>Control-Display Gain (CD Gain):</strong> ratio of display pointer velocity to device control velocity, $CD_\text{gain} = V_\text{pointer} / V_\text{device}$. We can dynamically change the CD Gain based on the device velocity.</p>
+
+<h2 id="input-performance">Input Performance</h2>
+
+<p><strong>input performance model:</strong> model of how people use input devices and interfaces predicting <u>time</u>, <u>error</u>, fatigue, learning etc.</p>
+
+<p><strong>keystroke level model (KLM):</strong> describe each task as a sequence of operators, then sum up the time of each operator to estimate task time e.g. pointing operator (P) to point to a object on screen takes 1.1s</p>
+
+<p>We may include a mental operator (M) to represent when people have to stop and think. Scenarios are: initate a task, make a strategy decision, retrive a chunk from memory, find something on the display, think of a task parmeter, verify that a specification/action is correct.</p>
+
+<blockquote>
+  <p>Let’s consider a date entry input represented as 1) a textbox in format “MM/DD/YYYY”, 2) as three dropdowns, and 3) as 3 textfields “MM”, “DD”, “YYYY”. Assume the user’s hand is already on the mouse.</p>
+
+  <p>We are given the following table of operators:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Operator</th>
+        <th>Time (seconds)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>K - Key press and release</td>
+        <td>0.3</td>
+      </tr>
+      <tr>
+        <td>P - Move mouse to point to object</td>
+        <td>1.1</td>
+      </tr>
+      <tr>
+        <td>B - Mouse press and release</td>
+        <td>0.1</td>
+      </tr>
+      <tr>
+        <td>H - Hand from keyboard to mouse or vice versa</td>
+        <td>0.4</td>
+      </tr>
+      <tr>
+        <td>M - Mental preparation</td>
+        <td>1.2</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ol>
+    <li>
+      <p>MPB H KK K KK K KKKK = 5.8s</p>
+    </li>
+    <li>
+      <p>MPB MPB PB MPB PB MPB = 12s</p>
+    </li>
+    <li>
+      <p>With tab: MPB H KK K KK K KKKK = 5.8s</p>
+    </li>
+  </ol>
+
+  <p>Without tab: MPB H KK H PB H KK H PB H KKK = 9.2s</p>
+</blockquote>
+
+<p>KLM benefits: simple to calculate</p>
+
+<p>KLM drawbacks: doesn’t model errors or learning time, some time estimates are inherently variable e.g. mouse pointing to a small vs. a large button</p>
+
+<p><strong>Fitt’s Law:</strong> a predictive model for pointing time considering device, distance, and target size. It observes that the pointing (movement) time is proprotional to the distance to the target and the inversely proportional to the size of the target.</p>
+
+\[MT = a + b\log_2(\frac{D}{W} + 1)\]
+
+<p>where MT = movement time, D = distance between starting point and the center of the target, W = constraining size of the target (e.g. $\min(W, H)$), and a, b are constants of the input device being used</p>
+
+<p>Define index of performance (IP) as $1/b$. Define index of difficulty (ID) as $\log_2(\frac{D}{W} + 1)$.</p>
+
+<p>Notice that Fitt’s Law is calculated in motor space as opposed to screen space (i.e. space is calculated as the amount of time it would take to get there as opposed to pixels). We can take advantage of this by changing CD Gain dynamically. For example, we could make the mursor move more slowly over the save button, thus making the save button larger in motor space, which makes it faster to click save.</p>
+
+<p><strong>Steering Law:</strong> adaptation of Fitt’s Law, sets a number of goal lines with variable lengths and measures the time it takes to pass through all goals. If we have only 2 goals, then this reduces to Fitt’s Law.</p>
+
+<p>The distance between any two goal lines is called an amplitude. We find the total time by summing all paths.</p>
+
+<p>In general, to speed up movement time, we need to: keep things close, make things large, and manipulate motor space to make targets stickier</p>
+
+<h2 id="direct-manipulation">Direct Manipulation</h2>
+
+<p><strong>direct manipulation:</strong> when a virtual representation of an object is manipulated in a similar way to a real-world object, proposed in 1983 by Ben Schneiderman. It allows users to interact with a <em>domain</em>, so you can focus on the task instead of how to translate the task to an interface.</p>
+
+<p>Principles of direct manipulation:</p>
+
+<ol>
+  <li>Continuous representation of objects and actions</li>
+  <li>Objects are manipulated by physical actions</li>
+  <li>Fast, incremental, and reversible actions with effects on objects immediately apparent</li>
+  <li>Layered, self-revealing approach to learning</li>
+</ol>
+
+<p>GUIs don’t always use direct manipulation. Some objects of interest are hidden e.g. text styles, page layout. Some objects in the interface aren’t real objects of interest e.g. toolbar palettes. Even when you are acting on virtual representation of an object, you could use an indirect command e.g. menus, dialogs, toolbars instead of a direct command e.g. dragging on a handle to scale a shape.</p>
+
+<p><strong>look:</strong> how an object is presented in an interface</p>
+
+<p><strong>feel:</strong> how a user expression is translated to commands to manipulate an object</p>
+
+<p><strong>interaction model:</strong> set of prinicples, rules, and properties that guide the design of an interface, defines look and feel of all interactions</p>
+
+<p><strong>instrumental interaction:</strong> a model of interaction based on how we use tools (interaction instruments) to manipulate objects in the physical world (domain objects)</p>
+
+<p><strong>instrument:</strong> tool with which you can change the subject e.g. drag handles on an image. You can activate an instrument spatially (e.g. scroll bar) and temporally (e.g. dragging to create a rectangle).</p>
+
+<p>We evaluate instruments by:</p>
+
+<ul>
+  <li>
+    <p><strong>degree of indirection:</strong> 2D measure of how close (spatially) the instrument is to the subject, and how long it takes for the instrument to act on the subject (temporally, how many other menus you have to get through).</p>
+
+    <p>Examples of spatial indirection:</p>
+
+    <ul>
+      <li>near: drag to translate, handles on to resize</li>
+      <li>med: scrollbars</li>
+      <li>far: dialog boxes</li>
+    </ul>
+
+    <p>Examples of temporal indirection:</p>
+
+    <ul>
+      <li>short: direct dragging response</li>
+      <li>med: activate tool in toolbar</li>
+      <li>long: dialog boxes</li>
+    </ul>
+  </li>
+  <li><strong>degree of integration:</strong> ratio between the number of degrees of freedom of the instrument and the degrees of freedom captured by the instrument e.g. mouse has 2 DOF, scrollbar has 1 DOF</li>
+  <li><strong>degree of compatibility:</strong> similarity between the physical actions on the instrument and the response of the object e.g. from high to low degree of compatibility: dragging, scrolling, dialog box</li>
+</ul>
+
+<p><strong>meta-instrument:</strong> tool with which you can change another instrument e.g. color palette (meta-instrument) for a filter color (instrument) chooser for an image (subject)</p>
+
+<p><strong>reification:</strong> a concrete expression of a concept e.g. a scrolbar reifies scroll commands</p>
+
+<p><strong>object reification:</strong> switching focus to a tool which chooses an attribute of a primary subject e.g. color swatch tool to pick color of shape</p>
+
+<h4 id="direct-manipulation-interface">Direct manipulation interface</h4>
+
+<p><strong>direct manipulation interface:</strong> allows a user to directly act on a set of objects in the interface (instrument is embedded in the object). Instruments are visually indistinguishable from the objects they control.</p>
+
+<ul>
+  <li>Actions on the instrument should be analgous to actions to similar objects</li>
+  <li>Actions on the instrument should preserve the conceptual linkage between the instrument and the subject</li>
+</ul>
+
+<h5 id="issues-with-direct-manipulation-interface">Issues with direct manipulation interface</h5>
+
+<ul>
+  <li>Visually impaired users, screen readers, and physically impaired users have a bad time</li>
+  <li>Consumes screen space</li>
+  <li>Switching between input devices or instruments throughout an action is time consuming</li>
+  <li>Analogies might not be clear</li>
+</ul>
+
+<h2 id="undo">Undo</h2>
+
+<p>In this course, undo refers to undo/redo.</p>
+
+<h4 id="benefits-of-undo">Benefits of undo</h4>
+
+<ul>
+  <li>enables exploratory learning</li>
+  <li>lets you recover from errors</li>
+  <li>lets you evaluate modifications (do-undo-redo cycle)</li>
+</ul>
+
+<p>We can implement undo using checkpointing. Every so often, the user needs to manually save to create a checkpoint, and then when they undo, we can revert to that checkpoint.</p>
+
+<p>But this is hassle for the user. So, applications should implement undo capability based on some design choices:</p>
+
+<ul>
+  <li>
+    <p><strong>Undoable actions:</strong> what actions should (or can) be undone?</p>
+
+    <p>Some actions which aren’t undoable:</p>
+
+    <ul>
+      <li>actions which don’t affect the model e.g. change to selection, window resizing, scrollbar positioning) often aren’t unable. The exception is actions which change some view of the application that are very intensive</li>
+      <li>actions which are destructive and not easily undone e.g. quitting program with unsaved data, emptying trash</li>
+      <li>actions which physically can’t be undone e.g. printing a document</li>
+    </ul>
+
+    <p>For un-undoable actions, we can ask for confirmation beforehand.</p>
+  </li>
+  <li>
+    <p><strong>State restoration:</strong> what part of UI is restored after undo?</p>
+
+    <p>The user interface state should be meaningful after the undo/redo action. We should give undo feedback and ensure that focus is on the correct control.</p>
+  </li>
+  <li>
+    <p><strong>Granularity:</strong> how much should be undone at a time?</p>
+
+    <p>We should chunk all changes resulting from a single interface event e.g. If we performed a mouse drag to draw a line, then we should undo the drawing of the line, rather than part of the line. The mouse delta is a direct manipulation intermediate state, which we should ignore.</p>
+
+    <p>We also should delimit on discrete input breaks.</p>
+  </li>
+  <li>
+    <p><strong>Scope:</strong> is the undo global, local, or someplace in between?</p>
+
+    <p>Is the undo on the system level, application level, document level, or widget level?</p>
+  </li>
+</ul>
+
+<h4 id="implementing-undo">Implementing undo</h4>
+
+<p>To implement undo/redo, we create an undo stack and a redo stack.</p>
+
+<h5 id="forward-undo">Forward undo</h5>
+
+<ol>
+  <li>Save complete baseline document state at some point.</li>
+  <li>Each time a change occurs, create a change record to transform the baseline document into the current document state. Save the change record into the undo stack.</li>
+</ol>
+
+<p>We can undo by removing the last change record from the undo stack and then applying its reverse change record to the current document. We will transfer that last change record from the undo stack to the redo stack.</p>
+
+<p>We can redo by removing the last change record from the redo stack and applying it to the current document. We will transfer that last change record from the redo stack to the undo stack.</p>
+
+<h5 id="reverse-undo">Reverse undo</h5>
+
+<ol>
+  <li>Save the complete current document state.</li>
+  <li>Each time a change occurs, create a reverse change record to transform the current document into the previous document state. Save the reverse change record into the undo stack.</li>
+</ol>
+
+<p>We can undo by removing the last reverse change record from the undo stack and then applying it to the current document. We will transfer that last reverse change record from the undo stack to the redo stack.</p>
+
+<p>We can redo by removing the last reverse change record from the redo stack and applying its reverse command to the current document. We will transfer that last reverse change record from the redo stack to the undo stack.</p>
+
+<p>A change record can consist of a snapshot or diff between two states (<strong>memento pattern</strong>), or of a command (<strong>command pattern</strong>).</p>
+
+<p>Java uses reverse undo with the command pattern. It is implemented in <code class="language-plaintext highlighter-rouge">javax.swing.undo.*</code>. To use it, we create a <code class="language-plaintext highlighter-rouge">UndoManager</code> member variable inside the Model class. The <code class="language-plaintext highlighter-rouge">UndoManager</code> manages an undo stack and a redo stack of <code class="language-plaintext highlighter-rouge">AbstractUndoableEdit</code> instances. It can also accept a <code class="language-plaintext highlighter-rouge">CompoundEdit</code> instance, which is a group of <code class="language-plaintext highlighter-rouge">UndoableEdit</code> instances in sequence.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="o">(</span><span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">final</span> <span class="kt">int</span> <span class="n">oldvalue</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+  <span class="kd">final</span> <span class="kt">int</span> <span class="n">newValue</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+
+  <span class="c1">// Create undoable edit instance</span>
+  <span class="nc">UndoableEdit</span> <span class="n">undoableEdit</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AbstractUndoableEdit</span><span class="o">(){</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">redo</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">value</span> <span class="o">=</span> <span class="n">newValue</span><span class="o">;</span> <span class="c1">// the redo command</span>
+      <span class="n">notifyObservers</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">undo</span><span class="o">()</span> <span class="o">{</span>
+      <span class="n">value</span> <span class="o">=</span> <span class="n">oldValue</span><span class="o">;</span> <span class="c1">// the undo command</span>
+      <span class="n">notifyObservers</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">};</span>
+  <span class="n">undoManager</span><span class="o">.</span><span class="na">addEdit</span><span class="o">(</span><span class="n">undoableEdit</span><span class="o">);</span> <span class="c1">// add edit to manager</span>
+  <span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span> <span class="c1">// finally, set the value</span>
+  <span class="n">notifyObservers</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">undo</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">undoManager</span><span class="o">.</span><span class="na">canUndo</span><span class="o">())</span>
+        <span class="n">undoManager</span><span class="o">.</span><span class="na">undo</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">redo</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">undoManager</span><span class="o">.</span><span class="na">canRedo</span><span class="o">())</span>
+        <span class="n">undoManager</span><span class="o">.</span><span class="na">redo</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>You can also have a model implement the <code class="language-plaintext highlighter-rouge">StateEditable</code> interface in order to implement <code class="language-plaintext highlighter-rouge">storeState</code> and <code class="language-plaintext highlighter-rouge">restoreState</code>.</p>
+
+<h4 id="destructive-commands">Destructive Commands</h4>
+
+<p>Consider an paint application using reverse undo.</p>
+
+<p>Notice that when we apply the reverse undo operation to the current state, we revert to a state we didn’t have before. To solve this, we could either:</p>
+
+<ul>
+  <li>Use forward command, since this always creates the model from the baseline</li>
+  <li>Use reverse command undo, but whenever we execute a “destructive” command like stroke, we also store the previous state so that we can revert to it (use the memento pattern instead of the command pattern). This costs a lot of memory.</li>
+</ul>
+
+<h2 id="clipboard-and-drag-and-drop">Clipboard and Drag and Drop</h2>
+
+<p><strong>data transfer:</strong> methods to enable user-interface level data transfer (e.g. copy, cut, paste, drag-and-drop) within and between applications</p>
+
+<p>We do data transfers by using a system level generic data buffer. We need to make sure that accessing the clipboard contents isn’t a potential security risk, and that we can handle different data in different formats (e.g. HTML, RTF, MS Office, SVG, PDF, tables, video).</p>
+
+<p>Java implements clipboard and drag-and-drop using the <code class="language-plaintext highlighter-rouge">java.awt.datatransfer</code> package. We access the local clipboard by creating a new <code class="language-plaintext highlighter-rouge">Clipboard</code> instance. We access the system clipboard by <code class="language-plaintext highlighter-rouge">Toolkit.getDefaultToolkit().getSystemClipboard()</code>.</p>
+
+<p>To copy data to a clipboard:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Get clipboard</span>
+<span class="nc">Clipboard</span> <span class="n">cb</span> <span class="o">=</span> <span class="nc">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getSystemClipboard</span><span class="o">();</span>
+<span class="cm">/* Create a transferable object
+   - implements methods to list/query supported data formats/flavors
+      DataFlavor[] getTransferDataFlavors()
+      boolean isDataFlavorSupported(DataFlavor, flavor)
+      Object getTransferData(DataFlavor flavor)
+   - implements methods to get data in specified format
+*/</span>
+<span class="nc">Transferable</span> <span class="n">transferObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Transferable</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// Get text from a textArea object</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">text</span> <span class="o">=</span> <span class="n">textArea</span><span class="o">.</span><span class="na">getSelectedText</span><span class="o">();</span>
+
+    <span class="c1">// when copying data to the clipboard, get text from the textArea</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getTransferData</span><span class="o">(</span><span class="nc">DataFlavor</span> <span class="n">flavor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">flavor</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">stringFlavor</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">text</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedFlavorException</span><span class="o">(</span><span class="n">flavor</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">DataFlavor</span><span class="o">[]</span> <span class="nf">getTransferDataFlavors</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nc">DataFlavor</span><span class="o">[]</span> <span class="o">{</span> <span class="nc">DataFlavor</span><span class="o">.</span><span class="na">stringFlavor</span> <span class="o">};</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isDataFlavorSupported</span><span class="o">(</span><span class="nc">DataFlavor</span> <span class="n">flavor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">flavor</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">stringFlavor</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+<span class="c1">// Set clipboard contents to Transferable object</span>
+<span class="n">cb</span><span class="o">.</span><span class="na">setContents</span><span class="o">(</span><span class="n">transferObject</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>To paste data to a clipboard:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Get clipboard</span>
+<span class="nc">Clipboard</span> <span class="n">cb</span> <span class="o">=</span> <span class="nc">Toolkit</span><span class="o">.</span><span class="na">getDefaultToolkit</span><span class="o">().</span><span class="na">getSystemClipboard</span><span class="o">();</span>
+<span class="k">if</span><span class="o">(</span><span class="n">cb</span><span class="o">.</span><span class="na">isDataFlavorAvailable</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">stringFlavor</span><span class="o">))</span> <span class="o">{</span>
+    <span class="c1">// Get text from clipboard</span>
+    <span class="nc">String</span> <span class="n">t</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">cb</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">stringFlavor</span><span class="o">);</span>
+    <span class="n">textArea</span><span class="o">.</span><span class="na">replaceSelection</span><span class="o">(</span><span class="n">t</span><span class="o">);</span> <span class="c1">// replace the contents of the text area with pasted</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Drag and drop involves a source widget passes data to a destination widget. The source widget will have a <code class="language-plaintext highlighter-rouge">TransferHandler</code> which implements <code class="language-plaintext highlighter-rouge">createTransferable</code> and <code class="language-plaintext highlighter-rouge">exportDone</code>. It will also have a mouseListener in order to detect the start of the drag gesture. When we have The destination widget also has a TransferHandler which implements <code class="language-plaintext highlighter-rouge">importData</code>.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// in destination widget</span>
+<span class="kd">private</span> <span class="kd">class</span> <span class="nc">ImageTransferHandler</span> <span class="kd">extends</span> <span class="nc">TransferHandler</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">importData</span><span class="o">(</span><span class="nc">JComponent</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Transferable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">isDataFlavorSupported</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">imageFlavor</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Image</span><span class="o">)</span> <span class="n">t</span><span class="o">.</span><span class="na">getTransferData</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">imageFlavor</span><span class="o">);</span>
+            <span class="n">label</span><span class="o">.</span><span class="na">setIcon</span><span class="o">(</span><span class="k">new</span> <span class="nc">ImageIcon</span><span class="o">(</span><span class="n">image</span><span class="o">));</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Invoked after data has been exported</span>
+    <span class="kt">void</span> <span class="nf">exportDone</span><span class="o">(</span><span class="nc">JComponent</span> <span class="n">source</span><span class="o">,</span> <span class="nc">Transferable</span> <span class="n">data</span><span class="o">,</span> <span class="kt">int</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">imageLabel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JLabel</span><span class="o">();</span>
+<span class="n">imageLabel</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="n">imageLabel</span><span class="o">.</span><span class="na">setTransferHandler</span><span class="o">(</span><span class="k">new</span> <span class="nc">ImageTransferHandler</span><span class="o">());</span>
+
+<span class="c1">// in source widget</span>
+<span class="kd">private</span> <span class="kd">class</span> <span class="nc">ImageTransferHandler</span> <span class="kd">extends</span> <span class="nc">TransferHandler</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">protected</span> <span class="nc">Transferable</span> <span class="nf">createTransferable</span><span class="o">(</span><span class="nc">JComponenet</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Transferable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">private</span> <span class="nc">Image</span> <span class="n">img</span> <span class="o">=</span> <span class="o">((</span><span class="nc">ImageIcon</span><span class="o">)</span> <span class="n">imageLabel</span><span class="o">.</span><span class="na">getIcon</span><span class="o">()).</span><span class="na">getImage</span><span class="o">();</span>
+            <span class="c1">// Called on drag start</span>
+            <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getTransferData</span><span class="o">(</span><span class="nc">DataFlavor</span> <span class="n">flavor</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">flavor</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="nc">DataFlavor</span><span class="o">.</span><span class="na">imageFlavor</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">img</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nc">UnsupportedFlavorException</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// returns COPY, MOVE, COPY_OR_MOVE</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getSourceActions</span><span class="o">(</span><span class="nc">JComponent</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">TransferHandler</span><span class="o">.</span><span class="na">COPY</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">class</span> <span class="nc">DragGesture</span> <span class="kd">extends</span> <span class="nc">MouseInputAdapater</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">armed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">mouseDragged</span><span class="o">(</span><span class="nc">MouseEvent</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Only call drag and drop at start of drag</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">armed</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">JComponent</span> <span class="n">c</span> <span class="o">=</span> <span class="o">(</span><span class="nc">JComponent</span><span class="o">)</span> <span class="n">e</span><span class="o">.</span><span class="na">getSource</span><span class="o">();</span>
+            <span class="nc">TransferHandle</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="na">getTransferHandler</span><span class="o">();</span>
+            <span class="c1">// Third param action is one of: COPY, MOVE, COPY_OR_MOVE</span>
+            <span class="n">handler</span><span class="o">.</span><span class="na">exportAsDrag</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">e</span><span class="o">,</span> <span class="nc">TranferHandler</span><span class="o">.</span><span class="na">COPY</span><span class="o">);</span>
+            <span class="n">armed</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">mouseReleased</span><span class="o">(</span><span class="nc">MouseEvent</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">armed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="mobile-ui">Mobile UI</h2>
+
+<p>Constraints of mobile:</p>
+
+<ul>
+  <li>Limited resources e.g. memory, processing, battery
+    <ul>
+      <li>Intensive tasks need to be done offline/preprocessed. This means that we rely on a server, but we still have to make sure that the application is responsive while we’re waiting on a server.</li>
+      <li>We have to use very few active background processes</li>
+    </ul>
+  </li>
+  <li>Primarily touch interaction
+    <ul>
+      <li>Touch screens use <strong>capacitive touch screen</strong> technology. we create an grid of thin wires and place a capacitor at each intersection. When a finger touches the screen, it creates a new capacitor with a different material capacitance. We can detect the touch by measuring the effective capcitance at each corner around the touch.</li>
+      <li>Difficult to know touch screen pressure due to noise</li>
+      <li>Touch targets must be large due to size of fingers</li>
+      <li>Center of screen is more accruate than corners of screen due to grip</li>
+      <li>Notice that there’s no hover state with a touch screen, so we need other ways to preview an action. We also need to consider multitouch gestures.</li>
+      <li>Touch interaction means direct input, which fails when we reach the edge of the physical screen. One solution for scrolling is to use elastic effects.</li>
+      <li>Need to consider gestures</li>
+    </ul>
+  </li>
+  <li>Mobile form factor (small display size, single application focus, different orientations)
+    <ul>
+      <li>Requires a consistent navigation model</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="android-basics">Android Basics</h2>
+
+<p>App components:</p>
+
+<ul>
+  <li><strong>activity:</strong> single screen of an application</li>
+  <li><strong>service:</strong> long running background process</li>
+  <li><strong>content provider:</strong> provides shared set of application data</li>
+  <li><strong>broadcast receiver:</strong> responds to system broadcast events</li>
+</ul>
+
+<h4 id="activity-lifecycle">Activity lifecycle</h4>
+
+<pre><code class="language-mermaid">graph TD;
+0[activity A launched] --&gt; 1[onCreate]
+1 --&gt; 2[onStart]
+2 --&gt; 3[onResume]
+3 --&gt; 4[Activity running]
+4 -- A is backgrounded --&gt; 5[onPause]
+5 -- User returns to A --&gt; 3
+5 -- A is no longer visible --&gt; 6[onStop]
+6 -- A is finishing or being destroyed --&gt; 7[onDestroy]
+7 --&gt; 8[activity shut down]
+6 -- Apps with higher priority need memory --&gt; 9[app process killed]
+9 -- User returns to A --&gt; 1
+6 -- User returns to A --&gt; 10[onRestart]
+10 --&gt; 2
+</code></pre>
+
+<p><strong>intent:</strong> messaging object used to request an action from another app component e.g. starting an activity, starting a service, delivering a broadcast</p>
+
+<p><strong>fragments:</strong> portions of a UI with their own layout and lifecycle. Activities can contain multiple fragments.</p>
+
+<p><strong>views:</strong> widgets in Android. ViewGroups are abstract containers of other views which can apply a layout to those views</p>
+
+<p><strong>layout:</strong> defines strcture for a user interface. Examples include:</p>
+
+<ul>
+  <li><strong>LinearLayout:</strong> organizes its children into a single horizontal/vertical row</li>
+  <li><strong>RelativeLayout:</strong> allows specification of a child’s position relative to other children or the parent</li>
+  <li><strong>GridLayout:</strong> displays items in a two dimensional scrollable grid</li>
+</ul>
+
+<p>We can define layout programmatically by manually instantiating ViewGroups and Views, or by using XML to describe the layout. XML is preferred.</p>
+
+<p><strong>pixel density (dpi):</strong> number of pixels that fit into an inch</p>
+
+<p><strong>density independent pixels (dp):</strong> 1 dp = one physical pixel on a screen with 160 dpi, dp = (width in pixels * 160) / screen density</p>
+
+<p>Android uses the Java event model with additional mobile events e.g. onLongClickListener, onTouchListener.</p>
+
+<h2 id="user-centered-design">User Centered Design</h2>
+
+<p><strong>usability:</strong> the effectiveness, efficiency, and satisfaction with which users can achieve tasks</p>
+
+<p><strong>usefulness:</strong> meeting specific needs and supporting tasks, quality of being of practical use</p>
+
+<p>Something that high usability does not always have high usefulness. For example, a Staples button is highly usable but not useful. A remote control with too many buttons is highly useful, but not very usable.</p>
+
+<p>Three models of a system:</p>
+
+<ul>
+  <li>developer’s model: how the developer believes the system is used</li>
+  <li>system model: how the system actually works</li>
+  <li>user’s model: how the user believes the system should be used</li>
+</ul>
+
+<h4 id="normans-model-of-interaction">Norman’s Model of Interaction</h4>
+
+<p><strong>Execution:</strong> What we do to the system to achieve a goal.</p>
+
+<ol>
+  <li>Intention to act</li>
+  <li>Plan actions to fulfill intention</li>
+  <li>Execute actions</li>
+</ol>
+
+<p><strong>Evaluation:</strong> Comparing what happened with our intended goal</p>
+
+<ol>
+  <li>Perceive current state</li>
+  <li>Interpret state</li>
+  <li>Evaluate the state compared to the goal</li>
+</ol>
+
+<p><strong>Gulf of execution:</strong> difficulty translating user’s intentions into actions allowed by system, whether users can carry out their intentions</p>
+
+<p><strong>Gulf of evaluation:</strong> difficulty interpreting the state of the system to determine whether our goal has been met</p>
+
+<p><img src="image-20180409192826743.png" alt="image-20180409192826743" /></p>
+
+<p>We want to minimize the gulf of execution and the gulf of evaluation.</p>
+
+<h4 id="central-tension">Central Tension</h4>
+
+<p>Users have varied experiences, learn, and are creative. Systems follow a rigid program, have at best primitive learning and are not creative. The user interface must mediate between users and the system.</p>
+
+<h4 id="ui-design-principles">UI Design Principles</h4>
+
+<p>UI design principles reduce the gulf of execution and the gulf of evaluation and help users build a more correct mental model.</p>
+
+<p><strong>Perceived Affordance:</strong> what you think you can do with an object based on perceived properties e.g. door handle implies you can pull on it</p>
+
+<p>What affordances we perceive is affected by our individual histories and cultural background.</p>
+
+<p><strong>Mappings:</strong> relationship between moving a control and results in the system e.g. turning a dial up/clockwise means “more”</p>
+
+<p>In UI mappings, we map an event from an input device to a UI instrument which then translate that action to the object of interest.</p>
+
+<p>Often times, a literal mapping between actions on object in a real world don’t translate well to virtual objects e.g. virtual DJ turntable.</p>
+
+<p><strong>Constraints:</strong> prevent certain actions while enabling/encouraging others. Types:</p>
+
+<ul>
+  <li>
+    <p><strong>physical constraints:</strong> action is impossible due to physical characteristics like shape and size e.g. keys don’t fit when inserted the wrong way, doors without handles can’t be pulled, slider from left to right doesn’t move up and down</p>
+  </li>
+  <li>
+    <p><strong>logical constraints:</strong> action should make sense e.g. given a set of lego pieces and a request to build something, we conclude that we should use all of the pieces</p>
+
+    <p>A <em>natural mapping</em> exists when a device has all of the necessary information to make correct inferences about some aspect of a system. It is a kind of logical constraint.</p>
+  </li>
+  <li>
+    <p><strong>semantic contraints:</strong> action should have meaning based on previous experiences and the current context e.g. Lego person on a motorcycle should face forwards</p>
+  </li>
+  <li>
+    <p><strong>cultural constraints:</strong> action according to cultural norms e.g. we read from left to right but other cultures read from right to left, this affects arrangement of previous/next buttons</p>
+  </li>
+</ul>
+
+<p>An example of how people perceive constraints is Norman’s Lego Motorcycle Experiment, where people were able to assemble a motorcycle from its component pieces without having seen the completed motorcycle or instructions. They were able to do this based on the constraints of a set of Lego.</p>
+
+<p><strong>Visibility/Feedback:</strong> make relevant parts of a UI visible and communicate feedback for an action in a visible way e.g. hinges on a door show the swing direction, progress indicators communicate feedback</p>
+
+<p><strong>Metaphor:</strong> set of unfied concepts used in a GUI e.g. desktop metaphor in windowing system, assembly line metaphor for a new car configurator</p>
+
+<ul>
+  <li><strong>Benefits:</strong> common language for all objects in the GUI (e.g. folders, files, and recycle bin all live on the desktop), inherent system semantics for users (e.g. recycling means reclaiming memory)</li>
+  <li><strong>Problems:</strong> metaphors can be inconsistent between different systems which use the same metaphor e.g. does moving a file to trash delete the file?</li>
+</ul>
+
+<h2 id="design-process">Design Process</h2>
+
+<p><strong>user centered design (UCD):</strong> philosophy which creates UI around users e.g. what users need, what problems they have, testing ideas with users</p>
+
+<p><img src="image-20180409204845912.png" alt="image-20180409204845912" /></p>
+
+<p><strong>UCD principles:</strong></p>
+
+<ul>
+  <li>Understand needs of users</li>
+  <li>Design the UI first, then design the architecture supporting the UI</li>
+  <li>Iterate on the design</li>
+  <li>Use it yourself</li>
+  <li>Observe others using the design</li>
+</ul>
+
+<p><strong>temporal aspects of UI:</strong> when things appear, flow from one interface to another, represented by an <em>interaction sequence diagram</em></p>
+
+<p><strong>spatial aspects of UI:</strong> where things appear on an individual interface section, represented by an <em>interface schematics diagram</em></p>
+
+<p><strong>interaction sequences:</strong> macro-structure of system interaction, illustrates all possible interaction paths in a flow chart</p>
+
+<p><strong>interface schematics:</strong> microstructure, conveys essential content and functionality at individual steps of interaction, also called “wireframing”</p>
+
+<ul>
+  <li>arrangement of content/information</li>
+  <li>functionality of elements in interface e.g. forms, widgets</li>
+  <li>navigational and content elements to convey structure and meaning</li>
+  <li>indicates relative significance of all elements</li>
+</ul>
+
+<p>A single schematic for a UI screen state can contain component schematics for widgets within the state e.g. sign-in status widget, pick calendar date widget.</p>
+
+<p><img src="image-20180409205630012.png" alt="image-20180409205630012" /></p>
+
+<p>We need both interaction sequences and interface schematics in order to describe the UI for a system.</p>
+
+<p><strong>visual vocabulary:</strong> standard set of graphical symbols and notation to describe a UI e.g. a page is a simple rectangle, concurrent sets of actions are represented by an arrow with a half-circle in the middle</p>
+
+<p><strong>graphic design mockups:</strong> interface schematic with color, layout, type, and shapes</p>
+
+<p><strong>prototype:</strong> limited representation of a design that allows people to interact with it and provide feedback from stakeholders, users, team members e.g. phyiscal models (wood, cardboard), software/hardware with limited functionality, video of sample use, paper prototyping</p>
+
+<p><strong>paper prototyping:</strong> paper version of interfaces switched out by person playing computer (Wizard of Oz technique), very fast and easy to make immediate modifications</p>
+
+<p>We want to build prototypes to test:</p>
+
+<ul>
+  <li>Concepts and terminology</li>
+  <li>Navigation</li>
+  <li>Mental models</li>
+  <li>Documentation, help</li>
+  <li>Requirements, functionality</li>
+  <li>Layout</li>
+  <li>Colours, fonts, graphic elements</li>
+  <li>Brand</li>
+  <li>Custom widgets + controls</li>
+  <li>Time, performance</li>
+  <li>Real world use</li>
+  <li>Others:
+    <ul>
+      <li>Technical feasibility</li>
+      <li>Usefulness</li>
+      <li>Difficult, controversial, or crtitical areas</li>
+      <li>Ergonomics and form factor (for physical models)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>prototype fidelity:</strong> how faithful the prototype’s appearance and performance are to the final product</p>
+
+<ul>
+  <li>Low-fi prototypes are easier, faster, and more creative. They’re good for iteration and experimentation.</li>
+  <li>High-fi prototypes are more accurate. However, they could cause people to over-critque.</li>
+</ul>
+
+<p><strong>Stages of design process:</strong></p>
+
+<ol>
+  <li>Low-fi paper prototypes or physical models
+    <ol>
+      <li>Rough out interface style</li>
+      <li>Task centered walkthrough, redesigns</li>
+    </ol>
+  </li>
+  <li>Medium fidelity interactive prototypes
+    <ol>
+      <li>Fine tune interface design</li>
+      <li>Heuristic evaluation, redesigns</li>
+    </ol>
+  </li>
+  <li>High fidelity prototypes or restricted systems
+    <ol>
+      <li>Usability testing, redesigns</li>
+    </ol>
+  </li>
+  <li>Working systems
+    <ol>
+      <li>Limited field testing</li>
+      <li>Alpha/beta tests</li>
+    </ol>
+  </li>
+</ol>
+
+<p><strong>prototype comprehensiveness:</strong> amount of features (breadth) and functionality (depth) in the prototype compared to the final product</p>
+
+<p><img src="image-20180410130237799.png" alt="image-20180410130237799" /></p>
+
+<h2 id="visual-perception">Visual Perception</h2>
+
+<p>Human perception of graphical output:</p>
+
+<ul>
+  <li>
+    <p><strong>psychophysics:</strong> relationship between external stimuli and internal sensations</p>
+  </li>
+  <li>
+    <p>temporal resolution (flicker)</p>
+
+    <p><strong>critical flicker frequency:</strong> when perception of light source changes from flickering to continuous light, depends on brightness, wavelength etc.</p>
+
+    <p>Ideally, we want continuous motion.</p>
+  </li>
+  <li>
+    <p>spatial resolution (visual acuity, how well humans can see)</p>
+
+    <p>If pixel density (ppcm, pixels per cm) is too high, the human eye can’t distinguish between each pixel, which makes the display look smoother. Maximum pixel density for distinguishing pixels is around 49 ppcm to 86 ppcm.</p>
+
+    <p>“Retina” displays have 87 ppcm. “Super retina” displays have 180 ppcm.</p>
+  </li>
+  <li>
+    <p>colour perception</p>
+
+    <p>We should only use graphical colors within the visible colour spectrum. We may use other wavelengths e.g. IR for input, and we might combine wavelengths in the visible colour spectrum to make light brighter or darker.</p>
+
+    <p>In the human eye, we have 2 different types of light sensors:</p>
+
+    <ul>
+      <li><strong>Cones:</strong> perceive color and focus. There are blue, “red” (yellow), and green cones, each of which are most sensitive to that respective color. There are few blue cones, so it’s harder for us to notice blues than reds.</li>
+      <li><strong>Rods:</strong> distinguish light from dark (peripheral vision)</li>
+    </ul>
+
+    <p>Our vision is significantly worse around the edges. We see contrast better than absolute brightness. It’s harder for us to tell apart color patches that are pale, small, or far apart.</p>
+
+    <p>Types of color blindness:</p>
+
+    <ul>
+      <li><strong>monochromacity:</strong> 2 or 3 types of cones missing</li>
+      <li><strong>dichromacy:</strong> 1 type of cone missing
+        <ul>
+          <li>Protanopia: missing red cones</li>
+          <li>Deuteranopia: missing creen cones</li>
+          <li>Tritanopia: missing blue cones and blue sensitive rods</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>Color models:</p>
+
+    <ul>
+      <li>
+        <p><strong>additive:</strong> coloured light is added to produce white, RGB for displays (R + G + B = W)</p>
+      </li>
+      <li>
+        <p><strong>subtractive:</strong> coloured light is absorved to produce black, CMY/CMYK for printing (C + M + Y = B)</p>
+      </li>
+      <li>
+        <p><strong>HSV/HSB:</strong> hue (determines color), saturation (how much hue e.g. red or pink or gray), value or brightness (how much light is reflected e.g. black or red or white)</p>
+
+        <p><img src="image-20180410134759530.png" alt="image-20180410134759530" /></p>
+
+        <p>Different types of color harmony:</p>
+
+        <p><img src="image-20180410135114800.png" alt="image-20180410135114800" /></p>
+
+        <p>In screens, a common way to implement RGB is to have each pixel be composed of 3 RGB subpixels. We can then adjust the 3 RGB subpixels to produce the correct color for the overall pixel.</p>
+
+        <p>In LCD displays, we have a fluorescent backlight which goes through glass filters with polarising films and a color filter in order to produce the correct color on the cover glass.</p>
+
+        <p>Organic LED (OLED) displays have no backlight, are bendable, and are more expensive to produce.</p>
+
+        <p>Digital Light Processing (DLP) projectors use a digital micromirror device and are used for most of cinema production.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="visual-design">Visual Design</h2>
+
+<p>Design objectives:</p>
+
+<ul>
+  <li>Information communication</li>
+  <li>Aesthetics</li>
+  <li>Brand</li>
+</ul>
+
+<p>We want users to think about the task rather than the interface.</p>
+
+<h4 id="gestalt-principles">Gestalt Principles</h4>
+
+<p>The Gestalt principles are theories on how people tend to organize visual elements. We can use them to create organization and structure in designs.</p>
+
+<h5 id="proximity">Proximity</h5>
+
+<p>Elements which are close together are more strongly related then elements which are far apart.</p>
+
+<h5 id="similarity">Similarity</h5>
+
+<p>Elements sharing visual characteristics (e.g. shape, size, color, texture, orientation) are more strongly related.</p>
+
+<h5 id="continuity">Continuity</h5>
+
+<p>Elemnts on a straight line or a smooth curve are more strongly related than those on disconnected segments.</p>
+
+<h5 id="closure">Closure</h5>
+
+<p>A set of elements is perceived as single pattern rather than individual elements e.g. dots forming a circle.</p>
+
+<h5 id="connectedness">Connectedness</h5>
+
+<p>Elements connected to each other by connecting lines or common region are more strongly related.</p>
+
+<p>To create organization and structure, we need to consider:</p>
+
+<ul>
+  <li><strong>grouping:</strong> group elements using techniques from the Gestalt principles</li>
+  <li><strong>hierarchy:</strong> creates indented reading sequence and allows for information scanning using size position, spacing, whitespace, colour</li>
+  <li><strong>relationship:</strong> establish relationships between elements by using position, size, colour, shape, alignment etc.</li>
+  <li><strong>balance:</strong> balance elements in the composition (symmetry) by using position, size, hue, form</li>
+</ul>
+
+<p><strong>typography:</strong> practice of arranging written subject matter. A typeface is the design of a font (e.g. fonts can be hand-set or digital).</p>
+
+<p>Properties of type:</p>
+
+<ul>
+  <li>style e.g. sans-serif, serif, display</li>
+  <li>weight</li>
+  <li>emphasis e.g. italic</li>
+  <li>point (size of letter in DPI)</li>
+</ul>
+
+<p><img src="image-20180411013050338.png" alt="image-20180411013050338" /></p>
+
+<p>Rules of thumb:</p>
+
+<ul>
+  <li>Avoid display typefaces e.g. comic sans</li>
+  <li>Don’t use many typefaces</li>
+  <li>Avoid underling, use italics/bold for emphasis</li>
+  <li>Avoid fully justified text</li>
+  <li>Never change the aspect ratio</li>
+</ul>
+
+<p>We want user interfaces to be simple, meaning we present the minimum amount of information for the maximum effect. This aids recall and allows people to build correct mental models faster. If a user interface is not simple, reduce it to its essential features.</p>
+
+<p>We also want user interfaces to have good visual design, since this reduces the human processing time (time it takes to achieve a task with the user interface).</p>
+
+<h2 id="responsiveness">Responsiveness</h2>
+
+<p><strong>responsive UI:</strong> UI which adapts to different window sizes and devices, delivers feedback in a timely manner</p>
+
+<p>We can achieve timely feedback by:</p>
+
+<ol>
+  <li>making data quickly available by loading it efficiently</li>
+  <li>designing for human perception of time e.g. placing floor indicator in the elevator</li>
+</ol>
+
+<p>Factors affecting responsiveness:</p>
+
+<ul>
+  <li>User expectations of system performance/reaction time</li>
+  <li>Application and interface design. The interface should keep up with user actions, inform the user of application status, and never make the user wait unexpectedly.</li>
+</ul>
+
+<p>Responsiveness is the most important factor in determining user satisfaction. It is distinct from system performance (i.e. a loading bar for copying files is highly responsive but could be slow performing, a printer could be high performing but not responsive).</p>
+
+<p>We can design responsive systems around how long it takes for humans to process something. Examples:</p>
+
+<ul>
+  <li>
+    <p>minimal time to be affected by a visual stimulus = 10ms</p>
+
+    <p>Continuous input latency must be less than 10ms.</p>
+  </li>
+  <li>
+    <p>maximum interval between cause/effect events = 140ms</p>
+
+    <p>If UI feedback takes longer than 140ms, then we don’t see a cause/effect relationship.</p>
+  </li>
+  <li>
+    <p>visual motor reaction time for unexpected events = 0.7s</p>
+
+    <p>Display loading indicators for operations which take more than 0.7s.</p>
+  </li>
+  <li>
+    <p>time to prepare for a conscious congnision task = 10s</p>
+
+    <p>Display a fake version of an application interface, or an image of document on last save, while the real one loads in less than 10s.</p>
+  </li>
+</ul>
+
+<p>Progress indicator best practices:</p>
+
+<ul>
+  <li>Show work remaining and work competed</li>
+  <li>Show total progress when there are multiple steps rather than showing each step</li>
+  <li>Display finished state briefly at the end</li>
+  <li>Show smooth progress, not erratic bursts</li>
+  <li>Use human measures e.g. about 4 mintues remaining</li>
+</ul>
+
+<p>We can make progress bars look more responsive by changing the mapping from actual progress to displayed progress. We can also change the look of the progress bar e.g. more frequent flashes towards the end in a progress bar makes it look faster.</p>
+
+<p><strong>progressive loading:</strong> provide user with some data while loading rest of data e.g. word processor shows first page as soon as document opens, search function displays items as soon as it finds them</p>
+
+<p><strong>predicting next operation:</strong> use periods of low load to pre-compute responses to high probability requests e.g. web browser pre-downloads linked pages, search finds the next occurence of the search term while the user looks at the current occurrence</p>
+
+<p><strong>graceful degradation of feedback:</strong> simplify feedback for high computation tasks e.g. BWS updates window after drag (only draws object outline during manipulation), CAD reduces render quality when panning/zooming</p>
+
+<p><strong>chunking processing:</strong> avoid doing frequent processing during user interaction e.g. validate keyboard input after pressing enter rather than with every keystroke</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2018-02-14T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/01/16/se-465.html">SE 465</a></div><div class="next"><span>NEXT</span><a href="/2018/02/15/econ-101.html">ECON 101</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+

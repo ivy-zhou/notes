@@ -1,0 +1,1711 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>CS 480 - Sentences</title>
+
+<meta name="description" content="These notes are incomplete and only cover pre-midterm content.Lecture 2Lecture  inductive learning: given a training set of examples of the form $(x, f(x))$,...">
+<link rel="canonical" href="/2019/06/19/cs-480.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24">
+<style type="text/css">
+	.st0{fill:#515151;}
+</style>
+<path class="st0" d="M1.7,22.3c5.7-5.7,11.3-5.7,17,0c3.3-3.3,3.5-5.3,0.8-6c2.7,0.7,3.5-1.1,2.3-5.6s-3.3-5.2-6.3-2.1
+	c3-3,2.3-5.2-2.1-6.3S7,1.8,7.7,4.6C7,1.8,5,2.1,1.7,5.3C7.3,11,7.3,16.7,1.7,22.3"/>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>CS 480</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2019-06-19-cs-480/2019-06-19-cs-480.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="CS 480"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=notes">notes</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=incomplete">incomplete</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 19, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2019-06-19T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes,incomplete"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><p class="warning">These notes are incomplete and only cover pre-midterm content.</p>
+
+<h2 id="lecture-2">Lecture 2</h2>
+
+<h3 id="lecture">Lecture</h3>
+
+<ul>
+  <li><strong>inductive learning:</strong> given a training set of examples of the form $(x, f(x))$, return a function $h$ that approximates $f$</li>
+  <li><strong>deductive learning:</strong> given the rule + practice exercises, deduce $h$, inverse of inductive learning</li>
+  <li>2 types of problems
+    <ol>
+      <li>Classification ⇒ range of f is categorical, can use discrete math</li>
+      <li>Regression ⇒ range of f is continuous</li>
+    </ol>
+  </li>
+  <li><strong>hypothesis space (H):</strong> set of all hypotheses h that learner can consider</li>
+  <li>We want an h that:
+    <ul>
+      <li>minimizes an error function w.r.t. the training data (no underfitting)</li>
+      <li>generalizes well over test data (no overfitting)</li>
+    </ul>
+  </li>
+  <li>As the number of training examples grows, and hypothesis h that fits the training data well will also fit the test data well</li>
+  <li>If h agrees with f on all training examples, then h is <strong>consistent</strong></li>
+  <li>Sometimes this is impossible due to insufficient H (learning problem is <strong>unrealizable</strong>) or noisy data</li>
+  <li>
+    <p>As the size of H increases, it becomes more expressive but it also becomes harder to find a good hypothesis in H</p>
+  </li>
+  <li>
+    <p><strong>underfitting:</strong> occurs when algorithm finds h with training accuracy lower than test accuracy of some other h’</p>
+
+    <ul>
+      <li>common causes: classifier is not expressive enough</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>overfitting:</strong> occurs when algorithm finds h with high training accuracy than its test accuracy</p>
+
+    <ul>
+      <li>common causes: classifier too expressive, noisy data, lack of data</li>
+    </ul>
+  </li>
+  <li>
+    <p>Choosing k based on validation set</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">k</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Number of neighbours
+</span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MAX_NEIGHBOURS</span><span class="p">)</span>
+	<span class="n">h_k</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">)</span>
+  <span class="n">accuracy_k</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">h_k</span><span class="p">,</span> <span class="n">validationData</span><span class="p">)</span>
+<span class="n">k_star</span> <span class="o">=</span> <span class="n">argmax_k</span><span class="p">(</span><span class="n">accuracy_k</span><span class="p">)</span> <span class="c1"># returns best k that maximizes accuracy_k
+</span><span class="n">h</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">k_star</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">.</span><span class="n">union</span><span class="p">(</span><span class="n">validationData</span><span class="p">))</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">accuracy</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>cross validation:</strong> split training data into N folds, and rotate over which fold to use as the validation set</p>
+
+    <ul>
+      <li>report the average validation accuracy over N trainings</li>
+      <li>deals with noisy/small validation set</li>
+    </ul>
+
+    <p><img src="image-20190614215248091.png" alt="image-20190614215248091" /></p>
+  </li>
+  <li>
+    <p>Choosing k with cross validation</p>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">k</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Number of neighbours
+</span><span class="n">N</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1"># Number of folds
+</span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MAX_NEIGHBOURS</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">h_ki</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">trainingData</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">accuracy_ki</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">h_ki</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  <span class="n">accuracy_k</span> <span class="o">=</span> <span class="n">average</span><span class="p">(</span><span class="n">accuracy_ki</span><span class="p">)</span>
+<span class="n">k_star</span> <span class="o">=</span> <span class="n">argmax_k</span><span class="p">(</span><span class="n">accuracy_k</span><span class="p">)</span> <span class="c1"># returns best k that maximizes accuracy_k
+</span><span class="n">h</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">k_star</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">)</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">test</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">k_star</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">accuracy</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>We can improve KNN by weighting a neighbor’s vote based on how close that neighbor is</p>
+  </li>
+  <li>We can use KNN for regression by returning the average of the neighbors</li>
+</ul>
+
+<h3 id="1881-nearest-neighbor-models">18.8.1 Nearest Neighbor Models</h3>
+
+<ul>
+  <li>
+    <p><strong>K Nearest Neighbors:</strong></p>
+
+    <ul>
+      <li>
+        <p>Given a query $x_q$, find the k examples that are nearest to $x_q$.</p>
+      </li>
+      <li>
+        <p>Nearest often means <strong>Minkowski distance</strong> ($L^p$ norm)</p>
+
+\[L^p(x_j, x_q) = (\sum_{i} |x_{j, i} - x_{q, i}|^p)^{1/p}\]
+
+        <p>If p = 2, Euclidean distance (used for measuring similar features).</p>
+
+        <p>If p = 1, Manhattan distance (used for measuring dissimilar features).</p>
+
+        <p>Often, we <strong>normalize</strong> features so that scaling a feature differently doesn’t change our nearest neighbors result.</p>
+
+\[x_{j,i} \leftarrow \frac{x_{j, i} - \mu_i}{\sigma_i}\]
+
+        <p>where $u_i$ is the mean of feature $i$, $\sigma_i$ is the standard deviation of feature $i$</p>
+      </li>
+      <li>
+        <p>Answer to $x_q$ is:</p>
+        <ul>
+          <li>If regression, mean of the neighbors</li>
+          <li>If classification, majority vote of the neighbors (k odd to avoid ties in vote)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>When K = 1, we have overfitting. If K is too large, we will have underfitting</p>
+  </li>
+  <li>
+    <p><strong>curse of dimenionality:</strong> as the number of features increases, there are more points that could be considered along the “edge” of counting as a neighbor, thus KNN gives a worse fit</p>
+  </li>
+  <li>
+    <p>KNN runs in O(N) time</p>
+  </li>
+</ul>
+
+<h2 id="lecture-3">Lecture 3</h2>
+
+<h3 id="lecture-1">Lecture</h3>
+
+<ul>
+  <li>
+    <p>Assume that h is linear:</p>
+
+\[y(x, w) = w_0 + w_1x_1 + \dots + w_Mx_M = \pmb{w^T}\begin{bmatrix}1 \\ \pmb{x} \end{bmatrix}\]
+
+    <p>We want to minimize Euclidean loss:</p>
+
+\[w^* = argmin_w \frac{1}{2}\sum_{n = 1}^{N} (t_n - \pmb{w^T}\begin{bmatrix}1 \\ \pmb{x} \end{bmatrix})^2\]
+
+    <p>$L_2$ loss is quadratic, so it’s convex, with one global optimum.</p>
+
+    <p>Let $\pmb{\bar{x}} = \begin{bmatrix}1 \ \pmb{x} \end{bmatrix}$. Taking the derivatave of $L_2$ with respect to each component of $w$:</p>
+
+\[\begin{align*}
+\frac{\partial L_2}{\partial w_j} &amp;= \sum_{n = 1}^N (t_n - \pmb{w^T\bar{x}_n})\bar{x}_{nj} = 0 \space \space \space \space \forall j \\
+ \therefore 0 &amp;= \sum_{n = 1}^N (t_n - \pmb{w^T\bar{x}_n})\pmb{\bar{x}_{n}} \\
+&amp; \text{where } \pmb{\bar{x}_{n}} = \begin{bmatrix} 1 \\ \dots \\ x_{n} \end{bmatrix}
+
+\end{align*}\]
+
+    <p>We can rewrite this equation as $\pmb{Aw} = \pmb{b}$, where $\pmb{A} = \sum_{n = 1}^N \pmb{\bar{x}}<em>n\pmb{\bar{x}}_n^T$, $\pmb{b} = \sum</em>{n = 1}^N t_n\pmb{\bar{x}}_n$</p>
+
+\[\begin{align*}
+0 &amp;= \sum_{n = 1}^N (t_n - \pmb{w^T\bar{x}_n})\pmb{\bar{x}_{n}} \\
+0 &amp;= \sum_{n = 1}^N t_n\pmb{\bar{x}_{n}} - \pmb{w^T\bar{x}_n}\pmb{\bar{x}_{n}} \\
+\sum_{n = 1}^N \pmb{w^T\bar{x}_n}\pmb{\bar{x}_{n}} &amp;= \sum_{n = 1}^N t_n\pmb{\bar{x}_{n}} \\
+\sum_{n = 1}^N \pmb{\bar{x}}_n\pmb{\bar{x}}_n^T \cdot \pmb{w}&amp; = \sum_{n = 1}^N t_n\pmb{\bar{x}}_n \\
+\pmb{Aw} &amp;= \pmb{b}
+\end{align*}\]
+
+    <p>If the training instances span $R^{M + 1}$ then $\pmb{A}$ is invertible, and $\pmb{w} = \pmb{A^{-1}b}$.</p>
+  </li>
+  <li>
+    <p><strong>Regularization:</strong> solution may not be stable (overfitting), so we add a constant to deal with noisy inputs</p>
+
+    <ul>
+      <li>Ridge regression: Add Tikhonov regularization term ($L_2$ norm of <strong>w</strong> squared).
+\(w^* = argmin_w \frac{1}{2}\sum_{n = 1}^{N} (t_n - \pmb{w^T}\begin{bmatrix}1 \\ \pmb{x} \end{bmatrix})^2 + \frac{\lambda}{2}||\pmb{w}||_2^2\)
+Solution: $(\lambda \pmb{I} +  \pmb{A})\pmb{w} = \pmb{b}$</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1861-univariate-linear-regression">18.6.1 Univariate Linear Regression</h3>
+
+<ul>
+  <li>
+    <p>A <em>univariate linear function</em> is of the form $h_\textbf{w}(x) = w_1x + w_0$, where <strong>w</strong> $= [w_0, w_1] $.</p>
+  </li>
+  <li>
+    <p><strong>linear regression:</strong> learn the best <strong>w</strong> for $h_\textbf{w}(x)$ that minimizes a loss function</p>
+  </li>
+  <li>
+    <p>Squared loss function, $L_2$</p>
+
+    <ul>
+      <li>If $y_j$ values have normally distributed noise, then we get the maximum likelihood <strong>w</strong> by minimizing $L_2$</li>
+    </ul>
+
+\[Loss(h_\textbf{w}) = \sum_{j = 1}^{N} (y_j - h_\textbf{w}(x_j))^2\]
+  </li>
+  <li>
+    <p>We can minimize squared loss by taking partial derivative w.r.t. each $w_i$ and setting to 0</p>
+
+    <ul>
+      <li>This gives a unique, optimal solution because the loss function is convex for univariate regression</li>
+      <li>Closed form solution for <strong>w</strong> = $[w_0, w_1]$:</li>
+    </ul>
+
+\[w_1 = \frac{N(\sum x_jy_j) - (\sum x_j)(\sum y_j)}{N(\sum x_j^2) - (\sum x_j)^2}\]
+
+\[w_0 = \frac{\sum y_j - w_1\sum x_j}{N}\]
+  </li>
+  <li>
+    <p><strong>gradient descent:</strong> choose any starting point in the weight space and move in a direction opposite to the gradient (partial derivative) with a given learning rate (step size)</p>
+
+    <ul>
+      <li>learning rate can be constant or decaying</li>
+    </ul>
+
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">w</span> <span class="o">=</span> <span class="nb">any</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">parameter</span> <span class="n">space</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">convergence</span><span class="p">:</span>
+  <span class="k">for</span> <span class="n">each</span> <span class="n">w_i</span> <span class="ow">in</span> <span class="n">w</span><span class="p">:</span>
+    <span class="n">w_i</span> <span class="o">=</span> <span class="n">w_i</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">partial_derivative_loss</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Batch gradient descent:
+        <ul>
+          <li>Guaranteed to find global minimum as long as $\alpha$ is small enough, may be slow</li>
+        </ul>
+      </li>
+    </ul>
+
+\[w_0 \leftarrow w_0 + \alpha \sum_{j} (y_j - h_{\textbf{w}}(x_j))\]
+
+\[w_1 \leftarrow w_1 + \alpha \sum_{j} (y_j - h_{\textbf{w}}(x_j))x_j\]
+
+    <ul>
+      <li>Stochastic gradient descent:
+        <ul>
+          <li>Consider only 1 training point at a time</li>
+          <li>Good for an online setting (new data coming in, we may want to see old data again)</li>
+          <li>Faster, but doesn’t guarantee convergence without decaying learning rate</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="lecture-4">Lecture 4</h2>
+
+<h3 id="lecture-2">Lecture</h3>
+
+<ul>
+  <li>
+    <p><strong>probability distribution:</strong> specification of probability for each event in sample space, must integrate to 1</p>
+  </li>
+  <li>
+    <p><strong>joint probability distribution:</strong> specification of probabilities for all combinations of events</p>
+  </li>
+  <li>
+    <p>Think of random variables as model features</p>
+  </li>
+  <li>
+    <p>Conditional probability:</p>
+  </li>
+  <li>
+\[P(A|B) = \frac{P(A\land B)}{P(B)} \\
+P(A \land B) = P(A|B)P(B)\]
+  </li>
+  <li>
+    <p>Bayes Rule:</p>
+
+\[P(B|A) = \frac{P(A|B)P(B)}{P(A)}\]
+  </li>
+  <li>
+    <p>Bayesian Learning</p>
+
+\[P(H|e) = \frac{P(e|H)P(H)}{P(e)}\]
+
+    <table>
+      <tbody>
+        <tr>
+          <td>where $P(H</td>
+          <td>e)$ is the posterior distribution, $P(e</td>
+          <td>H)$ is the likelihood distribution, $P(H)$ is the prior probability, $P(e)$ evidence</td>
+        </tr>
+      </tbody>
+    </table>
+
+\[P(H|\pmb{e}) = kP(\pmb{e}|H)P(H)\]
+  </li>
+  <li>
+    <p>Suppose we want to make a prediction about a dataset query X:</p>
+
+\[P(X|e) = \sum_i P(X|e, h_i)P(h_i|e)\]
+  </li>
+  <li>Assume prior $P(H) = [0,1, 0,2 0,4, 0,2, 0.1]$. Assume candies are i.i.d. (identically and independently distributed).</li>
+</ul>
+
+<h3 id="201-statistical-learning">20.1 Statistical Learning</h3>
+
+<ul>
+  <li>
+    <p><strong>Bayesian learning:</strong> calculates probability of each hypothesis given all seen data</p>
+
+\[P(h_i, \textbf{d}) = \alpha P(\textbf{d}|h_i)P(h_i)\]
+
+    <p>where <strong>d</strong> is seen data, pulled from <strong>D</strong>, all data</p>
+
+\[P(X|\textbf{d}) = \sum_{i} P(X|\textbf{d}, h_i)P(h_i|\textbf{d}) = \sum_{i} P(X|h_i)P(h_i|\textbf{d})\]
+
+    <p>where X is an unknown query we want to make a prediction on</p>
+  </li>
+  <li>
+    <p><strong>hypothesis prior:</strong> $P(h_i)$</p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>likelihood:</strong> probability of data under each hypothesis $P(\textbf{d}</td>
+          <td>h_i)$</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Assuming that observations are identically and independently distributed:</p>
+
+\[P(\textbf{d} | h_i) = \prod_{j} P(d_j | h_i)\]
+  </li>
+  <li>Given hypothesis prior, Bayesian prediction is optimal ⇒ any other prediction given hypothesis prior is expected to be correct less often</li>
+  <li>Hypothesis space is often very large or infinite, impossible to carry out summation</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>maximum a posteriori (MAP):</strong> make predictions based on single maximum likelihood ($P(\textbf{d}</td>
+          <td>h_i)$) hypothesis, Bayesian learning with 1 term (no summation)</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Bayesian learning and MAP have more complex hypotheses paired with lower priors ⇒ penalizes complexity to reduce overfitting</li>
+      <li>MAP chooses maximum compression (minimum bits to represent hypothesis, minimum bits to represent data given hypothesis)</li>
+      <li>Finding MAP may be intractable (optimization may be difficult)</li>
+      <li>Controlled overfitting (prior can be used to penalize complex hypotheses)</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>maximum likelihood (ML):</strong> MAP with assumption that prior is uniform over H</p>
+
+    <ul>
+      <li>good approximation of Bayesian learning and MAP when not enough data about prior</li>
+      <li>ML, MAP and Bayesian learning converge as amount of data increases</li>
+      <li>less accurate than Bayesian and MAP predictions since it ignores prior info</li>
+      <li>subject to overfitting since there’s no prior to penalize complex hypothesis</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="202-learning-with-complete-data">20.2 Learning with Complete Data</h3>
+
+<ul>
+  <li>
+    <p><strong>density estimation:</strong> learning a probability model given data that are assumed to be generated from that model</p>
+  </li>
+  <li><strong>complete data:</strong> each data point contains values for every feature</li>
+  <li><strong>parameter learning:</strong> finding numerical parameters for a probability model whose structure is fixed</li>
+</ul>
+
+<h4 id="2021-maximum-likelihood-parameter-learning-discrete-models">20.2.1 Maximum-likelihood parameter learning: Discrete models</h4>
+
+<ul>
+  <li>
+    <blockquote>
+      <p><strong>EX:</strong> Suppose we have a bag of lime and cherry candies, and we’d like to learn $\theta$, the probability that a given candy is cherry. We have observed N candies so far, c of which are cherry, l of which are lime. What is the maximum likelihood value of $\theta$?</p>
+    </blockquote>
+
+    <p>Likelihood of this N candy dataset:</p>
+
+\[P(\textbf{d} | h_\theta) = \prod_{j = 1}^N P(d_j | h_\theta) = \theta^c(1 - \theta)^l\]
+
+    <p>Log likelihood of dataset:</p>
+
+\[L(\textbf{d} | h_\theta) = \log P(\textbf{d} | h_\theta) = \sum_{j = 1}^N P(d_j | h_\theta) = c\log \theta + l\log (1 - \theta)\]
+
+    <p>Maximizing the likelihood of the dataset is the same as maximizing the log likelihood of the dataset. Thus, we can find the maximal parameter $\theta$ by differentiating log likelihood w.r.t. $\theta$ and setting to 0.</p>
+
+\[\frac{dL(\textbf{d} | h_\theta)}{d\theta} = \frac{c}{\theta} - \frac{l}{l - \theta} = 0 \rightarrow \theta = \frac{c}{N}\]
+  </li>
+  <li>
+    <p>Solving for the parameter where the derivative of the log likelihood is 0 is often not easy, might require iterative algorithms</p>
+  </li>
+  <li>
+    <p>Maximum likelihood assigns 0 probability to events it hasn’t seen yet, which is bad for small datasets ⇒ can be fixed by initializing count of each event to 1 instead of 0</p>
+  </li>
+  <li>
+    <blockquote>
+      <p><strong>EX:</strong> Suppose each candy has a green (lime) or red (cherry) wrapper, selected according to some unknown distribution which is dependent on the flavor of the candy. We have seen N candies, c of which of cherry, l of which are lime. $r_c$ of the cherry candies had a red wrapper and $g_c$ of the cherry candies had a green wrapper. $r_l$ of the lime candies had a red wrapper and $g_l$ of the lime candies had a green wrapper.</p>
+
+      <p>We’d like to learn $\theta$ (the probability that a given candy is cherry), $\theta_1$ (the probability that a cherry candy has a red wrapper) and $\theta_2$ (the probability that a lime candy has a red wrapper).</p>
+    </blockquote>
+
+    <p>Likelihood of this N candy dataset:</p>
+
+\[P(\textbf{d} | h_{\theta, \theta_1, \theta_2}) = [\theta^c(1 - \theta)^l][\theta_1^{r_c}(1 - \theta_1)^{g_c}][\theta_2^{r_l}(1 - \theta_2)^{g_l}]\]
+
+    <p>Log likelihood of dataset:</p>
+
+\[L = c\log \theta + l\log (1 - \theta) + r_c\log \theta_1 + g_c\log(1 - \theta_1) + r_l\log \theta_2 + g_l\log (1 - \theta_2)\]
+
+    <p>Taking each partial derivative, we have:</p>
+
+\[\begin{align*}
+\frac{\partial L}{\partial \theta} = \frac{c}{\theta} - \frac{l}{1 - \theta}
+&amp;\rightarrow \theta = \frac{c}{c + l}
+\\
+
+\frac{\partial L}{\partial \theta_1} = \frac{r_c}{\theta_1} + \frac{g_c}{1 - \theta_1}
+&amp;\rightarrow \theta_1 = \frac{r_c}{r_c + g_c}
+\\
+
+\frac{\partial L}{\partial \theta_2} = \frac{r_l}{\theta_2} + \frac{g_l}{1 - \theta_2}
+&amp;\rightarrow \theta_2 = \frac{r_l}{r_l + g_l}
+\end{align*}\]
+
+    <p>Notice, the maximum likelihood parameter values are the observed frequencies of each variable.</p>
+  </li>
+  <li>Given complete data, maximum likelihood parameter learning with multiple parameters decomposes into separate learning problems for each parameter</li>
+</ul>
+
+<h4 id="2022-naive-bayes-models">20.2.2 Naive Bayes models</h4>
+
+<ul>
+  <li>
+    <p><strong>naive Bayes (NB):</strong> model where we assume that features are conditionally independent of each other</p>
+
+\[P(C|x_1,\dots,x_n) = \alpha P(C)\prod_{i}P(x_i|C)\]
+  </li>
+  <li>
+    <p>scales well, no search is needed to find the maximum likelihood NB parameters, deals with noisy/missing data, and gives a probability that the predicted class is correct</p>
+  </li>
+</ul>
+
+<h4 id="2023-maximum-likelihood-parameter-learning-continuous-models">20.2.3 Maximum-likelihood parameter learning: Continuous models</h4>
+
+<blockquote>
+  <p><strong>EX:</strong> What are the maximum likelihood parameters $\mu$ and $\sigma$ for a Gaussian density function on a single variable?</p>
+</blockquote>
+
+<p>Assuming the data is generated by a Gaussian model, we have that</p>
+
+\[P(x) = \Large \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x - \mu}{2\sigma^2}}\]
+
+<p>Taking log likelihood:</p>
+
+\[\begin{align*}
+L &amp;= \sum_{j = 1}{N} \log \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x_j - \mu}{2\sigma^2}} \\
+&amp;= N(-\log \sqrt{2\pi} - \log \sigma) - \sum_{j = 1}^N \frac{(x_j - \mu)^2}{2\sigma^2}
+\end{align*}\]
+
+<p>Taking partial derivatives and setting to 0:</p>
+
+\[\begin{align*}
+\frac{\partial L}{\partial \mu} = -\frac{1}{\sigma^2} \sum_{j = 1}^N (x_j - \mu) = 0
+&amp;\rightarrow \mu = \frac{\sum_{j = 1}^N x_j}{N}
+\\
+\frac{\partial L}{\partial \sigma} = -\frac{N}{\sigma} + \frac{1}{\sigma^3}\sum_{j = 1}{N}(x_j - \mu)^2 = 0
+&amp;\rightarrow \sigma = \frac{\sqrt{\sum_{j = 1}^N (x_j - \mu)^2}}{N}
+\end{align*}\]
+
+<p>Suppose $y = w^Tx + N(0, \sigma)$, y is linear in x and has Gaussian noise with fixed variance.</p>
+
+<p>Then, $P(y \vert x) = \frac{1}{\sqrt{2\pi}\sigma}e^-\frac{(y-w^Tx)^2}{2\sigma^2}$.</p>
+
+<p>Notice that maximizing the likelihood $P(y \vert x)$ is the same as minimizing $(y - w^T)^2$, which is the same problem as minimizing $L_2$ loss in linear regression.</p>
+
+<h4 id="2024-bayesian-parameter-learning">20.2.4 Bayesian parameter learning</h4>
+
+<ul>
+  <li>
+    <p><strong>hypothesis prior:</strong> probability distribution of possible hypotheses, prior belief which is updated</p>
+
+    <ul>
+      <li>Value of the hypothesis prior is between 0 and 1 and integrates to 1</li>
+    </ul>
+
+    <p>Let $\theta$ be the probability that a randomly selected piece of candy is cherry flavored. Then, the hypothesis prior is $P(\Theta)$, where $P(\Theta= \theta)$ is the prior probability that a bag has a fraction $\theta$ of cherry candies.</p>
+  </li>
+  <li>
+    <p><strong>beta distribution:</strong> $\text{beta}[a, b](\theta) = \alpha\theta^{a - 1}(1 - \theta)^{b - 1}$</p>
+
+    <ul>
+      <li>If a = 0, b = 1, $Uniform = \text{beta}[0, 1](\theta) = \alpha\frac{1}{\theta}$</li>
+      <li>Normalization constant $\alpha$ chosen based on a and b to make beta distribution integrate to 1</li>
+      <li>Mean for beta distribution distribution is $\frac{a}{a + b}$</li>
+      <li>Larger values of $a$ push the $\theta$ values of the distribution closer to 1 and larger values of $a + b$ push the probability $P(\theta)$ closer to 1 (greater certainty)</li>
+    </ul>
+
+    <table>
+      <tbody>
+        <tr>
+          <td>Suppose we observe a cherry candy and we have a hypothesis $\theta$. We can calulate the posterior distribution $P(\theta</td>
+          <td>D_1 = cherry)$, given that the prior distribution is a beta distribution.</td>
+        </tr>
+      </tbody>
+    </table>
+
+\[\begin{align*}
+P(\theta \vert D_1 = cherry) &amp;= \alpha \cdot P(D_1 = cherry \vert \theta) \cdot P(\theta) \\
+&amp;= \alpha \cdot \theta \cdot \text{beta}\[a, b\](\theta) \\
+&amp;= \alpha \cdot \theta \cdot \alpha'\theta^{a - 1}(1 - \theta)^{b - 1} \\
+&amp;= \alpha'' \cdot \theta^a(1 - \theta)^{b - 1} \\
+&amp;= \text{beta}\[a + 1, b\](\theta)
+\end{align*}\]
+
+    <p>So, the posterior distribution of a beta distribution is also a beta distribution. We call a and b <strong>virtual counts</strong>, since a prior distribution $\text{beta}<a href="\theta">a, b</a> $ means we have seen $a - 1$ cherry candies and $b - 1$ lime candies.</p>
+
+    <p><strong>Bayesian learning</strong> means updating the posterior distribution based on the prior distribution until it converges to the true value of $\theta$.</p>
+  </li>
+  <li>
+    <p>Suppose we had 3 parameters: $\theta$ (the probability that a candy is cherry), $\theta_1$ (the probability that a cherry candy has a red wrapper), and $\theta_2$ (the probability that a lime candy has a red wrapper).</p>
+
+    <p>Assuming <em>parameter independence</em>:</p>
+
+\[P(\Theta, \Theta_1,\Theta_2)= P(\Theta)P(\Theta_1)P(\Theta_2)\]
+
+    <p>Suppose we observe a new candy. We first add a Flavor node and then a Wrapper node.</p>
+
+\[P(Flavor_i = cherry | \Theta = \theta) = \theta \\
+P(Wrapper_i = red | Flavor_i = cherry, \Theta_1 = \theta_1) = \theta_1 \\
+P(Wrapper_i = red | Flavor_i = lime, \Theta_2 = \theta_2) = \theta_2 \\\]
+
+    <p>Then, we can use these equations to infer the values we want, $P(\Theta_1)$ and $P(\Theta_2)$, as in the diagram</p>
+
+    <p><img src="image-20190617092415725.png" alt="image-20190617092415725" /></p>
+  </li>
+</ul>
+
+<h4 id="2025-learning-bayes-net-structures">20.2.5 Learning Bayes net structures</h4>
+
+<ul>
+  <li>In order to find a good Bayes net structure, we can search for one
+    <ul>
+      <li>Start with a model with no links, add parents</li>
+      <li>Start with full initial guess, do hill-climbing/simulated annealing to make modifications to structure</li>
+    </ul>
+  </li>
+  <li>Two methods for deciding when a good structure has been found:
+    <ul>
+      <li>test whether conditional independence equations implied by the structure are true on the dataset, with some statistical significance</li>
+      <li>check how well proposed model explains the dara
+        <ul>
+          <li>If explains well means “maximum likelihood”, we will end up with a fully connected network, because adding more parents to a node doesn’t decrease likelihood</li>
+          <li>Therefore we penalize model complexity</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="2026-density-estimation-with-nonparametric-models">20.2.6 Density estimation with nonparametric models</h4>
+
+<ul>
+  <li>
+    <p>K nearest neighbors ⇒ measure the probability density of a query X by measuring the area over which the neighbors of X are spread out</p>
+  </li>
+  <li>
+    <p>Kernel functions:</p>
+
+    <p>Assume each data point generates its own density function. Then, the estimated density at a query point x is the average density as given by each kernel function:</p>
+
+\[P(x) = \frac{1}{N}\sum_{j = 1}^N K(x, x_j)\]
+
+    <p>Assuming spherical Gaussians with standard deviation $w$ along each axis:</p>
+
+\[K(x, x_j) = \Large \frac{1}{(w^2\sqrt{2\pi})^d}e^{-\frac{D(x, x_j)^2}{2w^2}}\]
+
+    <p>Where $d$ is the number of dimensions in x and $D$ is the Euclidean distance function</p>
+  </li>
+</ul>
+
+<h2 id="lecture-5-linear-regression-by-ml-map-and-bayesian-learning">Lecture 5: Linear Regression by ML, MAP, and Bayesian Learning</h2>
+
+<h3 id="lecture-3">Lecture</h3>
+
+<ul>
+  <li>
+    <p>Assume y is obtained from x deterministic function f that has been perturbed by Gaussian noise.</p>
+
+\[\begin{align*}
+y &amp;= f(\bar{x}) + \epsilon \\
+	&amp;= w^T\bar{x} + N(0, \sigma^2)
+\end{align*}\]
+
+    <p>Assuming that each data point is identically and independently distributed, we can measure the likelihood of an output given data.</p>
+
+\[\begin{align*}
+P(\pmb{y|X}, \pmb{w}, \sigma) &amp;= N(\pmb{y|w^T\bar{X}}, \sigma^2) \\
+&amp;= \Large \prod_{n = 1}^N \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y_n - \pmb{w^T\bar{x}_n
+})^2}{2\sigma^2}}
+\end{align*}\]
+  </li>
+  <li>
+    <p><strong>Maximum Likelihood:</strong> Find best $\pmb{w^*}$ by maximizing the likelihood of the data</p>
+
+\[\begin{align*}
+\pmb{w*} &amp;= argmax_w P(\pmb{y|X}, \pmb{w}, \sigma) \\
+ &amp;= argmax_w \prod_{n = 1}^N \frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y_n - \pmb{w^T\bar{x}_n
+})^2}{2\sigma^2}} \\
+&amp;= argmax_w \prod_{n = 1}^N e^{-\frac{(y_n - \pmb{w^T\bar{x}_n
+})^2}{2\sigma^2}} \\
+ &amp;= argmax_w \sum_{n = 1}^N -\frac{(y_n - \pmb{w^T\bar{x}_n
+})^2}{2\sigma^2} \\
+ &amp;= argmin_w \sum_{n = 1}^N (y_n - \pmb{w^T\bar{x}_n
+})^2
+\end{align*}\]
+
+    <p>Thus minimizing Gaussian distributed noise is the same as minimizing least squares.</p>
+  </li>
+  <li>
+    <p><strong>Maximum A Posteriori:</strong> Find $\pmb{w^*}$ with the highest posterior probability.</p>
+
+    <p>Assume Gaussian prior distriution over w: $P(\pmb{w}) = N(\pmb{0}, \pmb{\Sigma})$, where $\pmb{\Sigma}$ is the covariance matrix.</p>
+
+    <p>Then, by Bayes rule, the posterior is:</p>
+
+\[\begin{align*}
+P(\pmb{w | X, y}) &amp;= \frac{P(\pmb{y | X, w})P(\pmb{w})}{P(\pmb{X, y})} \\
+&amp;\propto P(\pmb{w})P(\pmb{y|X, w}) \\
+&amp;= \Large ke^{-\frac{\pmb{w^T\Sigma^{-1}w}}{2}}e^{-\frac{\sum_n (y_n - \pmb{w^Tx_n})^2}{2\sigma^2}}
+\end{align*}\]
+
+    <p>Optimizing for the best $\pmb{w^*}$:</p>
+
+\[\begin{align*}
+\pmb{w^*} &amp;= argmax_w P(\pmb{w|\bar{X}, y}) \\
+&amp;= argmax_w - \Sigma_n(y_n - \pmb{w^T\bar{x}_n})^2 - \pmb{w^T\Sigma^{-1}w} \\
+&amp;= argmin_w \Sigma_n(y_n - \pmb{w^T\bar{x}_n})^2 + \pmb{w^T\Sigma^{-1}w}
+\end{align*}\]
+
+    <p>Let $\pmb{\Sigma^{-1}} = \lambda\pmb{I}$ (e.g. $\Sigma = \begin{bmatrix}1/\lambda &amp; 0 \ 0 &amp; 1/\lambda \end{bmatrix}$). Then</p>
+
+\[\pmb{w^*} = argmin_w \Sigma_n(y_n - \pmb{w^T\bar{x}_n})^2 + \lambda||\pmb{w}||_2^2\]
+
+    <p>This is the regularized least square problem. This minimizes $\pmb{w}$.</p>
+  </li>
+  <li>
+    <p><strong>expected square loss:</strong> E[L] consists of noise (constant) and error (depends on $\pmb{w}$)</p>
+
+\[\begin{align*}
+E[L] &amp;= \int_{x, y} P(\pmb{x}, y)(y - \pmb{w^T\bar{x}})^2d\pmb{x}dy \\
+&amp;= \int_{x, y} P(\pmb{x}, y)(y - f(\pmb{x}) + f(\pmb{x}) - \pmb{w^T\bar{x}})^2d\pmb{x}dy \\
+&amp;= \int_{x, y} P(\pmb{x}, y)\big[(y - f(\pmb{x}))^2 + 2(y - f(\pmb{x}))(f(\pmb{x}) - \pmb{w^T\bar{x}}) +(f(\pmb{x}) - \pmb{w^T\bar{x}})^2\big] d\pmb{x}dy \\
+&amp;= \int_{x, y} P(\pmb{x}, y)\big[(y - f(\pmb{x}))^2 +(f(\pmb{x}) - \pmb{w^T\bar{x}})^2\big] d\pmb{x}dy \\
+&amp;= \int_{x, y} P(\pmb{x}, y)(y - f(\pmb{x}))^2 d\pmb{x}dy + \int_{x, y}P(\pmb{x}, y)(f(\pmb{x}) - \pmb{w^T\bar{x}})^2 d\pmb{x}dy \\
+&amp;= \int_{x, y} P(\pmb{x}, y)(y - f(\pmb{x}))^2 d\pmb{x}dy + \int_{x}P(\pmb{x})(f(\pmb{x}) - \pmb{w^T\bar{x}})^2 d\pmb{x} \\
+\end{align*}\]
+
+    <p>We call the first part noise and the second part error.</p>
+
+    <p>Suppose we have some <strong>w</strong> chosen based on a dataset S. We can then decomponse error.</p>
+
+\[\begin{align*}
+E_s[L] &amp;= \int_{x}P(\pmb{x})(f(\pmb{x}) - \pmb{w^T\bar{x}})^2 d\pmb{x} \\
+&amp;= E_s[(f(\pmb{x}) - \pmb{w^T\bar{x}})^2] \\
+&amp;= E_s[(f(\pmb{x}) - E_s[\pmb{w^T\bar{x}}] + E_s[\pmb{w^T\bar{x}}] - \pmb{w^T\bar{x}})^2] \\
+&amp;= E_s[(f(\pmb{x}) - E_s[\pmb{w^T\bar{x}}])^2  + 2(f(\pmb{x}) - E_s[\pmb{w^T\bar{x}}])(E_s[\pmb{w^T\bar{x}}] - \pmb{w^T\bar{x}}) + (E_s[\pmb{w^T\bar{x}}] - \pmb{w^T\bar{x}})^2] \\
+&amp;= E_s[(f(\pmb{x}) - E_s[\pmb{w^T\bar{x}}])^2 + (E_s[\pmb{w^T\bar{x}}] - \pmb{w^T\bar{x}})^2] \\
+&amp;= (f(\pmb{x}) - E_s[\pmb{w^T\bar{x}}])^2 + E_s\big[(E_s[\pmb{w^T\bar{x}}] - \pmb{w^T\bar{x}})^2\big] \\
+\end{align*}\]
+
+    <p>We call the first part the bias (squared) and the second part the variant. The true underlying output is $f(\pmb{x})$, the average output of the model is $E_s[\pmb{w^T\bar{x}}]$, and the output of the model is $\pmb{w^T\bar{x}})^2$. Bias and variance are both functions of $\lambda$ because of $\pmb{w^T\bar{x}}$.</p>
+
+    <p><img src="image-20190618135714208.png" alt="image-20190618135714208" /></p>
+
+    <p><img src="image-20190618140022257.png" alt="image-20190618140022257" /></p>
+  </li>
+  <li>
+    <p><strong>Bayesian Linear Regression</strong></p>
+
+    <p>The weighted average prediction is:</p>
+
+\[\begin{align*}
+P(\pmb{w | X, y}) &amp;= \Large ke^{-\frac{\pmb{w^T\Sigma^{-1}w}}{2}}e^{-\frac{\sum_n (y_n - \pmb{w^Tx_n})^2}{2\sigma^2}} \\
+&amp;= \Large ke^{-\frac{1}{2}(\pmb{w} - \pmb{\bar{w}}^T)\pmb{A}(\pmb{w} - \pmb{\bar{w}}^T)} \\
+&amp;= N(\pmb{\bar{w}}, \pmb{A^{-1}})
+\end{align*}\]
+
+    <p>where $\Large \pmb{\bar{w}} = \sigma^{-2}\pmb{A^{-1}\bar{X}y}$, $\Large \pmb{A} = \sigma^{-2}\pmb{\bar{X}\bar{X}^T} + \pmb{\Sigma^{-1}}$</p>
+
+    <p><img src="image-20190619020444467.png" alt="image-20190619020444467" /></p>
+  </li>
+</ul>
+
+<h2 id="lecture-7-classification-with-mixture-of-gaussians">Lecture 7: Classification with Mixture of Gaussians</h2>
+
+<ul>
+  <li>
+    <p>We can use probabilistic generative models to generate data similar to the training data using Gaussian noise for both regression and classification</p>
+
+    <p><img src="image-20190619021601253.png" alt="image-20190619021601253" /></p>
+  </li>
+  <li>
+    <p><img src="image-20190619021713654.png" alt="image-20190619021713654" /></p>
+  </li>
+  <li>
+    <p><img src="image-20190619021846143.png" alt="image-20190619021846143" /></p>
+  </li>
+  <li>
+    <p><img src="image-20190619022117811.png" alt="image-20190619022117811" /></p>
+  </li>
+</ul>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-06-19T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/12/18/cs-348.html">CS 348</a></div><div class="next"><span>NEXT</span><a href="/2019/07/24/engl108d.html">ENGL 108D</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+
