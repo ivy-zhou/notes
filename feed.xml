@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/notes/feed.xml" rel="self" type="application/atom+xml" /><link href="/notes/" rel="alternate" type="text/html" /><updated>2020-09-02T17:11:22+00:00</updated><id>/notes/feed.xml</id><title type="html">Sentences</title><subtitle>A loosely organized collection of notes and thoughts
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/notes/feed.xml" rel="self" type="application/atom+xml" /><link href="/notes/" rel="alternate" type="text/html" /><updated>2020-09-02T23:35:09+00:00</updated><id>/notes/feed.xml</id><title type="html">Sentences</title><subtitle>A loosely organized collection of notes and thoughts
 </subtitle><author><name>Ivy Zhou</name></author><entry><title type="html">Functional Programming Principles in Scala</title><link href="/notes/2020/09/02/progfun.html" rel="alternate" type="text/html" title="Functional Programming Principles in Scala" /><published>2020-09-02T00:00:00+00:00</published><updated>2020-09-02T00:00:00+00:00</updated><id>/notes/2020/09/02/progfun</id><content type="html" xml:base="/notes/2020/09/02/progfun.html">&lt;p&gt;&lt;a href=&quot;https://www.coursera.org/learn/progfun1&quot;&gt;Functional Programming Principles in Scala | Coursera&lt;/a&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;week-1&quot;&gt;Week 1&lt;/h1&gt;
@@ -6288,7 +6288,7 @@ for every X -&amp;gt; A, X -&amp;gt; B in F
 
     &lt;p&gt;In the example below, we use a label &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;L&lt;/code&gt; in order the skip over g when &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;goto L&lt;/code&gt; is called in f to return to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;L = L2&lt;/code&gt; set in h. This automatically causes g to terminate as well as f.&lt;/p&gt;
 
-    &lt;p&gt;&lt;img src=&quot;/Users/ivyzhou/Library/Application Support/typora-user-images/image-20181216101021199.png&quot; alt=&quot;image-20181216101021199&quot; /&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;img src=&quot;image-20181216101021199.png&quot; alt=&quot;image-20181216101021199&quot; /&gt;&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;label variable in nonlocal transfer contains:&lt;/p&gt;
