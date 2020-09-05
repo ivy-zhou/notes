@@ -1,0 +1,2348 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>ENGL 315 - Sentences</title>
+
+<meta name="description" content="Professor Winfried Siemerling, Winter 2020Module 1  modernity (1850s on)          historical shift starting in Victorian/Confederation era      industrializa...">
+<link rel="canonical" href="/notes/2020/04/17/engl315.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/notes/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/notes/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/notes/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/notes/assets/favicon-16x16.png"><link rel="manifest" href="/notes/assets/site.webmanifest"><link rel="mask-icon" href="/notes/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/notes/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/notes/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet -->
+<link rel="stylesheet" href="/notes/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets -->
+<script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.6',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/notes/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script>
+</head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.11, written by Peter Selinger 2001-2013
+</metadata>
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M219 5026 c-52 -18 -91 -60 -104 -113 -16 -62 -8 -179 19 -288 14
+-56 21 -78 38 -129 11 -32 21 -63 22 -70 2 -6 15 -38 30 -71 16 -33 29 -66 29
+-72 0 -7 4 -13 9 -13 4 0 8 -9 8 -20 0 -11 3 -20 8 -20 4 0 18 -21 32 -47 13
+-27 27 -50 30 -53 4 -3 9 -12 13 -20 9 -19 28 -48 49 -74 9 -12 32 -41 51 -65
+l35 -44 -64 -65 c-35 -36 -66 -73 -69 -84 -4 -10 -10 -18 -14 -18 -9 0 -71
+-97 -71 -111 0 -5 -5 -9 -11 -9 -5 0 -8 -4 -4 -9 3 -5 1 -12 -5 -16 -20 -12
+-113 -229 -103 -239 4 -3 2 -6 -4 -6 -9 0 -17 -24 -27 -80 -1 -3 -5 -10 -9
+-16 -3 -7 -9 -29 -13 -50 -3 -22 -9 -46 -14 -54 -4 -8 -10 -31 -14 -50 -3 -19
+-8 -46 -11 -60 -3 -13 -7 -42 -10 -65 -3 -22 -8 -47 -10 -55 -2 -8 -7 -46 -11
+-85 -3 -38 -8 -73 -10 -76 -2 -4 -7 -86 -10 -182 l-7 -175 44 5 c24 2 52 5 62
+6 9 1 17 4 17 7 0 4 6 7 13 7 11 1 24 3 95 19 15 4 34 8 42 9 8 1 22 5 31 9 8
+4 29 8 45 9 16 1 35 8 42 15 7 6 22 12 31 12 10 0 36 6 57 13 22 8 52 17 67
+21 26 6 28 5 27 -21 -1 -15 -1 -32 0 -38 1 -5 1 -44 0 -85 -1 -41 -2 -92 -3
+-112 0 -21 2 -40 4 -43 3 -2 2 -28 -1 -57 -5 -46 -13 -60 -53 -103 -66 -69
+-68 -72 -120 -146 -26 -37 -47 -71 -47 -77 0 -6 -4 -12 -8 -14 -8 -3 -95 -173
+-93 -183 1 -3 -6 -19 -14 -35 -9 -17 -13 -30 -10 -30 3 0 -1 -13 -10 -30 -8
+-16 -15 -32 -15 -35 0 -3 0 -6 -1 -7 0 -2 -2 -11 -5 -20 -4 -19 -6 -27 -18
+-69 -4 -14 -9 -41 -11 -60 -2 -19 -4 -34 -5 -34 -1 0 -4 -16 -6 -35 -7 -54
+-10 -320 -4 -320 3 0 5 -17 4 -38 0 -20 2 -41 5 -47 6 -11 10 -28 13 -62 1
+-13 5 -23 9 -23 3 0 6 -7 6 -15 0 -20 25 -98 35 -110 4 -5 8 -17 8 -27 0 -10
+4 -18 9 -18 5 0 11 -10 15 -22 3 -13 16 -39 28 -58 12 -19 22 -37 23 -40 1
+-14 67 -93 130 -156 65 -65 151 -134 200 -160 39 -20 70 -39 75 -45 3 -3 47
+-22 99 -43 131 -53 278 -94 401 -111 25 -4 65 -10 90 -13 59 -9 2448 -9 2521
+0 143 17 319 57 419 95 8 3 20 7 25 8 6 2 42 17 80 35 39 18 73 32 78 32 4 -1
+7 2 7 7 0 5 10 13 23 16 12 4 32 17 45 28 12 11 22 16 22 11 0 -5 4 -4 8 2 4
+5 25 23 47 39 55 39 207 195 225 231 8 16 18 31 22 34 10 8 63 114 60 123 -1
+4 3 7 8 7 5 0 9 3 8 8 -2 7 21 80 31 97 3 6 6 15 8 20 5 24 13 62 17 83 3 12
+8 27 11 32 3 6 1 10 -6 10 -8 0 -8 4 1 15 14 17 19 268 7 360 -11 88 -18 130
+-24 145 -3 8 -6 18 -5 22 1 4 -8 35 -19 70 -12 35 -21 69 -22 76 0 6 -4 12 -9
+12 -4 0 -7 3 -6 7 3 17 -15 63 -25 63 -6 0 -8 3 -4 6 8 8 -77 167 -131 244
+-59 83 -58 81 -119 147 l-52 56 1 203 0 202 82 -25 c44 -13 88 -27 96 -30 17
+-7 173 -47 225 -57 6 -1 19 -5 30 -9 11 -3 37 -8 57 -11 21 -3 41 -6 45 -7 30
+-5 32 3 28 114 -4 108 -12 226 -20 291 -13 110 -17 142 -20 146 -2 3 -6 26
+-10 50 -15 108 -85 360 -107 384 -4 6 -8 18 -8 28 0 10 -7 30 -16 43 -9 14
+-12 25 -8 25 5 0 5 4 -1 8 -5 4 -26 39 -45 77 -53 108 -140 230 -207 291 -13
+12 -23 23 -23 26 0 3 20 27 45 54 24 27 45 52 45 55 0 3 14 24 30 45 53 66
+191 329 204 389 2 6 14 48 29 95 14 47 29 97 32 113 3 15 7 38 10 52 3 13 7
+60 9 103 6 112 -20 174 -85 207 -51 27 -77 25 -181 -11 -10 -4 -18 -10 -18
+-15 0 -5 -4 -9 -10 -9 -13 0 -48 -30 -124 -102 -33 -32 -60 -58 -60 -58 -1 0
+-42 -39 -91 -88 -50 -48 -110 -103 -134 -122 -24 -19 -48 -40 -55 -45 -21 -19
+-92 -63 -144 -89 l-52 -26 -26 22 c-15 13 -40 35 -56 51 -17 15 -34 27 -39 27
+-4 0 -19 10 -33 23 -31 29 -181 114 -255 145 -92 38 -205 74 -281 88 -14 2
+-31 7 -38 9 -40 14 -248 19 -832 18 -597 -1 -715 -4 -790 -19 -14 -3 -34 -6
+-45 -8 -11 -2 -27 -6 -35 -10 -8 -3 -26 -7 -40 -10 -64 -10 -290 -100 -330
+-131 -8 -6 -35 -23 -60 -37 -25 -14 -80 -53 -122 -87 -43 -34 -84 -61 -92 -61
+-18 0 -120 58 -124 71 -2 5 -8 9 -13 9 -9 0 -29 15 -74 55 -13 11 -36 31 -51
+44 -38 31 -163 151 -159 151 4 0 -29 31 -145 138 -25 23 -50 42 -57 42 -6 0
+-13 4 -15 9 -1 5 -10 11 -18 13 -8 2 -21 9 -28 16 -7 6 -23 12 -35 13 -12 0
+-29 2 -38 4 -8 1 -31 -3 -50 -9z"/>
+</g>
+</svg>
+<a title="A loosely organized collection of notes and thoughts
+" href="/notes/">Sentences</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/notes/archive.html">Archive</a></li><li class="navigation__item"><a href="/notes/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div>
+</aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet -->
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>ENGL 315</h1></header><span class="split-space">&nbsp;</span>
+          <a class="edit-on-github"
+            title="Edit on Github"
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2020-04-17-engl315.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="ENGL 315"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/notes/archive.html?tag=uwaterloo">uwaterloo</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/notes/archive.html?tag=notes">notes</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Apr 17, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2020-04-17T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet -->
+<div class="article__content" itemprop="articleBody"><blockquote>
+  <p>Professor Winfried Siemerling, Winter 2020</p>
+</blockquote>
+
+<h1 id="module-1">Module 1</h1>
+
+<ul>
+  <li>modernity (1850s on)
+    <ul>
+      <li>historical shift starting in Victorian/Confederation era</li>
+      <li>industrialization + communications ⇒ faster pace of life</li>
+      <li>attitude that life gets better (more knowledge, better life) over time through industrialization/knowledge (Lampman)</li>
+      <li>art acknowledges industrialization, secularization</li>
+    </ul>
+  </li>
+  <li>culture of modernity
+    <ul>
+      <li>Baudelaire defines modernity as art about the fleeting or unstable</li>
+      <li>Matthew Arnold defines the modern as a highly developed age with complex past and present (mature civilization)
+        <ul>
+          <li>art must comprehend/represent the modern age</li>
+          <li>many people should become art critics, to see things as they really are, impose order on chaos</li>
+        </ul>
+      </li>
+      <li>different from Romantic period (1800s) when focus was on the artist and creation rather than the critic</li>
+      <li>Canadian context ⇒ Canada is a mature civilization by aligning settler culture with Britain</li>
+    </ul>
+  </li>
+  <li>settler culture
+    <ul>
+      <li>wilderness ⇒ disorder, threat to settler communities</li>
+      <li>agriculture ⇒ order, superior, settlement = progress</li>
+    </ul>
+  </li>
+  <li>high colonialism (early 1900s) ⇒ attitude of optimism that Canada has inherited the best of culutre and has the best future</li>
+  <li>modernism (1920-1970)
+    <ul>
+      <li>literary period in Canada starting around the time of WWI</li>
+      <li>war brought feat/intolerance, violence on a massive scale, less faith in progress and optimism ⇒ alienation, chaos</li>
+      <li>rejection of pre-war modernist thought (e.g. high colonialism, Synthetic Model of Reasoning)</li>
+    </ul>
+  </li>
+  <li>Synthetic Model of Reasoning (1800s)
+    <ul>
+      <li>synthesize 2 opposing concepts into a 3rd that brings both together</li>
+      <li>thesis + antithesis ⇒ synthesis, chaos ⇒ order</li>
+      <li>Modernism response
+        <ul>
+          <li>not possible to create order due to flaws in the human mind</li>
+          <li>disorder can free the imagination</li>
+          <li>binary opposition ⇒ 2 concepts that exclude each other</li>
+          <li>tension in binary oppositions is a fact of the world</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>satire ⇒ using ridicule to describe an object for the purposes of deflating that object
+    <ul>
+      <li>Horatian satire ⇒ reader laughs with target</li>
+      <li>Juvenalian satire ⇒ reader sees flaws in target</li>
+    </ul>
+  </li>
+  <li>irony ⇒ difference between appearance and reality, difference between what is said and what is meant</li>
+</ul>
+
+<h1 id="module-2">Module 2</h1>
+
+<ul>
+  <li>history ⇒ chronology of events over time</li>
+  <li>histeriography ⇒ representation of events
+    <ul>
+      <li>Modernists use the past to interpret the present</li>
+    </ul>
+  </li>
+  <li>Northrop Frye
+    <ul>
+      <li>settling in Canada is like being swallowed by a whale
+        <ul>
+          <li>deep terror, vast unconsciousness in nature ⇒ analogous to death, loss of identity</li>
+        </ul>
+      </li>
+      <li>garrison mentality ⇒ cannot change chaos in landscape, but you can build an ordered dwelling</li>
+    </ul>
+  </li>
+  <li>Margaret Atwood
+    <ul>
+      <li>paranoid schizophrenia ⇒ attitude of settlers
+        <ul>
+          <li>settlers go crazy since they try to impose themselves on the landscape, but the landscape imposes itself on them</li>
+          <li>breakdown between subject/environment binary</li>
+        </ul>
+      </li>
+      <li>1st victim position ⇒ denial you are a victim</li>
+      <li>2nd victim position ⇒ assert you are a victim of change/God</li>
+    </ul>
+  </li>
+  <li>some modernists (e.g. Atwood) use the past to interpret the present, but some (e.g. Klein) express ambivalence about their connection to the past</li>
+</ul>
+
+<h1 id="module-3">Module 3</h1>
+
+<ul>
+  <li>poetry ⇒ most embodies aesthetic principles of culture, most difficult due to technical/formal elements</li>
+  <li>Modernist ideas of function of a poet
+    <ul>
+      <li>ignored by society, replaced by popular culture</li>
+      <li>function of the poet is to find truths in our present world, new insights</li>
+      <li>poet wants to revive reputation of poetry, make something new</li>
+      <li>poet describes simultaneously the topography of land and their own mind</li>
+    </ul>
+  </li>
+  <li>Apollonian principle ⇒ ability to reason and order the world, restraint, distinctions between self and world</li>
+  <li>Dionysian principle ⇒ disorder, excess, creative, no distinctions, drunk</li>
+  <li>freedom in poetry
+    <ul>
+      <li>absolute freedom to write anything, challenge our ideas</li>
+      <li>freedom to embrace all aspects of the world, Dionysian and Apollonian</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-4">Module 4</h1>
+
+<ul>
+  <li>internationally, many modernist writers identified with cities, but in Canada, the landscape has a sense of national identity</li>
+  <li>topocentralism ⇒ obsession over features of a landscape</li>
+  <li>anthromophization ⇒ giving animals human characteristics</li>
+  <li>personification ⇒ giving inanimate objects human characteristics</li>
+  <li>Modernity writers personify nature in order to control/project onto it
+    <ul>
+      <li>nature is domesticated space, doesn’t exist independent of humans</li>
+    </ul>
+  </li>
+  <li>baseland ⇒ settled parts of Canada, industrialized south
+    <ul>
+      <li>stability, security, order, limitations, reason/consciousness</li>
+    </ul>
+  </li>
+  <li>hinterland ⇒ sparsely populated, non-industrialized
+    <ul>
+      <li>freedom, risk, irrationality/unconsciousness</li>
+    </ul>
+  </li>
+  <li>compare the idea of the American frontier, where the baseland/hinterland divide is not permanent</li>
+  <li>modernity ⇒ baseland &gt; hinterland</li>
+  <li>modernists ⇒ baseland &lt; hinterland</li>
+  <li>Modernist writers use personification, but not to bring humanity and nature closer</li>
+  <li>freeverse ⇒ breakdown of formal dimension and loss of oral element of poetry
+    <ul>
+      <li>Modernists use literary devices subtly in free verse, avoid pattern/order</li>
+    </ul>
+  </li>
+  <li>nature and culture are binary oppositions
+    <ul>
+      <li>culture is artistic representation/use of language, but nature does not represent itself (unconscious)</li>
+    </ul>
+  </li>
+  <li>imagism ⇒ movement in art starting in 1900s in Britain, height at 1909-1917
+    <ul>
+      <li>avoids excess words put there to satisfy meter, emphasize verbal accuracy and sparseness</li>
+      <li>akin to sculpture, put images together to create meaning</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-5">Module 5</h1>
+
+<ul>
+  <li>Representations of Native peoples in Modernist writing
+    <ul>
+      <li>Both Modernist and pre-Modernist writings are interested in representing Native peoples</li>
+      <li>“The Forsaken” ⇒ Pre-modernist transition poem
+        <ul>
+          <li>Modernist features: free verse. repetition, absence of sentimentality (shows emotion rather than tells it directly)</li>
+          <li>Poem presented as legend, objective invisible narrator ⇒ Native peoples are fully accessible to others
+            <ul>
+              <li>No perspective from family member or heroine ⇒ Native peoples have no voice of their own</li>
+            </ul>
+          </li>
+          <li>Duncan Campbell Scott
+            <ul>
+              <li>Worked at Department of Indian affairs as the Deputy Superintendent of Indian Affairs, negotiated Treaty 9 with the Ojibwe and Cree</li>
+              <li>Imagination stands in for knowledge of Native funeral customs ⇒ Native peoples are accessible even when the non-Native author is imagining them</li>
+              <li>Negatively represents Native peoples as having shamefully abandoned the woman in the poem (contrast family with woman, contrast Native peoples with white Canadians) ⇒ Native peoples are opposite to settlers, who are morally superior to them</li>
+            </ul>
+          </li>
+          <li>Canadian writing done by writers part of settler culture often represent Native peoples as:
+            <ul>
+              <li>having no voice in their own representation</li>
+              <li>fully accessible to the writer and their readers</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>“Kitwancool” ⇒ Pre-modernist writing
+        <ul>
+          <li>Emily Carr
+            <ul>
+              <li>Studied in California, London, Paris (exposed to European modernism)</li>
+              <li>Grew up in Victoria BC, very British environment (settler culture)</li>
+              <li>Carr feels nostalgic about the pre-settler past, just as F. R. Scott feels nostalgic about prehistory in “Lakeshore” ⇒ make Native history a part of her own identity</li>
+              <li>Assumes that Native cultures are disappearing, idea that she must preserve Native cultures since she values that culture more than the Natives</li>
+              <li>Writes explicitly from the perspective of the artist</li>
+            </ul>
+          </li>
+          <li>Native peoples are inaccessible at first, but later open up to her
+            <ul>
+              <li>Carr feels to be at the margins, not treated as a guest</li>
+              <li>Idea that the élan vital of the Native peoples is revealed over time as Native peoples become more accessible to Carr
+                <ul>
+                  <li>Questionable that the Native peoples actually accepted her as an honorary Native person</li>
+                  <li>Idea that Native peoples are not fully accessible to outsiders, but full access exists and can be obtained</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Contrasts two perspectives on the “hero” from the Mounties and the Native peoples</li>
+        </ul>
+      </li>
+      <li>“Where is the Voice Coming From”
+        <ul>
+          <li>unreliable narrator
+            <ul>
+              <li>Fragmentary view of history from historical objects and conflicting accounts</li>
+              <li>Impossible to produce an objective true single account because stories are told from differing perspectives with differing motivations</li>
+              <li>Despite a desire for including native experiences in his narrative (contrast Carr’s “Kitwancool” and Scott’s “The Forsaken”), ultimately unable to do so</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>“Tay John”
+        <ul>
+          <li>ironies in Canadian modernist literature
+            <ul>
+              <li>Continuities exist from Confederation era art
+                <ul>
+                  <li>Canadian modernists still concerned with their claim to the land, understanding between humans and nature, connection between Native peoples and settlers, Canadian national identity</li>
+                  <li>Conflicts with how Modernists try to separate themselves from the style/concerns of previous art</li>
+                </ul>
+              </li>
+              <li>Concerned with Canadian national identity
+                <ul>
+                  <li>Conflicts with how, internationally, modernism is centered around
+                    <ul>
+                      <li>cosmopolitanism rather than regionalism</li>
+                      <li>trans-national concerns (e.g. world wars, global capitalism, large scale migration) rather than national</li>
+                    </ul>
+                  </li>
+                  <li>Canadian modernism must deal with inaccessible wilderness and Native people cultures that are also a part of their national identity, which is a unique challenge to Canada</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Kinds of physical movement in the novel tells us about the characters
+            <ul>
+              <li>Straight line of the train moving across towards the Pacific representative of the progress of history</li>
+              <li>Red Rorty and Kumkleseem wandering towards the Pacific representative of the cyclical structure of myth</li>
+            </ul>
+          </li>
+          <li>Conflicting perspectives ⇒ modernist oppositions
+            <ul>
+              <li>Narration grows less and less convincing</li>
+              <li>Tay John’s own perspective is never told, impossible to truly know him</li>
+            </ul>
+          </li>
+          <li>Problem of knowledge ⇒ interpretations are often questionable e.g. Tay John’s dreams, Red Rorty’s crimes, Red Rorty’s idea of himself as savior</li>
+          <li>Tay John is an example of the between-two-worlds motif (European prospectors vs. Native peoples) ⇒ each group rejects him at some point, his own wants are unclear</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Modernist concern with the concept of the indigenous
+    <ul>
+      <li>Treated as objects rather than subjects that describe themselves</li>
+      <li>Identified with nature, rather than with art or culture
+        <ul>
+          <li>Contrast this with F. R. Scott’s depiction of humans as being separated from nature through their culture, nostalgia for the past before culture</li>
+          <li>Representation as human power over nature</li>
+        </ul>
+      </li>
+      <li>Pre-1920s ⇒ some Native writers, modern period ⇒ very few Native writers, post-1970s ⇒ Contemporary period with many Native writers</li>
+    </ul>
+  </li>
+  <li>New Imperialism ⇒ mother country is respected but aging, power in empire is moving to new colonies
+    <ul>
+      <li>optimistic idea that colonies are the center of culture, mother country is at the margins of culture</li>
+      <li>Euro-centric view of colony, mother country, and colony’s future</li>
+    </ul>
+  </li>
+  <li>élan vital ⇒ the secret rhythm of things, life force that permeates all living things, art should represent the core identity of things instead of the surface appearance of the object
+    <ul>
+      <li>implies that artist has the ability to grasp the true nature of an object and convey that</li>
+    </ul>
+  </li>
+  <li>Fauvism ⇒ art movement associated with French painter Henri Matisse
+    <ul>
+      <li>use of vivid colors, simplifying forms for dramatic effect</li>
+      <li>influenced Emily Carr’s art, introduced to her by Scottish painter John Duncan Fergusson along with the concept of élan vital</li>
+    </ul>
+  </li>
+  <li>Romantic Nationalism ⇒ nations develop from groups of people living/working on the same land for centuries (Margery Fee)
+    <ul>
+      <li>race ⇒ group of people sharing an identity grounded in experience and inheritance of the same place</li>
+      <li>migration and colonization in 19th century changed this idea of nationhood
+        <ul>
+          <li>cultivation ⇒ if you cultivated the land, you have a right to it</li>
+          <li>common purpose ⇒ settlers are part of a common group dedicated to founding a new society better than the one they left behind</li>
+          <li>totem transfer ⇒ make the Native past part of the national past, Natives transfer history/knowledge of the land to settlers
+            <ul>
+              <li>Doesn’t accept Native peoples as part of the nation’s present, as having inaccessible cultures, as a sovereign people</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-6">Module 6</h1>
+
+<ul>
+  <li>progressivism ⇒ Victorian period attitude that the world becomes a better and better place over time as people learn about the world
+    <ul>
+      <li>Eventually, humans will become godlike through absolute knowledge and absolute power</li>
+      <li>Sees history as record of linear progress from which to learn
+        <ul>
+          <li>Contrast with modernist view, which sees history as progress and regress which may not contain lessons and may be misrepresented
+            <ul>
+              <li>May not be possible to find any knowledge at all, since the world is too confusing/chaotic</li>
+              <li>Modernists represent the past as nightmarish in order to describe their sense of the present world</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Northrop Frye’s theory of mythos
+    <ul>
+      <li>epics have a universal structure ⇒ they are public (rather than private, as in a lyric poem) and have an objective and disinterested element
+        <ul>
+          <li>consist of great human actions in a world that doesn’t reflect human concerns</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>myth
+    <ul>
+      <li>preferred by Modernists over history</li>
+      <li>differences from history:
+        <ul>
+          <li>does not claim to deliver truth the same way that history does</li>
+          <li>doesn’t guarantee that we will understand the truth it presents</li>
+          <li>based on natural cycles (e.g. solstices) and have cyclical structure, whereas history is a straight line of progress
+            <ul>
+              <li>the phrase “history repeats itself” implies that history should not repeat itself</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>defined by Max Müller as stories that human beings came up with before recorded history as explanations of the world before people had the use of science</li>
+      <li>defined by Holman and Hunt as:
+        <ul>
+          <li>concerned with the supernatural themes (e.g. creation, divinity, religion) to account for natural phenomena and chronicle the adventures of cultural heroes</li>
+          <li>truth of myth is embodied in the story itself (e.g. explanation of spring through Persephone), whereas truth is interpreted from history</li>
+          <li>similar motifs/characters/actions across time/civilizations</li>
+          <li>myth gives structure to experience in order to help understand it, but doesn’t make complete sense of it</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>mythopoesis ⇒ deliberate construction of myth used to affirm some kind of collective identity e.g. national identity, myth with clear single claim about identity
+    <ul>
+      <li>Uses myth for its:
+        <ul>
+          <li>large scale</li>
+          <li>supernatural subjects/heros</li>
+        </ul>
+      </li>
+      <li>Used for a purpose to get one clear interpretation, creates a new myth</li>
+    </ul>
+  </li>
+  <li>“between-two-worlds” ⇒ persecuted by both worlds but freedom from community</li>
+  <li>remittance man ⇒ black sheep, man whose family pays him to be apart from them</li>
+</ul>
+
+<h2 id="tay-john">Tay John</h2>
+
+<h3 id="jack-denham">Jack Denham</h3>
+
+<ul>
+  <li>quests for the élan vital of Tay John, the one true universal understanding of him larger than Tay John himself</li>
+  <li>principal narrator of “Hearsay” ⇒ some information must be second-hand, but it is unclear from the narration which is which</li>
+  <li>sees Tay John as a mythical hero, representative of all man
+    <ul>
+      <li>Winning against the bear represents winning against wilderness</li>
+      <li>Tay John’s myth is important in itself, so telling Tay John’s myth is important as well</li>
+      <li>Parallels with story of Moses and Jesus</li>
+    </ul>
+  </li>
+  <li>unlikely to be successful, since Tay John has many complexities e.g. his first name Kumkleseem</li>
+</ul>
+
+<h3 id="the-search-for-truth">The search for truth</h3>
+
+<ul>
+  <li>according to F. R. Scott, modernists prefer the concrete over the abstract because the Victorians dealt with the abstract and because modernists prefer to work with subjects they’re more sure of
+    <ul>
+      <li>perspective shapes and creates meanings</li>
+      <li>any object’s meaning can be remade depending on the language used to represent it</li>
+      <li>no object is unworthy of representation</li>
+      <li>universal true meaning only emerges tentatively if at all</li>
+    </ul>
+  </li>
+  <li>characters in Tay John are not aware of irony from their flawed narration
+    <ul>
+      <li>Examples:
+        <ul>
+          <li>unclear whether or not Julia Alderson is lying</li>
+          <li>Jack Denham has his own theory of how Father Rorty dies and his memory of the letter is untrustworthy</li>
+          <li>Father Rorty believes that his love troubles are analogous to Christ’s temptation and he will speak to God on the mountain</li>
+        </ul>
+      </li>
+      <li>characters are sincere, earnestly put together their interpretations of Tay John</li>
+    </ul>
+  </li>
+  <li>Father Rorty is a counterpoint to Red Rorty
+    <ul>
+      <li>Red Rorty wants to confirm faith in a great leader for the Shuswap, Father Rorty wants to confirm faith in the resort workers, both have crazed faith</li>
+      <li>Both fail and are crucified
+        <ul>
+          <li>Carl Jung believed that people place their experiences in archetypal narratives</li>
+          <li>Crucifixion is a metaphor for rebirth
+            <ul>
+              <li>Red Rorty purifies his old life by fire</li>
+              <li>Father Rorty “baptizes” himself by swimming in the lake</li>
+            </ul>
+          </li>
+          <li>However, these ritual purifications just lead to death, failure of narrative frameworks of old myths ⇒ Jack Denham’s quest to find a new myth</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ardith-aeriola">Ardith Aeriola</h3>
+
+<ul>
+  <li>Like Tay John
+    <ul>
+      <li>Represents something larger than her
+        <ul>
+          <li>Stereotyped as both the easy woman by Dobble and the masculine ideal of women by the resort workers in accordance to their desires</li>
+        </ul>
+      </li>
+      <li>Never represents herself, but many other people attempt to represent her</li>
+      <li>Flouts authority of someone prominent in society, flouts convention
+        <ul>
+          <li>disturbing because the environment is lawless, so regulating people’s relationships is important</li>
+          <li>both are hinterland outsiders who can be excluded/persecuted by the majority, but at the same time enjoy more freedoms than true members of the baseland</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="alf-dobble">Alf Dobble</h3>
+
+<ul>
+  <li>opposite to Tay John
+    <ul>
+      <li>Tay John speaks very rarely, Alf Dobble speaks often and to an audience</li>
+    </ul>
+  </li>
+  <li>views wilderness as a future satellite of the baseland with no identity of its own</li>
+  <li>visionary, but a ridiculous one</li>
+  <li>associates himself with the railroad (resort visitors will arrive by train)
+    <ul>
+      <li>railroad is a symbol of linear progression of history</li>
+      <li>similarly, Dobble is sure of the future’s direction</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="modernist-canadian-poetry">Modernist Canadian Poetry</h2>
+
+<ul>
+  <li>Canadian poetry is separated into 2 phases (WWI-1930s, 1930s onwards)</li>
+  <li>E. J. Pratt tries to give Canadian history a mythological structure in his long poems</li>
+</ul>
+
+<h3 id="towards-the-last-spike">Towards the Last Spike</h3>
+
+<ul>
+  <li>Narrator asserts there’s not much difference between the past and the present except for progress (e.g. better technology, more knowledge), mindset is the same
+    <ul>
+      <li>Nation continues to reach greater powers, universe continues expanding</li>
+    </ul>
+  </li>
+  <li>Dominant themes ⇒ ambition to build a nation, association of the railroad with the building of a nation, prominence of struggle</li>
+  <li>lyric ⇒ short poem that consists of a single speaker who expresses a state of mind or a process of perception
+    <ul>
+      <li>privacy around personal/individual experience, sense that speaker is alone</li>
+      <li>Victorian lyrics were unpopular in the modern period, were thought of as too sentimental and emotionally excessive</li>
+      <li>Modernists also wrote emotional poems, but the emotions are not attached to a known speaker and are instead evoked by the image presented</li>
+    </ul>
+  </li>
+  <li>epic ⇒ public poem, has heroes who incarnate a civilization, very little personal order
+    <ul>
+      <li>usually written formally (e.g. in iambic pentameter) to signify order and regularity</li>
+    </ul>
+  </li>
+  <li>long poem ⇒ poem between the lyric and the epic, not as long as an epic but usually containing a narrative of some kind, not as short as a lyric but has some private moments of emotion
+    <ul>
+      <li>suitable for Canada, which doesn’t have an epic lengthy history like an empire but does have important events in terms of building the nation</li>
+    </ul>
+  </li>
+  <li>train and iambic pentameter signify order (train line is analogous to the railroad line), but poem ultimately has order and disorder co-exist in a binary opposition
+    <ul>
+      <li>order is necessary for Canada to have a national identity
+        <ul>
+          <li>completion of the railroad gives Canadians a shared experience we can be proud of in hour national history</li>
+          <li>establishes cultural heroes, individuals like John A. McDonald, and anonymous groups like the corporate men (railroad companies and their employees)
+            <ul>
+              <li>ignores the dreams/stories of the corporate men except in relation to their completion of McDonald’s vision, which is problematic</li>
+              <li>assumes that the workers on the railroad were equal, which is problematic</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>poem is called “Towards the Last Spike” and not “The Last Spike” since progress towards order is never completed</li>
+    </ul>
+  </li>
+  <li>nature is represented as vast and indifferent to human values
+    <ul>
+      <li>time is represented in long evolutionary and geologic time, not the small finite historical time of human beings</li>
+      <li>human time and geological time are brought into conflict through building the railway line, unlike in F. R. Scott’s Lakeshore</li>
+      <li>the Laurentian Shield is represented as a monstrous reptile that is not personified by anger at human endeavor, but is only indifferent to it</li>
+      <li>contrast of humans with nature: human urgency vs. geological time, human measurement/ambition vs. simple existence</li>
+      <li>challenge of building a railroad in the West is what builds the nation</li>
+    </ul>
+  </li>
+  <li>cosmic level of disorder exists ⇒ struggle between humans, between elements of nature
+    <ul>
+      <li>struggle involving elements of nature is mythic in scope, compare Greek/Roman mythology where gods personify elemental forces</li>
+      <li>disorder/struggle is a feature of the world</li>
+    </ul>
+  </li>
+  <li>establishes collective identity of the Canadian people as those many who built Canada by co-operating and building the railroad</li>
+</ul>
+
+<h2 id="all-the-spikes-but-the-last">All the Spikes But the Last</h2>
+
+<ul>
+  <li>Scott critiques “Towards the Last Spkie” as having ignored vital elements national identity in its representation of Donald Smith, who is not a railroad worker, driving in the last spike
+    <ul>
+      <li>Ignoring the inequality suffered by Chinese workers on the railroad for the purpose of more unified mythological vision erases problems of racism and prejudice in Canada</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-7">Module 7</h1>
+
+<h2 id="social-concerns-and-canadian-writing">Social Concerns and Canadian Writing</h2>
+
+<ul>
+  <li>displacement and diaspora in the development of 1950s Canadian literature
+    <ul>
+      <li>displaced persons ⇒ people who lost their homes/communities in WWII</li>
+      <li>diaspora ⇒ dispersion/spread of any people from their original homeland</li>
+      <li>saw historical displacement
+        <ul>
+          <li>1913, first wave of Hungarian immigrants, economic migrants</li>
+          <li>1957, second wave of Hungarian immigrants, fleeing political persecution</li>
+        </ul>
+      </li>
+      <li>integration and assimilation became major themes in writing</li>
+      <li>xenophobia ⇒ fear of foreignness
+        <ul>
+          <li>immigration was restricted in the early 1900s, only after 1970 were immigration rules relazed ⇒ bigotry existed based on ethnicity, British preferred</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>compare the representation of social issues in examples of low and high Modernist texts
+    <ul>
+      <li>socialist realism ⇒ emphasizes the divisions between economic classes and believes that the opposition between economic classes is the essential dynamic of society
+        <ul>
+          <li>gives the impression of representing real life through accurate detailed depictions</li>
+        </ul>
+      </li>
+      <li>“Under the Ribs of Death” is an example of socialist realist work
+        <ul>
+          <li>focuses on the economic/material ordinary life of Hunyadi family, as opposed to the unusual like in Tay John</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>“between-two-worlds”
+    <ul>
+      <li>generation gap between 1900s immigrant families ⇒ first generation who want to retain the ways of the culture they grew up in, second generation who want to assimilate, third generation tries to reconcile 1st and 2nd</li>
+    </ul>
+  </li>
+  <li>the hollow man ⇒ From T. S. Eliot’s “The Hollow Man”, person without reason for being and thus is not important to world, represents excess (hollow man has many things, but is ultimately empty), abandoned any desire to connect to other people</li>
+</ul>
+
+<h2 id="under-the-ribs-of-death"><strong>Under the Ribs of Death</strong></h2>
+
+<h3 id="part-1-introduction-to-sandor"><strong>Part 1: Introduction to Sandor</strong></h3>
+
+<ul>
+  <li>First few paragraphs gives impressions of Sandor (hungry, lonely, deprivation), establishes a bleak world in detailed realist style</li>
+  <li>Sandor thinks and behaves like a child
+    <ul>
+      <li>Copes with present by imagining his life in the future, escapism</li>
+      <li>Deals with things he dislikes by imagining what he will do about them in the future</li>
+      <li>Craves respect, detests that his dad is not treated with respect</li>
+    </ul>
+  </li>
+  <li>Sandor’s represents his present world as a “dirty foreign neighborhood” ⇒ victims being alone, presence of English brutality (not specific foreign means that <em>all</em> foreigners would receive abuse)</li>
+  <li>Sandor’s name is not given right away since Hunyadi is a foreign name
+    <ul>
+      <li>In the absence of a name or distinguishing characteristics, we often imagine ourselves, so we identify with Sandor more</li>
+      <li>Marlyn wants readers want to see him as a person before they see him as a foreigner, relevant to readers in the 1950s</li>
+    </ul>
+  </li>
+  <li>Sandor is more pragmatic than his family
+    <ul>
+      <li>His dad takes in boarders at cost to his family
+        <ul>
+          <li>Sandor believes that his dad is being taken advantage of, but his dad believes it to be a principled rational decision</li>
+          <li>However, we know that his dad is not completely rational, even outside of Sandor’s skewed view of him, since he beats Sandor</li>
+        </ul>
+      </li>
+      <li>At the same time, Sandor is not entirely a realist, since his coping mechanism is a <em>romantic</em> fantasy world</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="part-2-sandors-harsh-reality"><strong>Part 2: Sandor’s Harsh Reality</strong></h3>
+
+<ul>
+  <li>Encounter with George Atkins on his birthday
+    <ul>
+      <li>Sandor wants material items in order to fit in and he lives a deprived life, so he doesn;t mind stealing from Atkins</li>
+      <li>Atkins lives in a different reality to Sandor, where other people are all there to help him</li>
+    </ul>
+  </li>
+  <li>English gang beating
+    <ul>
+      <li>Wants to belong with them so much he’d rather get beat up than escape, illustrates unhealthy desperation</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="part-3-stories-and-narratives"><strong>Part 3: Stories and Narratives</strong></h3>
+
+<ul>
+  <li>Sandor lives in a mean world where Sandor lacks both material things (hunger) and immaterial things (acceptance)</li>
+  <li>Sandor sees himself as a realist, but actually longs to live in a fantasy world
+    <ul>
+      <li>Sees himself as a hero on a quest that reveals his good qualities suppressed by his condition and in which he gets everything he wants
+        <ul>
+          <li>Sandor doesn’t think about the bigger picture beyond his immediate desires, unlike his dad</li>
+          <li>Common obstacles in the quest are:
+            <ul>
+              <li>monsters ⇒ his neighborhood, conscious quest for the directest route to his own material success</li>
+              <li>women ⇒ romantic fantasies, unconscious quest</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Sandor says he dislikes the picture of a blue horse because he thinks that its unrealistic, but it’s more likely that he only likes art that reproduces the world he’d like
+        <ul>
+          <li>fantasy world is just his world with him in a better position, not challenging or mind-expanding</li>
+        </ul>
+      </li>
+      <li>Sandor never changes this “realist” perspective throughout the novel</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="part-4-representation-of-women"><strong>Part 4: Representation of Women</strong></h3>
+
+<ul>
+  <li>Sandor’s dad believes that prejudice can be eliminated by education
+    <ul>
+      <li>But the novel empathizes with the child’s perspective, which is that education is not an immediate solution to reality</li>
+    </ul>
+  </li>
+  <li>Sandor unconsciously sees women as obstacles on his quest
+    <ul>
+      <li>Women are symbols he doesn’t understand
+        <ul>
+          <li>Mrs. Hamilton becomes idealized symbol of everything he wants
+            <ul>
+              <li>believes there is a path through nobility and high morality in which he could save her and thus become accepted, despite his emphasis on practicality</li>
+              <li>Associated with the Great Goddess who embodies the life and death principles, symbolizes the fleeting beloved, the transcendence of humankind, pure intellect etc.</li>
+            </ul>
+          </li>
+          <li>Fraulein Kleinholtz associated with the death principle and monsters ⇒ the Crone, Chaos principle</li>
+          <li>Mary ⇒ the Sexual Principle</li>
+        </ul>
+      </li>
+      <li>Signals that there is something in the universe larger than his goals which he doesn’t understand</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="part-5-between-two-worlds"><strong>Part 5: Between two worlds</strong></h3>
+
+<ul>
+  <li>Sandor lives between two worlds, fits in nowhere ⇒ Hungarian immigrant society and larger dominant Anglo-Canadian society</li>
+  <li>Sandor is a second-generation immigrant, parents have memory of mother country culture, but child only knows and identifies with new country</li>
+  <li>Sandor wants to assimilate and sees his old culture as an obstacle to assimilation since he sees the new country’s culture as the dominant power</li>
+  <li>Under the Ribs of Death could be seen as hopeful since it ends with the birth of Sandor’s son, a 3rd generation immigrant who can reconcile the traditions of the old with the new</li>
+</ul>
+
+<h3 id="part-6-sandors-use-of-narrative-to-shape-his-vision-of-life"><strong>Part 6: Sandor’s Use of Narrative to Shape His Vision of Life</strong></h3>
+
+<ul>
+  <li>Story of Jack
+    <ul>
+      <li>Treat the businessman well and he will treat you well
+        <ul>
+          <li>Businessman want to reward deserving character/talent/hard work ⇒ virtue turns a profit</li>
+        </ul>
+      </li>
+      <li>Sandor identifies with Jack ⇒ Sandor believes he should work hard and then wait for some businessman to notice him and elevate him</li>
+      <li>Very generic story common in early 1900s literature that celebrates industrial capitalism by idealizing businesses as centers of power and morality and by encouraging the desire to belong to the system as an owner</li>
+      <li>Has order, romantic story where causes and effects are clear (only element of chance is dropping the wallet)</li>
+    </ul>
+  </li>
+  <li>Sandor depends on stories to sustain his dreams throughout his life, lives in his imagination and commits to Story of Jack</li>
+</ul>
+
+<h3 id="part-7-what-kind-of-story-is-this"><strong>Part 7: What kind of story is this?</strong></h3>
+
+<ul>
+  <li>Sandor changes his name to Alex ⇒ Sandor accepts the contradiction that businesses are racist while being objectively good</li>
+  <li>Irony in how Sandor sympathizes with characters of narratives, but he doesn’t have a lot of sympathy/empathy in his own life ⇒ sees empathy as a liability
+    <ul>
+      <li>Marie uses stories to reach and connect with people</li>
+      <li>Alex uses stories as a coping mechanism</li>
+    </ul>
+  </li>
+  <li>Unclear how much Alex learns over the course of the story about his romantic notions of business e.g. Mr. Nagy, interview with Mr. Atkinson ⇒ progress is not inevitable in Modernist works</li>
+</ul>
+
+<h3 id="part-8-mr-nagy"><strong>Part 8: Mr. Nagy</strong></h3>
+
+<ul>
+  <li>Mr. Nagy is a version of what Alex would like to be</li>
+  <li>Mr. Nagy doesn’t enjoy his wealth, no family/friends, no outside interests, wants to leave money from business to build a monument to himself ⇒ a hollow man who moves for the purpose of gathering power alone</li>
+  <li>Alex is not a hollow man ⇒ he always has Mary, always wants to belong, and so always has a pupose</li>
+</ul>
+
+<h3 id="part-9-conclusion"><strong>Part 9: Conclusion</strong></h3>
+
+<ul>
+  <li>xenophobia
+    <ul>
+      <li>Central social issue behind Sandor’s sense of marginalization and his never-ending effort to belong</li>
+      <li>His ethnic differences exacerbate his poverty, which makes him even more marginalized e.g. Joseph Hunyadi losing his court case</li>
+      <li>Reaction of dominant British settler society in fear that they will lose power
+        <ul>
+          <li>Marlyn and Scott argue that Canada should be instead focusing on its unique identity as a nation of immigrants</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Alex only accepts 1 side of the binary oppositions e.g. Canadian vs. Hungarian, English vs. immigrant, ostracism vs. belonging etc.</li>
+</ul>
+
+<h1 id="module-8">Module 8</h1>
+
+<ul>
+  <li>explain concepts such as the grotesque and the double in relation to Modernist representations of the mind</li>
+  <li>understand the role of the gothic in relation to Modernist treatments of mind</li>
+  <li>in modernist writing, understanding of the mind amounts to understanding of God</li>
+  <li>device of the riddle in relation to “mind” ⇒ riddle invites us to try to create meaning from the mind, where one authoritative meaning may be impossible</li>
+  <li>wonders ⇒ signs/phenomena that appear before us but lack explanation, usually positive, the divine is overwhelming
+    <ul>
+      <li>originally, signs of the Second Coming that show Christianity as the one true faith</li>
+      <li>wonders are purpose from God, and are a sign of his interest in us</li>
+    </ul>
+  </li>
+  <li>the grotesque ⇒ disruption and distortion of canonical assumptions
+    <ul>
+      <li>combines ugliness and ornament, the bizarre and the ridiculous, the excessive and the unreal</li>
+      <li>where order is disrupted, darkly comic, reveals the constructed nature of reality</li>
+    </ul>
+  </li>
+  <li>the gothic ⇒ combination of the supernatural and the grotesque
+    <ul>
+      <li>produces the sense you are confronting the unknown, confounds explanation</li>
+      <li>fuses different times/places into the same image, blurs the subject-object distinction</li>
+    </ul>
+  </li>
+  <li>the double ⇒ a mirror image in which one object seems an exact replica of the other</li>
+  <li>Surrealism
+    <ul>
+      <li>features of surrealism according to Brian Trehearne
+        <ol>
+          <li>The associative accumulation of images that are not obviously connected, but the reader connects to form a single picture</li>
+          <li>An interest in liminal state (state between other clear demarcated states e.g. waking,  dreaming)</li>
+          <li>May be very uncomfortable because there is no coherent standpoint for the reader ⇒ otherwise, reader has illusion that you have a perspective that the dreamers do not
+            <ul>
+              <li>rational mind has less power in a surrealist work</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+  <li>Modernist explore the mind as analogous to exploring God (mind is complex, we find unexpected truths etc.), use the tools of psychology/psychiatry/psychoanalysis which were being theorized at this time
+    <ul>
+      <li>Mind and turning inwards towards oneself becomes a major theme in modernist texts</li>
+    </ul>
+  </li>
+  <li>Modernists always believe that there is Meaning (or God, or truth) despite their belief that the world is chaotic, but it is inaccessible</li>
+  <li>Aesthetic experimentation ⇒ how does the mind reflect itself in aesthetics (e.g. art)?
+    <ul>
+      <li>create an aesthetic that expresses the mind’s complexity</li>
+      <li>ways madness is described
+        <ul>
+          <li>for Atwood, silence in the subject since madness is impossible to describe</li>
+          <li>through the narrator’s peculiar perspective that renders the familiar fantastic</li>
+        </ul>
+      </li>
+      <li>depictions of draw attention to the mind from which they are coming</li>
+      <li>the mind is not fully understood, could be dangerous or enriching</li>
+    </ul>
+  </li>
+  <li>Three insights into the question of meaning and where it comes from
+    <ol>
+      <li>Transcendent meaning (God) is unknowable ⇒ can’t trust narrator’s perspective/sanity</li>
+      <li>Cannot trust the narrator’s description of the truth because we cannot trust their description of events</li>
+      <li>Connections exist between outer landscape of geography and inner landscape of the mind (e.g. subject-object connection) that we may not fully recognize/understand</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="ethel-wilson-the-window">Ethel Wilson, “The Window”</h2>
+
+<ul>
+  <li>there exists difference and distance between subject and object, represented in the dominant image of the window</li>
+  <li>window represents Mr. Willy’s freedom from the meaningless social world, he has ordered his world
+    <ul>
+      <li>however, immediately upon looking through the window, Mr. Willy has less happy thoughts, thinks about the lost years of his youth</li>
+      <li>Mr. Willy is realizing that he has been a hollow man e.g. spends most of his life in a loveless union, sees Northern lights and thinks of them as an unknown danger</li>
+      <li>Split between natural world that surrounds Mr. Willy (nature) and Mr. Willy (self)
+        <ul>
+          <li>window provides Mr. Willy with a sense of control over nature, since he controls where the window goes (the window is a wall)</li>
+          <li>window suggests Mr. Willy’s vulnerability
+            <ul>
+              <li>allows those in the outside world to see Mr. Willy’s vulnerability</li>
+              <li>invites Mr. Willy to look at himself at night
+                <ul>
+                  <li>The thief running off could be interpreted as how frightening it is to self-reflect</li>
+                </ul>
+              </li>
+              <li>birds, a symbol of spirit, fly into the window and die</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>image of the specter becomes more and more prominent
+    <ul>
+      <li>specter is not real, projection of Mr. Willy’s mind</li>
+    </ul>
+  </li>
+  <li>tundra of the mind ⇒ loneliness, isolation, increasing tastelessness due to a lack of belief
+    <ul>
+      <li>Mr. Willy has sunk into a depression, perhaps he needs God (read the specter as the God) but this is not explicit since this is a modernist text</li>
+      <li>having beliefs demands a new worldview, and Mr. Willy doesn’t know how to break through this unknown barrier despite thinking that doing so could get him out of his depression</li>
+    </ul>
+  </li>
+  <li>no breakthrough on Mr. Willy’s part because truth is fragmentary</li>
+</ul>
+
+<h2 id="wo-mitchell-saint-sammy">W.O. Mitchell, “Saint Sammy”</h2>
+
+<ul>
+  <li>3rd person omniscient narrator, but adopts the perspective of Brian for a part of the story
+    <ul>
+      <li>Brian is a child narrator, used to evoke observation, openness of experience, and naivety</li>
+      <li>Saint Sammy is also inaccurate, puts events into specific narrative according to his belief ⇒ uses Judeo-Christian mythology to foretell the future, which requires almost crazed belief in God
+        <ul>
+          <li>Saint Sammy is a innocent fool, who has a special kind of wisdom, as seen by his prophecy coming true ⇒ idea that God is an ambiguous possibility</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Bent Candy is easy to interpret as biblical sin ⇒ covets Sammy’s horses and is a hypocrite about why he wants the horses
+    <ul>
+      <li>But, unfair selfish hypocrites exist throughout the world, and we dismiss Saint Sammy’s ideas
+        <ul>
+          <li>we expect Bent to succeed in getting the horses and to be sad on behalf of Saint Sammy</li>
+        </ul>
+      </li>
+      <li>However, things turn out the way Saint Sammy prophesied</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="robertson-davies-world-of-wonders">Robertson Davies, “World of Wonders”</h2>
+
+<h3 id="wonders-defined">Wonders Defined</h3>
+
+<ul>
+  <li>“wonders” in the title is not used in an ironic sense ⇒ wonders in the carnival are extraordinary and defy explanation to the audience
+    <ul>
+      <li>However, the “wonders” are explained and are looked at as trickery instead of miracles ⇒ undermines the idea of God and the positive connotations of wonder</li>
+      <li>Audience are represented as fools who are willing to be tricked because we project our desire for a God into the environment</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cass-fletcher">Cass Fletcher</h3>
+
+<ul>
+  <li>has contempt for religious belief and the audience of fools who believe in wonders</li>
+  <li>doesn’t have innocence of normal children due to his job</li>
+  <li>projects cynicism, confident narration, but Cass is also unreliable
+    <ul>
+      <li>Cass mentions the possibility of Willard’s molesting him only once, and then never addresses it again ⇒ possibility of trauma</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="happy-hannah">Happy Hannah</h3>
+
+<ul>
+  <li>the carnival seems very far away from the mainstream but is in fact ordered, a double of the mainstream
+    <ul>
+      <li>values are inverted in the carnival
+        <ul>
+          <li>the less well that you would fit in to the mainstream, the better you fit in at the carnival</li>
+          <li>skill/ingenuity is not as important as talent</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Happy Hannah is a religious hypocrite
+    <ul>
+      <li>reaffirms her weight as part of the divine order
+        <ul>
+          <li>But according to the bible, gluttony is a sin</li>
+          <li>According to Cass, she is grotesque
+            <ul>
+              <li>her naked weight is unpleasant in its excess, seen as almost a threat that would swallow you</li>
+              <li>she dresses herself as a baby</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>mean-mouthed, arrogant, disguises her hate as love
+        <ul>
+          <li>her sermonizing is blasphemous illusion that Cass finds offensive ⇒ so Cass may believe in some sense of a God</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="the-double-image">The Double Image</h2>
+
+<ul>
+  <li>A. Purdy, “Wilderness Gothic”
+    <ul>
+      <li>use of the gothic in the architectural sense to give an image to the old church building being repaired</li>
+      <li>the repairman is uncanny since because of the double entendre of “hanging in the sky” ⇒ familiar (repair harness) yet foreign (execution)</li>
+      <li>birds as representative of spirit have been hit by cars and are part of the road</li>
+      <li>the picture of the past (Victorian age when the spire was raised) superimposes itself onto the picture of the present, ironically as the repairman superimposes the present onto the spire
+        <ul>
+          <li>fusing is seen as a harbinger of apocalypse, danger, strangeness in the ordinary</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>P. K. Page, “Arras”
+    <ul>
+      <li>speaker is mad because their mind uses symbols that are not understandable by others ⇒ reader must make sense for the speaker</li>
+      <li>speaker confuses subject (themselves) and object (arras) ⇒ the speaker might be on the tapestry or looking at the tapestry based on their description</li>
+      <li>speaker sees the stillness as threatening, and hopes that by letting the peacock in, it will move the other figures on the arras (alienation, desire for emotional connection)</li>
+      <li>poem is a riddle that asks people to interpret it (troubled mind of the speaker doesn’t imply that there is no meaning in the poem), but a quest for one authoritative meaning is a red herring</li>
+    </ul>
+  </li>
+  <li>Gwedolyn MacEwen, “Dark Pines Under Water”
+    <ul>
+      <li>some modernist writers try to be very political in order to include the context of their outer world, but others like MacEwen and P.K. Page do not</li>
+      <li>inner landscape that becomes a metaphor for things happening in the outer world and vice versa
+        <ul>
+          <li>double image of the outside world (tangible pine trees, conscious) and the inner world (image of the dark pines inverted in the water, unconscious)</li>
+          <li>what is beneath the water is unknown, just as we don’t know what is beneath our awareness of our unconscious</li>
+          <li>explorer wants to explore the blurring of the unconscious and conscious instead of maintaining a binary opposition</li>
+        </ul>
+      </li>
+      <li>interested in Gnosticism, which is a belief system emphasizing personal mysticism</li>
+    </ul>
+  </li>
+  <li>Margaret Atwood, “This is a Photograph of Me”
+    <ul>
+      <li>gothic poem involving a double image of the binary opposition of life and death, mind and body</li>
+      <li>suggests that where life ends and death begins depends on the reader’s perspective, speaker directs the reader’s perspective</li>
+      <li>speaker is uncanny (the familiar made strange) since the speaker was assumed to be alive but is actually dead</li>
+      <li>no body to see, instead we see the surface of the water
+        <ul>
+          <li>reader sees the suggestion of the speaker, or begins to see the speaker as matter which has been distributed everywhere</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-9">Module 9</h1>
+
+<ul>
+  <li>distinguish between Modernism and Nationalism</li>
+  <li>differentiate between Cosmopolitanism and Regionalism</li>
+  <li>explain the influence of the Massey Report on cultural production in Canada</li>
+  <li>explain the relationship Frye and others see between “nature” and a truly “national” literature</li>
+  <li>branch plant ⇒ For Grant, Canada became a branch plant for American culture and the Massey Report was too late</li>
+  <li>cosmopolitanism ⇒ Modernist aspiration to be always moving towards a one common global art</li>
+  <li>regionalism ⇒ opposite of cosmopolitanism, Modernists views it as undermining the national literature unless they have themes that surpass the local in scope
+    <ul>
+      <li>uniting regional distinctions results in a higher standing on the international community</li>
+      <li>state of mind of being marginal to something more central</li>
+    </ul>
+  </li>
+  <li>elegy ⇒ express mourning/bereavement at a death, denial to grief to anger to acceptance</li>
+</ul>
+
+<h2 id="introduction-1">Introduction</h2>
+
+<ul>
+  <li>nation-creation involves conscious acts of will by its citizens
+    <ul>
+      <li>contrast with earlier ideas of the nation as a group of people living in the same place over time</li>
+      <li>In order to have a nation, there must be a national literature ⇒ idea in modernist literature and Confederation literature
+        <ul>
+          <li>But Frye argues that literature must be innovative and of a high quality, not simply by Canadian authors or about Canadian landscapes, against the “Buy Canadian” argument</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Modernists reject that literature must be a profitable commercial product e.g. included in a popular collection</li>
+</ul>
+
+<h2 id="what-makes-a-great-national-literature---northrop-frye">What makes a great national literature? - Northrop Frye</h2>
+
+<ul>
+  <li>Frye on nature
+    <ul>
+      <li>Canadian genius represents experience in ways peculiarly our own</li>
+      <li>What is accidentally our own is not what is peculiarly our own ⇒ a representation of Canadian landscape is not necessarily Canadian poetry
+        <ul>
+          <li>Nature is important not because of its attributes but because of its connection withe social organization or the individual mind e.g. unconscious horror of nature with the mind’s subconscious</li>
+          <li>We use nature in order to move onto more abstract ideas</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Poetry is at its best when it is created in a national unit
+    <ul>
+      <li>Images like peace, love, etc. should not be named directly in poetry but reflected in places (not spaces, which are only nature and have no human activity)</li>
+      <li>Canadian attitude of mind should be represented in the poem</li>
+      <li>Empires are too big and provinces are too small for literature
+        <ul>
+          <li>Empires are always expanding, archiving information, imposing meaning via government, therefore don’t have time for self-reflection Modernists require of high literature</li>
+          <li>Provinces have local interest but only local scope/concern</li>
+          <li>Nation-scope poetry strikes a balance between the particular and the universal</li>
+        </ul>
+      </li>
+      <li>Features of national community
+        <ul>
+          <li>Not sectarian ⇒ not committed to any religion due to diversity of faith</li>
+          <li>For Canada, binary tension ⇒ French vs. Canadian, relationships between regions</li>
+        </ul>
+      </li>
+      <li>imperial writing ⇒ writing that seeks to reflect the mother country</li>
+      <li>indigenous writing ⇒ writing committed to a very local area</li>
+      <li>For Frye, original writing strikes a balance between imperial and indigenous writing
+        <ul>
+          <li>returning to origins of studying, selecting/critiquing the great poets of the past</li>
+        </ul>
+      </li>
+      <li>Every national literature should have something unique about it</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="distinguishing-canadian-literature">Distinguishing Canadian Literature</h2>
+
+<ul>
+  <li>what makes Canadian literature unique, according to Frye ⇒ dual emphasis on nature and the power of the mind
+    <ul>
+      <li>riddle of inexplicable death has answers, if at all, in both nature and in the subconscious of the mind</li>
+      <li>the search for meaning in the apparently meaningless is humanizing
+        <ul>
+          <li>helps reveal our own mind and our desire for human contact, which is ultimately what matters most to us</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="regionalism">Regionalism</h2>
+
+<ul>
+  <li>is it such a bad thing for there to be a purely regionalist literature?
+    <ul>
+      <li>idea of a region has always been foundational to Canadian identity since Canada is made up of geographically disparate regions, so regional cultures result
+        <ul>
+          <li>Regions are very distinct and have different immigrant communities</li>
+          <li>In the past, it was also very hard to move between regions ⇒ artistic community is hard to find</li>
+          <li>Alienated between by the central parts of the nation, but also felt to have too much power by the nation e.g. East Atlantic feel they have little in common with Ontario</li>
+          <li>nation-state as a concept is only 200-250 years old</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="the-massey-report">The Massey Report</h2>
+
+<ul>
+  <li>Massey Report Royal commission named in 1949 by the Canadian government
+    <ul>
+      <li>purpose:
+        <ul>
+          <li>post-war crisis of Canadian universities which were underfunded and unpopular compared with American ones</li>
+          <li>conflict between CBC radio and private companies that wanted greater freedom and competition in the marketplace</li>
+          <li>view that Canada as a nation is vulnerable because of its small and sparse population (regional) vs. American industry which is always seeking new markets</li>
+        </ul>
+      </li>
+      <li>investigated lack of a Canadian identity/culture, made recommendations on how to build that Canada
+        <ul>
+          <li>guaranteed money for the CBC</li>
+          <li>federal funding for universities and arts</li>
+          <li>finds regionalism to be good for Canada in order to resist standardization and provide diversity ⇒ however, a strong national art scene must also exist to give artists a community to exchange ideas</li>
+          <li>American philanthropy, American taught teachers, American products, and American pop culture assimilate Canadians into American culture
+            <ul>
+              <li>Must preserve Canadian culture by encouraging Canadian education and Canadian high culture via a set government infrastructure</li>
+            </ul>
+          </li>
+          <li>nations are an act of will that must be preserved</li>
+        </ul>
+      </li>
+      <li>Modernists influenced commission ⇒ nations rely on self-aware, critical thinking citizens</li>
+    </ul>
+  </li>
+  <li>For Frye, being a part of Canada creates a creative schizophrenia because artists feel torn between the old colony and the new nation
+    <ul>
+      <li>Nationalistic literature is better because it doesn’t need to be subservient</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="fr-scott-wlmk">F.R. Scott, “W.L.M.K.”</h2>
+
+<ul>
+  <li>elegy for a leader should reflect on how the leader influenced their nation</li>
+  <li>ironically, Scott condemns King through Juvenalian satire, asserts nationhood needs leaders to take a stance in order to have a vision</li>
+  <li>Scott asks what will become of Canada instead of King ⇒ criticizes Canadians for a lack of critical thinking in electing King</li>
+</ul>
+
+<h2 id="a-m-klein-the-rocking-chair">A. M. Klein, “The Rocking Chair”</h2>
+
+<ul>
+  <li>shares central image of movement that goes nowhere (rocking chair) as in “W.L.M.K.”
+    <ul>
+      <li>restriction/inaction exists in the home, but the image of the rocking chair is comforting</li>
+      <li>chair has personality due to its age/tradition, symbol of the Francophone culture
+        <ul>
+          <li>Modernists view tradition as being outdated, kept around due to sentimentality and nostalgia ⇒ low utility, pleasure out of repeated pain, keeps new things out</li>
+        </ul>
+      </li>
+      <li>chair is a symbol of the political movements (“invoke”, “revoke”)
+        <ul>
+          <li>suggests movement is a longstanding feature of the culture of Quebec</li>
+          <li>critiques regionality of thought in Quebec in Modernist view</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="module-10">Module 10</h1>
+
+<ul>
+  <li>evaluate the Modernist canon as the previous modules have set it out</li>
+  <li>apply the characteristics of Modernist writing set out in the previous modules to the interpretation of Ethel Wilson’s <em>Love and Salt Water</em></li>
+  <li>debate the canonicity of Wilson’s novella</li>
+  <li>prolepsis ⇒ moments when the narrator jumps forwards in time to tell us about the future, creates a sense of the world as a whole unit, not popular among Modernists</li>
+  <li>intense summary ⇒ invoking something elliptically, strong control of the narrative, not popular among Modernists</li>
+</ul>
+
+<h2 id="part-1---the-voyage">Part 1 - The Voyage</h2>
+
+<ul>
+  <li>features of high modernist narrative: epiphany, sustained symbolism, impersonal narrative, ironic detachment, ultimate inconclusiveness (readers do not grasp a sense of the whole)</li>
+  <li>theme of human vulnerability
+    <ul>
+      <li>vulnerability against chance, landscape, old age</li>
+      <li>Irony of her mother’s death, in the sense of things falling part
+        <ul>
+          <li>Ellen identifies voyage with her mother, but only her mother’s death allows her to go</li>
+          <li>Divides her from her childhood, divides her father from his present, and gives them a past</li>
+          <li>Results of her death are liberating to Ellen, even though she grieves greatly</li>
+        </ul>
+      </li>
+      <li>prominent role of chance ⇒ chance puts Ellen through a rite of passage for children
+        <ul>
+          <li>Children see they are alone in the world and there doesn’t exist a kindred spirit that reflects you back at yourself</li>
+          <li>Ellen goes out into the world to encounter/learn unexpected new things before she is prepared to, leaving tradition/familiar
+            <ul>
+              <li>aligns with Modernist thought of the familiar as suspicious and leaving home as a necessary challenge</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>voyage ⇒ metaphor for new and potentially hostile unfamiliarity
+    <ul>
+      <li>ideal Modernist voyage of discovery</li>
+      <li>horizon of discovery is not only geographical, it is on the ship through the social relationships of the people on board
+        <ul>
+          <li>Ellen is not prepared for how her father meets someone new</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>third person narrator ⇒ seems like a person since they interject their own observations/arguments, provides coherent perspective out of characters actions
+    <ul>
+      <li>Modernist argues that this draws meaning for the reader, and should not be considered a modernist text</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="part-2---huw">Part 2 - Huw</h2>
+
+<ul>
+  <li>uses Huw to tell us about Morgan in a subtle way, anger morphs into sympathy for Ellen
+    <ul>
+      <li>we see depth in Morgan, contrast Nora who is surface deep and protects herself from deep connections with other characters</li>
+    </ul>
+  </li>
+  <li>unless you’re emotionally vulnerable, it is very difficult to have epiphanies</li>
+</ul>
+
+<h2 id="part-3---the-setup-of-the-story">Part 3 - The Setup of the Story</h2>
+
+<ul>
+  <li>sisters represent different ideals, opposites but the story doesn’t prefer one to the other
+    <ul>
+      <li>Nora ⇒ determined to be a mother, conventional marriage
+        <ul>
+          <li>however, Morgan is the emotional center of the family, whereas mothers are usually depicted as the center</li>
+        </ul>
+      </li>
+      <li>Ellen ⇒ wants a different kind of marriage or perhaps no marriage because it would be too emotionally taxing, doesn’t know what she wants to do
+        <ul>
+          <li>Ellen rejects Huw, who is a parallel for Morgan ⇒ if she had married Huw, she might have had a life like her mother, where she would long for travel but never go</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>expands the local setting (Aunt Maury’s wharf) to the universal (all coves on the BC coast look the same)
+    <ul>
+      <li>Ellen’s ideal environment since she’s close to the water, but she has the freedom of not being in her parent’s house or her sister’s house</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="part-4---themes">Part 4 - Themes</h2>
+
+<ul>
+  <li>Love
+    <ul>
+      <li>imposes obligations/restrictions on the lover based on the person they love</li>
+    </ul>
+  </li>
+  <li>Salt water
+    <ul>
+      <li>signifies total freedom</li>
+    </ul>
+  </li>
+</ul>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-04-17T00:00:00+00:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet -->
+<div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/notes/feed.xml">Subscribe</a></div>
+</div><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/notes/2019/07/24/engl108d.html">ENGL 108D</a></div><div class="next"><span>NEXT</span><a href="/notes/2020/04/18/engl315-essay.html">The Difficulties in Interpreting Myth Between Two Worlds</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script>
+</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ivy Zhou"><meta itemprop="url" content="/notes/"><meta itemprop="description" content="an uneasy soul"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Follow me on Medium.">
+        <a class="button button--circle medium-button" itemprop="sameAs" href="https://medium.com/@ivyzhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M834.7 279.8l61.3-58.9V208H683.7L532.4 586.4 360.3 208H137.7v12.9l71.6 86.6c7 6.4 10.6 15.8 9.7 25.2V673c2.2 12.3-1.7 24.8-10.3 33.7L128 805v12.7h228.6v-12.9l-80.6-98a39.99 39.99 0 0 1-11.1-33.7V378.7l200.7 439.2h23.3l172.6-439.2v349.9c0 9.2 0 11.1-6 17.2l-62.1 60.3V819h301.2v-12.9l-59.9-58.9c-5.2-4-7.9-10.7-6.8-17.2V297a18.1 18.1 0 0 1 6.8-17.2z"></path>
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Linkedin.">
+        <a class="button button--circle linkedin-button" itemprop="sameAs" href="https://www.linkedin.com/in/zhouivy" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M260.096 155.648c0 27.307008-9.899008 50.516992-29.696 69.632-19.796992 19.115008-45.396992 28.672-76.8 28.672-30.036992 0-54.612992-9.556992-73.728-28.672-19.115008-19.115008-28.672-42.324992-28.672-69.632 0-28.672 9.556992-52.224 28.672-70.656 19.115008-18.432 44.372992-27.648 75.776-27.648 31.403008 0 56.32 9.216 74.752 27.648 18.432 18.432 28.331008 41.984 29.696 70.656 0 0 0 0 0 0m-202.752 808.96c0 0 0-632.832 0-632.832 0 0 196.608 0 196.608 0 0 0 0 632.832 0 632.832 0 0-196.608 0-196.608 0 0 0 0 0 0 0m313.344-430.08c0-58.708992-1.364992-126.292992-4.096-202.752 0 0 169.984 0 169.984 0 0 0 10.24 88.064 10.24 88.064 0 0 4.096 0 4.096 0 40.96-68.267008 105.812992-102.4 194.56-102.4 68.267008 0 123.220992 22.868992 164.864 68.608 41.643008 45.739008 62.464 113.664 62.464 203.776 0 0 0 374.784 0 374.784 0 0-196.608 0-196.608 0 0 0 0-350.208 0-350.208 0-91.476992-33.451008-137.216-100.352-137.216-47.787008 0-81.236992 24.576-100.352 73.728-4.096 8.192-6.144 24.576-6.144 49.152 0 0 0 364.544 0 364.544 0 0-198.656 0-198.656 0 0 0 0-430.08 0-430.08 0 0 0 0 0 0" />
+</svg>
+</div>
+        </a>
+      </li><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/ivy-zhou" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>© Sentences 2020,
+        Powered by <a title="Jekyll is a simple, blog-aware, static site generator." href="http://jekyllrb.com/">Jekyll</a> & <a
+        title="TeXt is a super customizable Jekyll theme." href="https://github.com/kitian616/jekyll-TeXt-theme">TeXt Theme</a>.
+      </div>
+    </div>
+  </div>
+</footer>
+</div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script>
+  window.Lazyload.js(['https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js', 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js'], function() {
+    var $canvas = null, $this = null, _ctx = null, _text = '';
+    $('.language-chart').each(function(){
+      $this = $(this);
+      $canvas = $('<canvas></canvas>');
+      _text = $this.text();
+      $this.text('').append($canvas);
+      _ctx = $canvas.get(0).getContext('2d');
+      (_ctx && _text) && (new Chart(_ctx, JSON.parse(_text)) && $this.attr('data-processed', true));
+    });
+  });
+</script>
+<script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  window.Lazyload.js('https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js', function() {
+    mermaid.initialize({
+      startOnLoad: true
+    });
+    mermaid.init(undefined, '.language-mermaid');
+  });
+</script>
+
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
+
