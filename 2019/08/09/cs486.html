@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>SE 464 Architecture Assignment - LLVM - Sentences</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>CS 486 - Sentences</title>
 
-<meta name="description" content="ProblemLLVM, which originally stood for Low Level Virtual Machine, was a research project into compiler framework design created by Chris Lattner and Vikram ...">
-<link rel="canonical" href="/notes/2018/11/19/se-464-architecture-assignment.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/notes/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/notes/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/notes/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/notes/assets/favicon-16x16.png"><link rel="manifest" href="/notes/assets/site.webmanifest"><link rel="mask-icon" href="/notes/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/notes/assets/favicon.ico">
+<meta name="description" content="Professor Alice Gao, Spring 2019Lecture 1Applications of AI:  checkers  chess  go  JeopardyTopics in this course:  Search: Heuristic  Supervised Learning  Re...">
+<link rel="canonical" href="/notes/2019/08/09/cs486.html"><link rel="alternate" type="application/rss+xml" title="Sentences" href="/notes/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/notes/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/notes/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/notes/assets/favicon-16x16.png"><link rel="manifest" href="/notes/assets/site.webmanifest"><link rel="mask-icon" href="/notes/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/notes/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/notes/assets/browserconfig.xml">
 
@@ -334,79 +334,766 @@ l35 -44 -64 -65 c-35 -36 -66 -73 -69 -84 -4 -10 -10 -18 -14 -18 -9 0 -71
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet -->
-<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>SE 464 Architecture Assignment - LLVM</h1></header><span class="split-space">&nbsp;</span>
+<article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>CS 486</h1></header><span class="split-space">&nbsp;</span>
           <a class="edit-on-github"
             title="Edit on Github"
-            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2018-11-19-se-464-architecture-assignment/2018-11-19-se-464-architecture-assignment.md">
-            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="SE 464 Architecture Assignment - LLVM"><div class="article__info clearfix"><ul class="left-col menu"><li>
+            href="https://github.com/ivy-zhou/notes/tree/master/_posts/2019-08-09-cs486/2019-08-09-cs486.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="CS 486"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/notes/archive.html?tag=uwaterloo">uwaterloo</a>
             </li><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/notes/archive.html?tag=assignment">assignment</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Nov 19, 2018</span>
-            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2018-11-19T00:00:00+00:00">
-    <meta itemprop="keywords" content="uwaterloo,assignment"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/notes/archive.html?tag=notes">notes</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 09, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Ivy Zhou"/><meta itemprop="datePublished" content="2019-08-09T00:00:00+00:00">
+    <meta itemprop="keywords" content="uwaterloo,notes"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
 <!-- end custom article top snippet -->
-<div class="article__content" itemprop="articleBody"><h3 id="problem">Problem</h3>
+<div class="article__content" itemprop="articleBody"><blockquote>
+  <p>Professor Alice Gao, Spring 2019</p>
+</blockquote>
 
-<p>LLVM, which originally stood for Low Level Virtual Machine, was a research project into compiler framework design created by Chris Lattner and Vikram Adve at the University of Illinois in 2004. Today, the acronym LLVM has no meaning and instead refers to a collection of open source libraries that provides compilers, compiler toolchains, and compiler frameworks. It is widely known for being the platform that provides Clang, the very fast C/C++/Objective-C compiler used by Apple in their iOS and macOS software development kits.</p>
+<h1 id="lecture-1">Lecture 1</h1>
 
-<p>LLVM’s original aim was to allow for the compilation of both statically compiled and dynamically compiled languages in a modular and reusable way. Existing compilers at the time rarely supported both kinds of compilation, and in the cases where they did, there was very little sharing of code. In solving this problem, LLVM introduced a new architecture for compilers that also allowed for easier development, better optimization due to delayed compilation, and better unit testing of the compiler.</p>
+<p>Applications of AI:</p>
 
-<h3 id="functional-and-nonfunctional-properties">Functional and Nonfunctional Properties</h3>
+<ul>
+  <li>checkers</li>
+  <li>chess</li>
+  <li>go</li>
+  <li>Jeopardy</li>
+</ul>
 
-<p>A functional property of LLVM is that it allows for the compilation of C/C++/Objective-C code through its provided Clang compiler. A non-functional property of LLVM is that is very fast. For instance, the Clang compiler provided by LLVM is roughly 3 times faster than GCC for compiling Objective-C code in the default configuration for each.</p>
+<p>Topics in this course:</p>
 
-<h3 id="architecture">Architecture</h3>
+<ul>
+  <li>Search: Heuristic</li>
+  <li>Supervised Learning</li>
+  <li>Reasoning under uncertainty</li>
+  <li>Learning under uncertainty</li>
+  <li>Decision making under uncertainty</li>
+</ul>
 
-<p>Compiler architecture is generally organized as a 3 phase design with a frontend, an optimizer, and a backend. The frontend of the compiler is a parser responsible for building an abstract syntax tree (AST) from the grammar defined by the programming language. An optimizer uses that AST (creating a new representation if necessary in the case of dynamic compiler architecture) in order to transform the code in such a way to improve its runtime and/or memory usage. Then, the backend of the compiler translates the code into machine code and applies further optimizations based on the instruction set available to the target.</p>
+<p>Describe the four definitions of AI. Explain why we will pursue one over the other three.</p>
 
-<p><img src="image-20181119230844368.png" alt="image-20181119230844368" /></p>
+<ol>
+  <li>Cognitive Modeling Approach
+    <ul>
+      <li>Model human thoughts through brain imaging, cognitive science, etc.</li>
+      <li>Systems that think like humans</li>
+    </ul>
+  </li>
+  <li>Turing Test Approach
+    <ul>
+      <li>See if a human judge can distinguish a robot from a computer</li>
+      <li>Systems that act like humans</li>
+    </ul>
+  </li>
+  <li>Laws of Thought Approach
+    <ul>
+      <li>Laws of logic</li>
+      <li>Systems that think rationally</li>
+    </ul>
+  </li>
+  <li>Rational Agent Approach
+    <ul>
+      <li>Rational agent has rational behavior e.g. learning, having goals</li>
+      <li>Rational behavior means to take an action that maximizes the best outcome</li>
+      <li>Systems that act rationally</li>
+    </ul>
+  </li>
+</ol>
 
-<p>This design allows for support of multiple source languages and targets, which greatly expands the capability of the compiler and thus is likely to increase the popularity of the open source project. Ideally, the distinction in responsibility between the 3 sections would also aid development and reuse, since code relating to the frontend should be completely independent of code written for the backend. For instance, a developer working to develop new support for C should simply have to write a C frontend, without changing the rest of the compiler.</p>
+<p>A system is intelligent if it <strong>acts</strong> rationally.</p>
 
-<p><img src="image-20181119234528770.png" alt="image-20181119234528770" /></p>
+<p>We pursue the rational agent approach because humans are not necessarily rational (excludes 1 and 2) and laws of logic are hard to translate/apply (excludes 3).</p>
 
-<p>However, this is rarely the case. In practice, many compiler projects have dependencies between their 3 phases of compilation, making it extremely difficult to pull out parts of these compilers for use in libraries without pulling in the full source of the compiler. In GCC, for example, the backend of the compiler is dependent on the AST generated by the frontend in order to get debugging info, and global variable use is rampant. This criticism is also true of the Java and .NET virtual machines, which force garbage collection and JIT compilation on any source language it compiles.</p>
+<p>Rationality is mathematically well-defined and completely general.</p>
 
-<p>In order to solve these problems, LLVM introduced intermediate representation (IR), which is a language designed to be used by all 3 phases. The frontend parses source code into IR, validating the source code as it does so, and then turns over the IR to the optimizer. The optimizer then performs a series of configurable passes over the IR, each of which transforms the IR according to the the optimization specific to that pass. For example, we might configure the optimizer to optimize for speed of execution, but not memory usage. Finally, the optimized IR is handed off to the backend, which also performs multiple configurable passes on the IR in order to translate it into into machine code. For example, we might configure the backend to compile for a case where there are very few registers available.</p>
+<h1 id="lecture-2">Lecture 2</h1>
 
-<p><img src="image-20181120102318377.png" alt="image-20181120102318377" /></p>
+<p>sensor ⇒ perceives the environment e.g. mouse, eyes</p>
 
-<p>Under this design, each phase of the compiler is completely independent of the other phases, meaning that frontends and backends to LLVM can be cleanly interchanged in a way that was impossible for earlier compilers. For instance, a developer writing a LLVM frontend for a new source language only has to understand LLVM and the source language being added in order add support for that source language over all of the existing LLVM backends.</p>
+<p>act ⇒ acts on the environment e.g. monitor, hands, feet</p>
 
-<p>Furthermore, each pass within the optimizer is created as a C++ subclass of the LLVM Pass class, making it easy to package each pass as a separate library that a developer aiming to write a compiler on top of the LLVM infrastructure can include as necessary. For example, if we were to build a JIT compiler for image processing, we could forgo passes that increase compile-time latency as needed and those excluded passes would not be linked into the finished executable compiler, resulting in a much smaller custom build specific for image processing.</p>
+<p><strong>rational agent:</strong> selects an action that maximizes its performance measure given a percept sequence and prior knowledge (e.g. rules)</p>
 
-<p><img src="image-20181120123316545.png" alt="image-20181120123316545" /></p>
+<p>properties of a task environment:</p>
 
-<p>It is similarily easy to use components of an LLVM backend as separate LLVM libraries. To store information about the target being compiled to, LLVM introduces a target description (.td) file format, a set of which can describe specific properties about the target. For instance, a .td file might contain a list of all 16 32-bit registers available to a target, or describe a custom instruction available to the target. Thus, LLVM backends can easily share information in the form of .td files between differing targets. Since .td files contain purely declarative information, sometimes they must be augmented with C++ support routines that are specific to the architecture. An example of this would be code that handles x87 floating point stack. In the future, the LLVM community would like to expand the definition of .td files to eliminate such support routines and further increase the usability of .td files.</p>
+<ul>
+  <li>
+    <p>fully observable vs. partially observable (uncertainty) e.g. chess vs. poker (hands of other players are not observed)</p>
+  </li>
+  <li>
+    <p>deterministic vs. stochastic (uncertain dynamics) e.g. chess (if we know what move the opponent is going to make e.g. opponent is a computer) vs. poker (next card flipped is random)</p>
+  </li>
+  <li>
+    <p>static vs. dynamic (changing environment) e.g. chess vs. medical diagnostic</p>
+  </li>
+  <li>
+    <p>episodic vs. sequential (long term consequences of actions) e.g. imagic classification vs. crossword</p>
+  </li>
+  <li>
+    <p>known vs. unknown (agent knows the rules of the environments) e.g. chess vs. playing chess for the first time</p>
+  </li>
+  <li>
+    <p>single agent vs. multi-agent e.g. crossword vs. autonomous cars (when you model other cars)</p>
+  </li>
+</ul>
 
-<p><img src="image-20181120124747289.png" alt="image-20181120124747289" /></p>
+<p>We can formulate real world problems as search problems.</p>
 
-<p>Another significant benefit of the independence between the phases is the ease with which the LLVM compiler can be unit tested. LLVM IR is much easier to unit test than traditional compilers because you can load LLVM IR specific to the piece of the compiler that is broken, rather than create a source file which runs through the whole compiler in an effort to test one crashing optimizer. Furthermore, to find which specific component is offending, you can use the LLVM BugPoint tool which reduces a list of crashing optimizers and/or backend passes from some faulting input to a minimum test case.</p>
+<h5 id="n-queens">N Queens</h5>
 
-<h3 id="why-is-llvm-fast">Why is LLVM fast?</h3>
+<ul>
+  <li>states: 16C8 positions for the queens</li>
+  <li>start state: any of those states</li>
+  <li>goal test: are the queens attacking each other?</li>
+  <li>action: move 1 queen away (in any valid direction) from attacking queen, cost of movement is 0</li>
+  <li>successor function: valid actions</li>
+</ul>
 
-<p>There are many contributing factors to the speed of compilers, from social factors such as the size of the LLVM community and the popularity of LLVM as a compiler infrastructure to technical factors such as the implementation of the optimizer’s PassManager or tblgen, LLVM’s provided .td file reader. We will focus here on one of the most interesting and most unique ways that LLVM is able to increase performance, and that is through optimization through delayed compilation.</p>
+<h5 id="river-crossing">River Crossing</h5>
 
-<p>LLVM IR can be serialized into a binary format called LLVM bitcode, which can also be deserialized into LLVM IR. Serializing to bitcode at an intermediate step rather than creating object code right away allows us to delay code generation to link time or even install time to get better optimizations.</p>
+<ul>
+  <li>states: who is on either side of the river</li>
+  <li>start state: parent and children are on left side of the river</li>
+  <li>goal state: parent and children are on the right side of the river</li>
+  <li>successor function: move up to 100kg of weight across the river</li>
+</ul>
 
-<p><img src="image-20181120125128831.png" alt="image-20181120125128831" /></p>
+<h5 id="propositional-satisfiability">Propositional satisfiability</h5>
 
-<p>In the figure above, we have instructed the LLVM optimizer to emit bitcode rather than object code to each of the .o files pictured, so that the LLVM linker can then deserialize the bitcode into LLVM IR, link them, and then run an LLVM optimizer that has a scope over multiple files rather than just a.c or just d.f. This allows for file-wide optimizations such as inlining, eliminating dead code, and propagating constants.</p>
+<ul>
+  <li>states: truth values of each boolean variable used in the expression</li>
+  <li>start state: all false</li>
+  <li>goal state: expression is true</li>
+  <li>successor function: try to flip a boolean variable, from right to left</li>
+</ul>
 
-<p><img src="image-20181120130237815.png" alt="image-20181120130237815" /></p>
+<h5 id="traveling-salesman-problem">Traveling salesman problem</h5>
 
-<p>We can further delay compilation to install time by instructing the LLVM optimizer behind the LLVM linker to emit bitcode which is then sent to an LLVM backend hosted on the machine the compiler is being installed on. This is useful because many targets contain variability that is impossible to predict before install time. For example, the x86 family of targets is implemented on a variety of chips with differing characteristics and by delaying the selection of exactly which instructions to use in the machine code to install time, LLVM can adapt to such differences in targets very easily and provide further optimization.</p>
+<ul>
+  <li>states: path of salesman</li>
+  <li>start state: salesman at start city</li>
+  <li>goal state: salesman goes to every city</li>
+  <li>successor function: cool</li>
+</ul>
 
-<h4 id="works-cited">Works Cited</h4>
+<h1 id="lecture-3">Lecture 3</h1>
 
-<p>Lattner, C. (n.d.). LLVM. Retrieved from http://aosabook.org/en/llvm.html</p>
+<h5 id="8-puzzle-problem">8 Puzzle Problem</h5>
 
-<p>The LLVM Compiler Infrastructure Project. (n.d.). Retrieved from https://llvm.org/</p>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2018-11-19T00:00:00+00:00"><!-- start custom article footer snippet -->
+<p><strong>state:</strong> Each state is given by
+\(x_{00},x_{01},x_{02}, \\ x_{10},x_{11},x_{12}, \\ x_{20},x_{21},x_{22}\)
+where $x_{ij}$ is the value in the space at column i and row j. If the space is blank, the value is 0. $i, j \in {0, 1, 2}$, $x_{ij} \in {0, \dots, 8}$.</p>
+
+<p><strong>initial state:</strong> 530, 876, 241</p>
+
+<p><strong>goal state</strong>: 123, 456, 780</p>
+
+<p><strong>action:</strong> Move the blank space up, down, left, or right, wherever possible.</p>
+
+<p><strong>successor function:</strong> The resulting state after 1 action</p>
+
+<p><strong>cost function:</strong> Each move has a cost of 1.</p>
+
+<p>For the 8 puzzle problem, here are the first 4 layers of the search graph:</p>
+
+<p><img src="Untitled.png" alt="Untitled.png" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">frontier</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">frontier</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">initial_state</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">frontier</span><span class="p">:</span>
+	<span class="c1"># DFS: Expand most recent
+</span>	<span class="n">curr_state</span> <span class="o">=</span> <span class="n">frontier</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+	<span class="c1"># BFS: Expand oldest
+</span>	<span class="n">curr_state</span> <span class="o">=</span> <span class="n">frontier</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">curr_state</span> <span class="o">==</span> <span class="n">GOAL_STATE</span><span class="p">:</span>
+		<span class="k">return</span> <span class="n">curr_state</span>
+	<span class="n">successors</span> <span class="o">=</span> <span class="n">get_successors</span><span class="p">(</span><span class="n">curr_state</span><span class="p">)</span>
+	<span class="c1"># Implementation assumes no duplicates
+</span>	<span class="c1"># If duplicates, remember search tree as hashmap
+</span>	<span class="n">frontier</span> <span class="o">+=</span> <span class="n">successors</span>
+
+<span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"No solution"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Whether we should use BFS or DFS depends on the scenario:</p>
+
+<ul>
+  <li>
+    <p>Memory is limited ⇒ DFS</p>
+  </li>
+  <li>
+    <p>All solutions are deep in the tree ⇒ DFS</p>
+  </li>
+  <li>
+    <p>The search graph contains cycles ⇒ BFS</p>
+
+    <p>If we don’t remember the search tree, DFS gets cycles. BFS also gets stuck in cycles, but it will add its cycle to a queue.</p>
+  </li>
+  <li>
+    <p>The branching factor is large ⇒ DFS</p>
+
+    <p>Assume m is the number of levels, b is the branching factor. Then DFS is O(bm) while BFS is O(b^m).</p>
+  </li>
+  <li>
+    <p>We must find the shallowest goal node ⇒ BFS</p>
+  </li>
+  <li>
+    <p>Some solutions are very shallow ⇒ BFS</p>
+  </li>
+</ul>
+
+<p><strong>search graph:</strong> contains all states and edges for the successor function</p>
+
+<p><strong>search tree:</strong> constructed as we execute the algorithm (tree nodes are 1 directional)</p>
+
+<p><strong>frontier:</strong> all leaf nodes available for expansion</p>
+
+<ul>
+  <li>expanding a node removes it from the frontier</li>
+  <li>generating a node adds it to the frontier</li>
+</ul>
+
+<h1 id="lecture-4">Lecture 4</h1>
+
+<p>BFS and DFS are <em>uninformed</em> search algorithms. When we can, we should used <em>informed</em> search algorithms like A* search to find the target solution faster.</p>
+
+<h3 id="a-search-algorithm">A* search algorithm</h3>
+
+<p><strong>g(n):</strong> cost of the path from initial state to current state n, known</p>
+
+<p><strong>search heuristic h(n)</strong>: estimate of the cost of the cheapest path from node n to a goal node</p>
+
+<ul>
+  <li>h(n) ≥ 0. If n is a goal node, h(n) = 0</li>
+  <li>h(n) must be easy to compute (without search)</li>
+</ul>
+
+<p><strong>informed search algorithm:</strong> Same as DFS/BFS, except you treat the frontier as a priority queue ordered by f(n)</p>
+
+<ul>
+  <li>Djikstra’s: f(n) = g(n)</li>
+  <li>Greedy: f(n) = h(n)</li>
+  <li>A*: f(n) = g(n) + h(n)</li>
+</ul>
+
+<p>A* is optimally efficient because among all optimal algorithms that start from the same start node and use the same heuristic, A* expands the fewest nodes.</p>
+
+<p><strong>admissible heuristic:</strong> lower bound optimistic estimate of the cost of getting from node n to the nearest goal node</p>
+
+<p>We verify that a heuristic is admissible by showing that it is an optimal solution to a relaxed version of the problem.</p>
+
+<p>For the 8 puzzle problem, relaxed problems are:</p>
+
+<ul>
+  <li>A tile can move from A to B if A and B are adjacent
+    <ul>
+      <li>Optimal solution is Manhattan distance for each tile</li>
+    </ul>
+  </li>
+  <li>A tile can move from A to B if B is blank</li>
+  <li>A tile can move from A to B
+    <ul>
+      <li>Optimal solution is the number of misplaced tiles</li>
+    </ul>
+  </li>
+</ul>
+
+<p>To construct an admissible heuristic, relax a search problem and find the optimal solution in the relaxed case.</p>
+
+<p>A heuristic $h_1(n)$ <strong>dominates</strong> another heuristic $h_2(n)$ if for all states $h_1$ ≥ $h_2$ and for at least 1 state, $h_1$ &gt; $h_2$.</p>
+
+<p>If $h_1$ dominates $h_2$, A* using $h_1$ will never expand more states using $h_1$ than $h_2$. So, we should always choose dominating heuristics.</p>
+
+<p>Other desirable properties:</p>
+
+<ul>
+  <li>heuristic admissible, but with high values (close to true h)</li>
+  <li>not a constant function</li>
+</ul>
+
+<h1 id="lecture-5">Lecture 5</h1>
+
+<p>Components of a constraint satisfaction problem (CSP):</p>
+
+<ul>
+  <li>A set X of variables</li>
+  <li>A set D of domains</li>
+  <li>A set C of constraints specifying allowable combinations of values</li>
+</ul>
+
+<p>A solution to a CSP is a set of assignments to X that satisfy all C.</p>
+
+<p>For the 4 Queens problem:</p>
+
+<ul>
+  <li>X = ${x_0, x_1, x_2, x_3}$, where $x_i$ is the row of the the Queen in column i</li>
+  <li>Domain of $x_i$ is ${0, 1, 2, 3}$</li>
+  <li>C:
+    <ul>
+      <li>No 2 queens can be in the same row ⇒ For all i, j where i ≠ j, $x_i$ ≠ $x_j$</li>
+      <li>No 2 queens can be in the same diagonal ⇒ For all i, j where i ≠ j, $\vert x_i - x_j \vert ≠ 2$</li>
+      <li>No 2 queens can be in the same column ⇒ Not necessary since this is impossible by the formulation of X</li>
+    </ul>
+  </li>
+</ul>
+
+<p>For the 4 queens problem, we have the constraint: <em>The queens in columns 0 and 2 are not in the same row or diagonal</em>.</p>
+
+<p>In table format:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>$x_0$</th>
+      <th>$x_1$</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In formula format:</p>
+
+\[(x_0 \ne x_2) \land (|x_0 - x_2| \ne 2)\]
+
+<p><strong>arc-consistency:</strong> $X_i$ is arc-consistent with respect to another variable $X_j$ if and only if for every value $c_i$ in $D_i$, there is a value $v_j$ in $D_j$ such that $(v_i, v_j)$ satisfies the constraint $(X_i, X_j)$.</p>
+
+<h3 id="arc-consistency-algorithm">Arc consistency algorithm</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">revise</span><span class="p">(</span><span class="n">X_i</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+	<span class="n">revised</span> <span class="o">=</span> <span class="bp">False</span>
+	<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dom</span><span class="p">(</span><span class="n">X_i</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dom</span><span class="p">(</span><span class="n">X_i</span> <span class="n">s</span><span class="p">.</span><span class="n">t</span><span class="p">.</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="n">satisfies</span> <span class="n">C</span><span class="p">:</span>
+			<span class="n">remove</span> <span class="n">x</span> <span class="k">from</span> <span class="n">dom</span><span class="p">(</span><span class="n">X_i</span><span class="p">)</span>
+			<span class="n">revised</span> <span class="o">=</span> <span class="bp">True</span>
+	<span class="k">return</span> <span class="n">revised</span>
+
+<span class="k">def</span> <span class="nf">ac3</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+	<span class="n">Put</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="ow">in</span> <span class="n">the</span> <span class="nb">set</span> <span class="n">S</span> <span class="k">for</span> <span class="n">every</span> <span class="n">variable</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">every</span> <span class="n">constraint</span> <span class="n">involving</span> <span class="n">v</span>
+	<span class="k">while</span> <span class="n">S</span><span class="p">:</span>
+		<span class="n">X_i</span><span class="p">,</span> <span class="n">C_ij</span> <span class="o">=</span> <span class="n">S</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">revise</span><span class="p">(</span><span class="n">X_i</span><span class="p">,</span> <span class="n">Cij</span><span class="p">):</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">dom</span><span class="p">(</span><span class="n">X_i</span><span class="p">):</span> 
+				<span class="k">return</span> <span class="bp">False</span>
+			<span class="c1"># For all constraints where X_i is the other variable
+</span>			<span class="k">for</span> <span class="n">X_k</span> <span class="n">where</span> <span class="n">C_ki</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">constraint</span> <span class="n">between</span> <span class="n">X_k</span> <span class="ow">and</span> <span class="n">X_i</span><span class="p">:</span>
+				<span class="c1"># Adds if X_k, C_ki is not already in S
+</span>				<span class="n">S</span><span class="p">.</span><span class="n">add</span><span class="p">((</span><span class="n">X_k</span><span class="p">,</span> <span class="n">C_ki</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>3 possible outcomes to the arc-consistency algorithm:</p>
+
+<ul>
+  <li>no solution</li>
+  <li>1 unique solution</li>
+  <li>multiple solutions</li>
+</ul>
+
+<h4 id="complexity-of-the-arc-consistency-algorithm">Complexity of the arc consistency algorithm</h4>
+
+<p>Assume $n$ variables, $c$ binary constraints, and the size of the domain at each step is at most $d$. Then the complexity is $O(ncd)$.</p>
+
+<p>The algorithm always terminate because we shrink the domain at each step.</p>
+
+<p><strong>arity:</strong> the number of variables involved in a constraint</p>
+
+<h1 id="lecture-6-7">Lecture 6, 7</h1>
+
+<p><strong>local search:</strong> keep track of a single node, move to a neighbor of the node based on how good the neighbor is</p>
+
+<p>Advantages over other search algorithms:</p>
+
+<ul>
+  <li>Can be used when state space is large or infinite</li>
+  <li>Doesn’t use a lot of memory (only stores 1 state)</li>
+  <li>
+    <p>Can solve pure optimization problems where there is no goal state to test against</p>
+  </li>
+  <li>Good for solving CSPs, since path to goal state in CSP is irrelevant.</li>
+</ul>
+
+<p>Components of a local search problem:</p>
+
+<ul>
+  <li>A set of variables</li>
+  <li>Domains for variables</li>
+  <li>Constraints on the joint values of variables</li>
+  <li>Node: a complete assignment to all of the variables</li>
+  <li>Neighbor relation for each node
+    <ul>
+      <li>If the neighborhood at each step
+        <ul>
+          <li>large, we get large improvements at each step, less likely to get stuck</li>
+          <li>small, we get small improvement at each step, faster</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cost function for each node</li>
+</ul>
+
+<p>For the 4 queens problem:</p>
+
+<ul>
+  <li><strong>state:</strong> 4 queens on the board
+    <ul>
+      <li>Variables: $x_0, x_1, x_2, x_3$</li>
+      <li>Domain for each variable: $x_i \in {0, 1, 2, 3}$</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>initial state</strong>: Any random state</p>
+  </li>
+  <li>
+    <p><strong>goal state:</strong> No pair of queens attacking each other</p>
+  </li>
+  <li><strong>neighbor relation:</strong>
+    <ul>
+      <li>Version A: Move a single queen to another square in the same column</li>
+      <li>Version B: Swap the row positions of two queens</li>
+    </ul>
+  </li>
+  <li><strong>cost function:</strong> The number of pairs of queens attacking each other directly or indirectly</li>
+</ul>
+
+<p><img src="Untitled-9327839.png" alt="Untitled.png" /></p>
+
+<p><strong>local optima:</strong> a state s* is locally optimal if c(s<em>) ≤ c(s) for every state s in the neighborhood of s</em></p>
+
+<p><strong>global optima:</strong> a state s* is globally optimal if c(*) ≤ c(s) for every state s</p>
+
+<p><strong>plateau:</strong> flat area in the state space</p>
+
+<ul>
+  <li>shoulder: possible to improve when we escape</li>
+  <li>flat local optimum: cannot improve even if we escape</li>
+</ul>
+
+<p>Strategies for escaping local optima</p>
+
+<ul>
+  <li>sideway moves ⇒ allow max number of moves to neighbors with the same cost</li>
+  <li>taboo list ⇒ keep a small list of recently visited states and forbid the algorithm to return to those states</li>
+  <li>hill climbing with random restarts ⇒ restart search in different part of the state space
+    <ul>
+      <li>finds optimal solution given enough restarts</li>
+    </ul>
+  </li>
+  <li>hill climbing with simulated annealing ⇒ move to a state with high cost occasionally
+    <ol>
+      <li>Start with a random solution and a large T.</li>
+      <li>Choose a random neighbor. If the neighbor is better than current move to the neighbor. If the neighbor is not better than the current state, move to the neighbor with probability \(p = e^{\frac{\Delta E}{T}}\) where $E = \text{cost}(current) - \text{cost}(next)$. Define lower $\text{cost(x)}$ to be better.</li>
+      <li>Stop when T = 0. If T decreases slowly enough, simulated annealing is guaranteed to fin the global optimum.</li>
+    </ol>
+  </li>
+</ul>
+
+<p>Comparing hill climbing with genetic algorithms:</p>
+
+<ul>
+  <li>Exploring state space
+    <ul>
+      <li>Hill climbing explores neighbors of the state based on neighbor relation</li>
+      <li>Genetic algorithm uses mutation/reproduction to explore</li>
+    </ul>
+  </li>
+  <li>Optimizing quality of state/population
+    <ul>
+      <li>Hill climbing chooses the best neighbor</li>
+      <li>Genetic algorithm chooses best parents</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Parallel search</p>
+
+<ul>
+  <li>Maintain k nodes, update each one independently</li>
+  <li>Equivalent to doing k random restarts in parallel</li>
+</ul>
+
+<p>Beam search</p>
+
+<ul>
+  <li>Maintain k nodes, choose k best nodes out of all the neighbors</li>
+  <li>When k = 1, hill climbing</li>
+  <li>Loses diversity very fast if all k neighbors in the same area</li>
+</ul>
+
+<p>Stochastic beam search</p>
+
+<ul>
+  <li>Beam search, but k best nodes are chosen with a probability proportional to fitness of the node</li>
+  <li>Maintains diversity</li>
+</ul>
+
+<p>Genetic algorithm</p>
+
+<ul>
+  <li>Keep track of a set of states. Each state has a fitness.</li>
+  <li>Randomly two states to reproduce. The fitter a state, the more likely it’s chosen to reproduce</li>
+  <li>Two parent states cross over to produce a child state</li>
+  <li>The child state mutates with a small independent probability</li>
+  <li>Add the child state to the new population</li>
+  <li>Repeat reproduction until we produce a new population. Replace the old population with the new one</li>
+  <li>Repeat until one state in the population has high enough fitness.</li>
+</ul>
+
+<h1 id="lecture-8-9">Lecture 8, 9</h1>
+
+<p>Reasons for building an agent that can learn</p>
+
+<ul>
+  <li>Don’t know the solution ourselves</li>
+  <li>World evolves, cannot anticipate all changes over time</li>
+  <li>Cannot anticipate all possible situations</li>
+</ul>
+
+<p>Different types of learning</p>
+
+<ul>
+  <li>
+    <p><strong>unsupervised learning:</strong> learn patterns in the examples, no labels available</p>
+  </li>
+  <li>
+    <p><strong>semi-supervised learning:</strong> learn from a few labeled examples and a large number of unlabelled examples</p>
+  </li>
+  <li>
+    <p><strong>supervised learning:</strong> learn a function that maps from examples to labels</p>
+  </li>
+</ul>
+
+<p><strong>supervised learning:</strong></p>
+
+<ul>
+  <li>training set of (x, y) pairs generated by some unknown function f(x) = y</li>
+  <li>find a function h in hypothesis space H that approximates f
+    <ul>
+      <li>Choose h that is most accurate on the test set of examples ⇒ h that generalizes best</li>
+      <li>We want the simplest consistent hypothesis</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>classification:</strong> label is a discrete value</p>
+
+<p><strong>regression</strong>: label has continuous values</p>
+
+<p><img src="Untitled-9328347.png" alt="Untitled.png" /></p>
+
+<p><strong>overfitting:</strong> h that fits training data too well and does not generalize to test set</p>
+
+<p><strong>decision tree:</strong> graph of nodes, at each node divide up examples based on the value for a chosen feature</p>
+
+<p><img src="Untitled 1.png" alt="Untitled.png" /></p>
+
+<p>We construct a decision tree by testing features in order until each leaf contains training examples with the same label. The resulting tree will fit the training set perfectly.</p>
+
+<p>We want an order of testing features that gives a tree that is as shallow (simple) as possible.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">ID3</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">examples</span><span class="p">):</span>
+	<span class="n">If</span> <span class="nb">all</span> <span class="n">examples</span> <span class="n">are</span> <span class="n">positive</span><span class="p">,</span> <span class="k">return</span> <span class="n">a</span> <span class="n">leaf</span> <span class="n">node</span> <span class="k">with</span> <span class="n">decision</span> <span class="n">yes</span>
+	<span class="n">If</span> <span class="nb">all</span> <span class="n">examples</span> <span class="n">are</span> <span class="n">negative</span><span class="p">,</span> <span class="k">return</span> <span class="n">a</span> <span class="n">leaf</span> <span class="n">node</span> <span class="k">with</span> <span class="n">decision</span> <span class="n">no</span>
+	<span class="c1"># If there are hidden features or data is noisy
+</span>	<span class="n">If</span> <span class="n">no</span> <span class="n">features</span> <span class="n">left</span><span class="p">,</span> <span class="k">return</span> <span class="n">a</span> <span class="n">leaf</span> <span class="n">node</span> <span class="k">with</span> <span class="n">the</span> <span class="n">majory</span> <span class="n">decision</span> <span class="n">of</span> <span class="n">the</span> <span class="n">examples</span>
+	<span class="c1"># If training data doesn't contain this combination of values
+</span>	<span class="n">If</span> <span class="n">no</span> <span class="n">examples</span> <span class="n">left</span><span class="p">,</span> <span class="k">return</span> <span class="n">a</span> <span class="n">leaf</span> <span class="n">node</span> <span class="k">with</span> <span class="n">the</span> <span class="n">majority</span> <span class="n">decision</span> <span class="n">of</span> <span class="n">the</span> <span class="n">examples</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">parent</span>
+	
+	<span class="c1"># Choose the feature with greatest information gain
+</span>	<span class="n">Choose</span> <span class="n">the</span> <span class="n">most</span> <span class="n">important</span> <span class="n">feature</span> <span class="n">f</span>
+	<span class="k">for</span> <span class="n">each</span> <span class="n">value</span> <span class="n">v</span> <span class="n">of</span> <span class="n">feature</span> <span class="n">f</span><span class="p">:</span>
+		<span class="n">add</span> <span class="n">arc</span> <span class="k">with</span> <span class="n">label</span> <span class="n">v</span>
+		<span class="n">add</span> <span class="n">subtree</span> <span class="n">ID3</span><span class="p">(</span><span class="n">F</span> <span class="o">-</span> <span class="n">f</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">S</span> <span class="o">|</span> <span class="n">f</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>entropy of distribution with k outcomes:
+\(I(P(c_1) \dots P(c_k) = -\sum^{k}_{i = 1} P(c_i)\log_2 P(c_i)\)</p>
+
+<ul>
+  <li>
+    <p>maximum entropy = 1 when distribution is even between classes</p>
+  </li>
+  <li>
+    <p>Define I(1, 0) = 0, I(0, 1) = 0</p>
+  </li>
+</ul>
+
+<h4 id="expected-information-gain-for-selecting-a-feature">Expected information gain for selecting a feature</h4>
+
+<p>Before testing a feature, suppose there are p positive examples and n negative examples.</p>
+
+<p>Entropy before testing the feature:</p>
+
+<p>\(E_0 = I(\frac{p}{p + n}, \frac{n}{p + n})\)
+Expected entropy after testing the feature:</p>
+
+<p>\(E_1 = \sum^k_{i = 1} \frac{p_i + n_i}{p + n} \cdot I(\frac{p_i}{p_i + n_i}, \frac{p_i}{p_i + n_i})\)
+Expected information gain after testing the feature:</p>
+
+\[G = E_0 - E_1\]
+
+<h1 id="lecture-10">Lecture 10</h1>
+
+<h4 id="decision-trees-with-real-value-features">Decision trees with real-value features</h4>
+
+<p>To choose a split point for a real valued feature:</p>
+
+<ol>
+  <li>Sort the instances according to the real valued feature</li>
+  <li>Call every value halfway between two adjacent instance values a possible split point. If there exist at least 1 pair of labels with differing values on either side of the split point, record its expected information gain.</li>
+  <li>Pick the split point with the maximum information gain.</li>
+</ol>
+
+<p>We can test a real valued features multiple times, but discrete valued features a maximum of once. This makes computing real valued decision trees expensive.</p>
+
+<h4 id="preventing-overfitting-in-decision-trees">Preventing overfitting in decision trees</h4>
+
+<p>To get a smaller tree to prevent overfitting to noisy data:</p>
+
+<ul>
+  <li>Grow the tree to a maximum depth</li>
+  <li>Enforce a minimum number of examples at a leaf node</li>
+  <li>Post-prune the tree using a validation set</li>
+</ul>
+
+<p>Choose the best maximum depth of decision tree by k-fold cross validation</p>
+
+<ul>
+  <li>
+    <p>Use k-fold cross validation to split the dataset into k pairs of training sets and validation sets. Train k trees of a given depth. The accuracy for that depth is the average accuracy between the k trees.</p>
+  </li>
+  <li>
+    <p>Do k-fold cross validation several times to pick the best maximum depth.</p>
+  </li>
+</ul>
+
+<h1 id="lecture-11">Lecture 11</h1>
+
+<p>Causes and resolutions of the two AI winters:</p>
+
+<ol>
+  <li>1970s - 1980s
+    <ul>
+      <li>1969 → Marvin Minsky proved we need to use multi-layer perceptrons to represent simple non-linear functions such as XOR</li>
+      <li>Unclear how to train multi-layer perceptrons
+        <ul>
+          <li>1986 → Rumelhart, Hinton, and Williams use back-propagation to train multi-layer perceptrons</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>mid 1990s
+    <ul>
+      <li>Multi-layer neural networks trained with back propagation don’t work well compared to simpler models</li>
+      <li>Rise of deep learning
+        <ul>
+          <li>2006 → Hinton, Osindero, and Teh show that back-propagation works if initial weights are chosen in a smart way</li>
+          <li>2012 → Hinton enters ImageNet competition using deep convolutional neural networks and did far better than the next closest entry</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p>4 lessons learned summarized by Geoff Hinton</p>
+
+<ol>
+  <li>Labelled data sets were thousands of times too small</li>
+  <li>Our computers were millions of times too slow</li>
+  <li>We initialized the weights in a stupid way</li>
+  <li>We used the wrong type of non-linearity (relu better than sigmoid).</li>
+</ol>
+
+<p>A drawn simple perceptron:</p>
+
+<p><img src="Untitled-9329302.png" alt="Untitled.png" /></p>
+
+<h1 id="lecture-12">Lecture 12</h1>
+
+<p>$P(X)$ ⇒ prior, unconditional, likelihood of X given background information</p>
+
+<p>$P(X \vert Y)$ ⇒ posterior, conditional, likelihood of X given Y</p>
+
+<p><strong>random variable</strong></p>
+
+<ul>
+  <li>has a domain of possible values</li>
+  <li>has an associated probability distribution</li>
+</ul>
+
+<p><strong>probabilistic model:</strong> a set of random variables</p>
+
+<p><strong>atomic event:</strong> assigns a value to every ranom variable in the model</p>
+
+<p><strong>joint probability distribution:</strong> assigns a probability to every atomic event</p>
+
+<p>Sum rule:
+\(P(X = x \land Y = y) = \sum_{z = \{T, F\}} P(X = x \land Y = y \land Z = z)\)
+Product rule:</p>
+
+<p>\(P(X = x \vert Y = y) = \frac{P(X=x \land Y = y}{P(Y = y)}\)
+Chain Rule:</p>
+
+<p>\(P(A, B, C) = P(A \vert B, C) \cdot P(B \vert C) \cdot P(C)\)
+Bayes Rule:</p>
+
+\[P(X \vert Y) = \frac{P(Y \vert X) \cdot P(X)}{P(Y)}\]
+
+<h1 id="lecture-13">Lecture 13</h1>
+
+<p><strong>independence:</strong> $X$ is independent of $Y$ if $P(X \vert Y) = P(X)$</p>
+
+<p><strong>conditional independence:</strong> $X$ is conditionally independent of $Y$ if $P(X \vert Y, Z) = P(X \vert Z)$</p>
+
+<p>Computing a joint probability given a Bayesian network:</p>
+
+<ol>
+  <li>
+    <p>Choose an order of the variables consistent with the partial ordering in the Bayesian Network</p>
+  </li>
+  <li>
+    <p>Compute the joint probability using the formula
+\(P(X_n, \dots, X_1) = \prod^n_{i = 1} P(X_i \vert Parents(X_i))\)</p>
+  </li>
+</ol>
+
+<p><strong>Markov blanket:</strong> the node’s parents, children, and other parents of children</p>
+
+<p>In a Bayesian network, a node is conditionally independent of all other nodes given the node’s Markov Blanket.</p>
+
+<h1 id="lecture-16">Lecture 16</h1>
+
+<p>Markov model:</p>
+
+<ul>
+  <li>Each world contains a series of time slices</li>
+  <li>Each time slice t contains X, unobservable state variables and E, observable evidence variables</li>
+  <li>Markov assumption: The current state only depends on a fixed number of previous states</li>
+  <li>First order Markov process: every variable only depends on previous state</li>
+</ul>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-08-09T00:00:00+00:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet -->
 <div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/notes/feed.xml">Subscribe</a></div>
@@ -417,7 +1104,7 @@ l35 -44 -64 -65 c-35 -36 -66 -73 -69 -84 -4 -10 -10 -18 -14 -18 -9 0 -71
       </a>
     </p>
   </div></div></footer>
-<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/notes/2018/02/15/se-350-textbook-notes.html">SE 350 Textbook Notes</a></div><div class="next"><span>NEXT</span><a href="/notes/2018/12/10/se464.html">SE 464</a></div></div></div>
+<div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/notes/2019/07/24/engl108d.html">ENGL 108D</a></div><div class="next"><span>NEXT</span><a href="/notes/2020/04/17/engl315.html">ENGL 315</a></div></div></div>
 
 </div>
 
