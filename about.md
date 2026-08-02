@@ -25,10 +25,3 @@ titles:
   # @end locale config
 key: page-about
 ---
-
-I'm Ivy Zhou, a graduate of [UW](https://uwaterloo.ca/)'s co-op computer science program as of 2020.
-This is my blog, where I archive my old notes and homework from high school, university, and other things I've learned.
-I'm also a bit of a literary nut, so there might be few essays and poems strewn in there from time to time. Bear with me.
-
-> Quotation is a serviceable substitute for wit.
-> **~ Oscar Wilde**
