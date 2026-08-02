@@ -1,3 +1,274 @@
-/* start custom scss snippet */
+/*
+ * Graphite-and-cyan styling inspired by Daniel Hernandez's Ursine Umbra.
+ * System serif faces keep long-form notes readable without a font download.
+ */
 
-/* end custom scss snippet */
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+button,
+input {
+  font-family: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+}
+
+body {
+  letter-spacing: .006em;
+  background: #1e2022;
+}
+
+.main {
+  max-width: 796px;
+}
+
+.has-aside .main {
+  max-width: 1016px;
+}
+
+::selection {
+  color: #f8f8f2;
+  background: rgba(#6bcafb, .32);
+}
+
+a {
+  text-decoration-color: rgba(#6bcafb, .48);
+  text-decoration-thickness: .08em;
+  text-underline-offset: .16em;
+}
+
+.header {
+  border-bottom: 1px solid #393c40;
+  box-shadow: 0 8px 24px rgba(#000, .12);
+}
+
+.header__brand > a {
+  font-family: "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: .035em;
+}
+
+.header__brand > svg g {
+  fill: #d7d7d4;
+}
+
+.navigation,
+.article__info,
+.button,
+.tag-button,
+.footer,
+.toc {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.page__main-inner {
+  background-image: linear-gradient(180deg, rgba(#fff, .012), transparent 20rem);
+}
+
+.layout--article,
+.layout--home,
+.layout--archive,
+.layout--articles {
+  padding-bottom: 2rem;
+}
+
+.article__header {
+  margin-top: 3.8rem;
+  margin-bottom: 2rem;
+}
+
+.article__header h1,
+.article__content h1,
+.article__content h2,
+.article__content h3,
+.article__content h4,
+.article__content h5,
+.article__content h6,
+.article-list__group-header,
+.item__header {
+  font-family: "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  color: #f2f2ee;
+  letter-spacing: -.012em;
+}
+
+.article__header h1 {
+  font-size: 2.75rem;
+  line-height: 1.08;
+}
+
+.article__content {
+  font-size: 1.04rem;
+  line-height: 1.72;
+}
+
+.article__content h1,
+.article__content h2 {
+  padding-bottom: .36em;
+  border-color: #3b3e42;
+}
+
+.article__content h1 {
+  font-size: 2rem;
+}
+
+.article__content h2 {
+  font-size: 1.65rem;
+}
+
+.article__content h3 {
+  font-size: 1.34rem;
+}
+
+.article__content h4 {
+  font-size: 1.14rem;
+}
+
+.article__content h5,
+.article__content h6 {
+  font-size: 1rem;
+}
+
+.article__content blockquote {
+  padding: .1rem 0 .1rem 1.2rem;
+  color: #a8abb2;
+  border-left: 3px solid #428bca;
+}
+
+.article__content code,
+.article-list .item__meta {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.article__content code {
+  color: #f1fa8c;
+  background: #282a36;
+  border: 1px solid rgba(#fff, .09);
+  border-radius: 3px;
+}
+
+.article__content pre > code,
+.article__content .highlight code {
+  color: inherit;
+  border: 0;
+}
+
+.article__content .highlighter-rouge > .highlight,
+.article__content figure.highlight {
+  border: 1px solid rgba(#fff, .09);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(#000, .12);
+}
+
+.article__content .highlighter-rouge > .highlight > pre,
+.article__content figure.highlight > pre,
+.article__content figure.highlight::before {
+  border-radius: 3px;
+}
+
+.article__content img:not(.emoji) {
+  display: block;
+  height: auto;
+  margin: 1.6rem auto;
+  border: 1px solid #3b3e42;
+  border-radius: 4px;
+  box-shadow: 0 10px 32px rgba(#000, .18);
+}
+
+.article__content table {
+  scrollbar-color: #60646b #282a36;
+}
+
+.article__content th {
+  color: #f2f2ee;
+  background: #282a36;
+}
+
+.article__content tr:nth-child(even) {
+  background: rgba(#fff, .022);
+}
+
+.article__content .MathJax_Display,
+.article__content mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: .25rem 0;
+}
+
+.items--divided > .item:not(:last-child) {
+  border-color: #34373b;
+}
+
+.item__header {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.tag-button {
+  border: 1px solid #464a50;
+}
+
+.search-box > input {
+  background: #242629;
+}
+
+.page__aside,
+.page__aside .toc-aside {
+  width: 220px;
+  max-width: 220px;
+}
+
+.page__aside .toc-aside {
+  box-sizing: border-box;
+  padding-left: 1.5rem;
+}
+
+.page__aside .toc {
+  width: 100%;
+}
+
+.page__sidebar {
+  background: #242629;
+  border-color: #393c40;
+}
+
+.footer {
+  border-top: 1px solid #2f3235;
+}
+
+@media (max-width: 499px) {
+  .article__header h1 {
+    font-size: 2.05rem;
+  }
+
+  .article__content {
+    font-size: 1rem;
+    line-height: 1.66;
+  }
+
+  .article__content ul,
+  .article__content ol {
+    margin-left: 1.25rem;
+  }
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body,
+  .page__main,
+  .page__main-inner,
+  .article__content,
+  .article__content h1,
+  .article__content h2,
+  .article__content h3,
+  .article__content h4,
+  .article__content h5,
+  .article__content h6 {
+    color: #111;
+    background: #fff;
+  }
+}

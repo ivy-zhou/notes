@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -eu
+
+JEKYLL_ENV=production bundle exec jekyll build --trace
+bundle exec ruby scripts/audit-site.rb _site

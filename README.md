@@ -10,7 +10,13 @@ Install Ruby 3.4.10, then install the locked dependencies:
 bundle install
 ```
 
-Posts live in `_posts`. Name a new post `YYYY-MM-DD-short-title.md` and start it with front matter like:
+Create a dated post directory, Markdown file, and starter front matter with:
+
+```sh
+bin/new-post "Short title" notes
+```
+
+The remaining arguments become tags. Without any tags, the post gets the `notes` tag. If you prefer to create a post manually, posts live in `_posts` and use front matter like:
 
 ```yaml
 ---
@@ -29,6 +35,14 @@ bundle exec jekyll serve --livereload --drafts
 
 Open <http://127.0.0.1:4000/notes/>. LaTeX, tags, syntax highlighting, post assets, and existing permalinks are handled by the current Jekyll configuration and TeXt theme.
 
+Before publishing, run the same production build and content audit used by CI:
+
+```sh
+bin/check
+```
+
+This catches malformed generated HTML, broken local links and images, duplicate IDs, missing image descriptions, and unbalanced code fences.
+
 ## Publish
 
 Commit the source changes and push `master`:
@@ -39,4 +53,4 @@ git commit -m "Add post title"
 git push origin master
 ```
 
-The `Deploy notes to GitHub Pages` workflow builds the site and deploys the generated artifact to GitHub Pages. The generated `_site` directory and `gh-pages` branch are not edited by hand.
+The `Deploy notes to GitHub Pages` workflow runs `bin/check` and deploys the generated artifact to GitHub Pages. The generated `_site` directory and `gh-pages` branch are not edited by hand.

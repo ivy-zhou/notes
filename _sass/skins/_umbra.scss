@@ -1,0 +1,63 @@
+///
+// Skin: Umbra
+// A web adaptation of Ursine Umbra's graphite-and-cyan palette.
+///
+
+$main-color-1:     #6bcafb;
+$text-color-1:     #121416;
+
+$main-color-2:     #bd93f9;
+$text-color-2:     #17131d;
+
+$main-color-3:     #2b2b2b;
+$text-color-3:     #ddd;
+
+$main-color-theme-light: rgba(#000, .86);
+$main-color-theme-dark:  rgba(#fff, .9);
+
+$background-color: #1e2022;
+
+$text-color-theme-light-d: #111;
+$text-color-theme-light:   #222;
+$text-color-theme-light-l: #666;
+
+$text-color-theme-dark-d:  #f5f5f2;
+$text-color-theme-dark:    #ddd;
+$text-color-theme-dark-l:  #a8abb2;
+
+$text-color-d:     $text-color-theme-dark-d;
+$text-color:       $text-color-theme-dark;
+$text-color-l:     $text-color-theme-dark-l;
+
+$text-background-color: #282a36;
+
+$header-text-color: $text-color-3;
+$header-background: #2b2b2b;
+
+$footer-text-color: #a8abb2;
+$footer-background: #191b1d;
+
+$border-color:     #464a50;
+$border-color-l:   #34373b;
+$decorate-color:   rgba(#fff, .12);
+$mask-color:       rgba(#000, .9);
+$select-color:     rgba($main-color-1, .32);
+
+$green:           #50fa7b;
+$blue:            #66d9ef;
+$yellow:          #f1fa8c;
+$red:             #ff5555;
+$text-color-function: #161719;
+
+$mail-color:       #6bcafb;
+$facebook-color:   #8be9fd;
+$twitter-color:    #8be9fd;
+$weibo-color:      #ff5555;
+$google-plus-color:#ff5555;
+$telegram-color:   #8be9fd;
+$medium-color:     #ddd;
+$zhihu-color:      #8be9fd;
+$douban-color:     #50fa7b;
+$linkedin-color:   #6bcafb;
+$github-color:     #ddd;
+$npm-color:        #ff5555;

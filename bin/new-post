@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require "date"
+require "fileutils"
+
+title = ARGV.shift.to_s.strip
+abort 'Usage: bin/new-post "Post title" [tag ...]' if title.empty?
+
+tags = ARGV.empty? ? ["notes"] : ARGV
+slug = title.downcase
+  .unicode_normalize(:nfkd)
+  .encode("ASCII", invalid: :replace, undef: :replace, replace: "")
+  .gsub(/[^a-z0-9]+/, "-")
+  .gsub(/\A-|\-\z/, "")
+abort "The title does not produce a usable filename." if slug.empty?
+
+basename = "#{Date.today.iso8601}-#{slug}"
+directory = File.expand_path("../_posts/#{basename}", __dir__)
+post = File.join(directory, "#{basename}.md")
+abort "Post already exists: #{post}" if File.exist?(post)
+
+FileUtils.mkdir_p(directory)
+escaped_title = title.gsub("\\", "\\\\").gsub('"', '\\"')
+File.write(post, <<~MARKDOWN)
+  ---
+  layout: article
+  title: "#{escaped_title}"
+  tags: #{tags.join(" ")}
+  ---
+
+  Start writing here.
+MARKDOWN
+
+puts post
+puts "Put post-specific images in #{directory} and reference them by filename."

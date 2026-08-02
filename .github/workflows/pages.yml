@@ -27,10 +27,8 @@ jobs:
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b
         with:
           bundler-cache: true
-      - name: Build site
-        run: bundle exec jekyll build --trace
-        env:
-          JEKYLL_ENV: production
+      - name: Build and audit site
+        run: bin/check
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v4
         with:

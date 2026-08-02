@@ -2,6 +2,7 @@
 layout: article
 title: "SE 350 Textbook Notes"
 tags: uwaterloo notes
+mermaid: true
 ---
 
 ## Chapter 1 - Computer System Overview
