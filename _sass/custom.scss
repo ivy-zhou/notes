@@ -189,6 +189,38 @@ a {
   border-left: 3px solid #428bca;
 }
 
+.article__content .note-example {
+  margin: 1.8rem 0 1.8rem 1rem;
+  padding: 1rem 1.15rem 1.1rem;
+  color: #d8dce0;
+  background: rgba(#6bcafb, .055);
+  border: 1px solid rgba(#6bcafb, .18);
+  border-left: 3px solid #6bcafb;
+  border-radius: 0 5px 5px 0;
+}
+
+.article__content .note-example > :first-child {
+  margin-top: 0;
+}
+
+.article__content .note-example > :last-child {
+  margin-bottom: 0;
+}
+
+.article__content .note-example strong:first-child {
+  color: #8bd8ff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: .78em;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.article__content .note-example__answer-label {
+  margin-top: 1.15rem;
+  padding-top: .85rem;
+  border-top: 1px solid rgba(#6bcafb, .18);
+}
+
 .article__content code,
 .article-list .item__meta {
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;

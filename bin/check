@@ -2,5 +2,6 @@
 
 set -eu
 
+bundle exec ruby scripts/test-example-block.rb
 JEKYLL_ENV=production bundle exec jekyll build --trace
 bundle exec ruby scripts/audit-site.rb _site
