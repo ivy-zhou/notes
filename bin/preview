@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -eu
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  printf '%s\n' \
+    'Usage: bin/preview' \
+    '' \
+    'Runs the production build and content audit, then serves the site with' \
+    'drafts and live reload at http://127.0.0.1:4000/notes/.' \
+    '' \
+    'This command never commits or pushes. Stop it with Ctrl-C.'
+  exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+  printf '%s\n' 'Usage: bin/preview' >&2
+  exit 1
+fi
+
+bin/check
+exec bundle exec jekyll serve --livereload --drafts

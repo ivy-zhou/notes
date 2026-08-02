@@ -17,7 +17,7 @@ text_skin: umbra
 highlight_theme: ursine-umbra
 url: https://ivy-zhou.github.io
 baseurl: /notes # does not include hostname
-title: Sentences
+title: Notes
 description: > # this means to ignore newlines until "Language & timezone"
   A loosely organized collection of notes and thoughts
 

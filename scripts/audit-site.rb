@@ -32,6 +32,8 @@ html_files.each do |file|
   end
 
   document.css("img").each do |image|
+    next if image["aria-hidden"] == "true"
+
     issues << "#{relative}: image is missing alt text: #{image['src']}" if image["alt"].to_s.strip.empty?
   end
 

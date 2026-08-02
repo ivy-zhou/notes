@@ -3,6 +3,23 @@
 require "date"
 require "fileutils"
 
+if ["-h", "--help"].include?(ARGV.first)
+  puts <<~HELP
+    Usage: bin/new-post "Post title" [tag ...]
+
+    Creates _posts/YYYY-MM-DD-post-title/YYYY-MM-DD-post-title.md with
+    article front matter and a starter paragraph. Any remaining arguments
+    become tags; when omitted, the post receives the "notes" tag.
+
+    Put post-specific images beside the generated Markdown file and refer to
+    them by filename.
+
+    Example:
+      bin/new-post "How I take notes" writing process
+  HELP
+  exit
+end
+
 title = ARGV.shift.to_s.strip
 abort 'Usage: bin/new-post "Post title" [tag ...]' if title.empty?
 

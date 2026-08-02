@@ -25,3 +25,5 @@ titles:
   # @end locale config
 key: page-about
 ---
+
+These are my notes!

@@ -45,15 +45,69 @@ a {
 
 .header__brand > a {
   font-family: "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: .035em;
 }
 
-.header__brand > svg g {
-  fill: #d7d7d4;
+.header__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  margin-right: .85rem;
 }
 
-.navigation,
+.header__logo {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.header__logo-wrap::after {
+  position: absolute;
+  top: .55rem;
+  right: .05rem;
+  color: #fff2ad;
+  font-family: Georgia, serif;
+  font-size: .78rem;
+  line-height: 1;
+  content: "✦";
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 .25rem rgba(#fff, .8);
+  transform: rotate(-20deg) scale(.1);
+  transform-origin: center;
+}
+
+.header__logo-wrap:hover::after {
+  animation: cow-glasses-twinkle .72s ease-out;
+}
+
+@keyframes cow-glasses-twinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: rotate(-20deg) scale(.1);
+  }
+
+  32% {
+    opacity: 1;
+    transform: rotate(5deg) scale(1.25);
+  }
+
+  62% {
+    opacity: .9;
+    transform: rotate(25deg) scale(.78);
+  }
+}
+
+.navigation {
+  font-family: "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  font-size: 1.05rem;
+}
+
 .article__info,
 .button,
 .tag-button,
@@ -238,6 +292,16 @@ a {
 }
 
 @media (max-width: 499px) {
+  .header__brand > a {
+    font-size: 1.2rem;
+  }
+
+  .header__logo-wrap {
+    width: 1.85rem;
+    height: 1.85rem;
+    margin-right: .55rem;
+  }
+
   .article__header h1 {
     font-size: 2.05rem;
   }
@@ -250,6 +314,14 @@ a {
   .article__content ul,
   .article__content ol {
     margin-left: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__logo-wrap:hover::after {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
